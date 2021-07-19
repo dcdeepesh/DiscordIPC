@@ -1,58 +1,55 @@
-﻿using System;
+﻿using Dec.DiscordIPC.Commands;
+using Dec.DiscordIPC.Core;
+using Dec.DiscordIPC.Events;
+using System;
 using System.Text.Json;
-using System.IO.Pipes;
 using System.Threading.Tasks;
 
-using Dec.DiscordIPC.Commands;
-
 namespace Dec.DiscordIPC {
-    public class DiscordIPC {
-        private NamedPipeClientStream pipe;
-        private MessageReadLoop messageReadLoop;
+    public class DiscordIPC : LowLevelDiscordIPC {
 
-        public async Task InitAsync() {
-            pipe = new NamedPipeClientStream(".", "discord-ipc-0",
-                PipeDirection.InOut, PipeOptions.Asynchronous);
-            await pipe.ConnectAsync();
+        public DiscordIPC(string clientId) : base(clientId) { }
 
-            messageReadLoop = new MessageReadLoop(pipe);
-            messageReadLoop.Start();
+        #region Commands
 
-            await SendMessageAsync(Message.Handshake(JsonSerializer.SerializeToUtf8Bytes(new {
-                client_id = "850433922746810368",
-                v = "1",
-                nonce = Guid.NewGuid().ToString()
-            })));
+        public async Task<Authorize.Data> SendCommandAsync(Authorize.Args args) =>
+            await SendCommandAsync_Core("AUTHORIZE", args) as Authorize.Data;
+
+        public async Task<Authenticate.Data> SendCommandAsync(Authenticate.Args args) =>
+            await SendCommandAsync_Core("AUTHENTICATE", args) as Authenticate.Data;
+
+        private async Task<dynamic> SendCommandAsync_Core(string cmd, dynamic args) {
+            var nonce = Guid.NewGuid().ToString();
+            dynamic payload = new {
+                cmd,
+                nonce,
+                args
+            };
+
+            JsonElement response = await SendCommandWeakTypeAsync(payload);
+            return response.GetProperty("data").ToObject<Authorize.Data>();
         }
 
-        public async Task<dynamic> SendCommandAsync(ICommand payload) {
-            await SendMessageAsync(new Message(OpCode.FRAME, JsonSerializer.SerializeToUtf8Bytes(payload)));
-            var response = await messageReadLoop.WaitForResponse(payload.nonce);
-            return response.data;
+        #endregion
+
+        #region Events
+
+        public async Task SubscribeAsync(GuildStatus.Args args) =>
+            await SubscribeAsync_Core("GUILD_STATUS", args);
+
+        private async Task SubscribeAsync_Core(string evt, dynamic args) {
+            var nonce = Guid.NewGuid().ToString();
+            dynamic payload = new {
+                cmd = "SUBSCRIBE",
+                nonce,
+                evt,
+                args
+            };
+
+            await SendCommandWeakTypeAsync(payload);
+            await messageReadLoop.WaitForResponse(nonce);
         }
 
-        ~DiscordIPC() {
-            messageReadLoop.Stop();
-            pipe.Dispose();
-        }
-
-        #region Private methods
-        private async Task SendMessageAsync(Message message) {
-            byte[] bOpCode = BitConverter.GetBytes((int) message.opCode);
-            byte[] bLen = BitConverter.GetBytes(message.Length);
-            if (!BitConverter.IsLittleEndian) {
-                Array.Reverse(bOpCode);
-                Array.Reverse(bLen);
-            }
-
-            byte[] buffer = new byte[4 + 4 + message.Length];
-            Array.Copy(bOpCode, buffer, 4);
-            Array.Copy(bLen, 0, buffer, 4, 4);
-            Array.Copy(message.data, 0, buffer, 8, message.Length);
-            Console.WriteLine("\nSENDING:\n{0}", message.Json);
-            await pipe.WriteAsync(buffer, 0, buffer.Length);
-        }
-        
         #endregion
     }
 }

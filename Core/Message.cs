@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Dec.DiscordIPC {
+namespace Dec.DiscordIPC.Core {
     internal class Message {
         public OpCode opCode;
         public byte[] data;

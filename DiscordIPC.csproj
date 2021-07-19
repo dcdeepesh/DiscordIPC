@@ -43,10 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandHandler.cs" />
     <Compile Include="Commands\Authenticate.cs" />
     <Compile Include="Commands\Authorize.cs" />
-    <Compile Include="Commands\Interfaces.cs" />
+    <Compile Include="DiscordIPC.cs" />
     <Compile Include="Entities\Guild.cs" />
     <Compile Include="Entities\OAuth2AppStructure.cs" />
     <Compile Include="Entities\RPCServerConfig.cs" />
@@ -54,9 +53,11 @@
     <Compile Include="ErrorResponse.cs" />
     <Compile Include="ErrorResponseException.cs" />
     <Compile Include="Events\GuildStatus.cs" />
-    <Compile Include="Message.cs" />
-    <Compile Include="MessageReadLoop.cs" />
-    <Compile Include="DiscordIPC.cs" />
+    <Compile Include="Events\Ready.cs" />
+    <Compile Include="Core\Message.cs" />
+    <Compile Include="Core\MessageReadLoop.cs" />
+    <Compile Include="Core\LowLevelDiscordIPC.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

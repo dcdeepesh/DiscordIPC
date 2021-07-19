@@ -5,21 +5,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Dec.DiscordIPC.Commands;
-using System.IO;
-
-namespace Dec.DiscordIPC {
+namespace Dec.DiscordIPC.Core {
     internal class MessageReadLoop {
+        private readonly LowLevelDiscordIPC ipcInstance;
         private readonly NamedPipeClientStream pipe;
         private readonly Thread thread;
         private EventWaitHandle newResponseEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
-        private CountdownEvent countdownLatch = new CountdownEvent(5);
+        private CountdownEvent countdownLatch = new CountdownEvent(0);
         private LinkedList<dynamic> unhandledResponses = new LinkedList<dynamic>();
         private LinkedList<ErrorResponse> errorResponses = new LinkedList<ErrorResponse>();
         private int waiterCount = 0;
 
-        public MessageReadLoop(NamedPipeClientStream pipe) {
+        public MessageReadLoop(NamedPipeClientStream pipe, LowLevelDiscordIPC ipcInstance) {
             this.pipe = pipe;
+            this.ipcInstance = ipcInstance;
             thread = new Thread(Loop);
             thread.Name = "Message loop";
         }
@@ -40,13 +39,13 @@ namespace Dec.DiscordIPC {
                     dynamic result = null;
                     lock (unhandledResponses) {
                         foreach (var response in unhandledResponses) {
-                            if (response.nonce == nonce) {
+                            if (response.GetProperty("nonce").GetString() == nonce) {
                                 result = response;
                                 break;
                             }
                         }
 
-                        if (result != null) {
+                        if (!(result is null)) {
                             unhandledResponses.Remove(result);
                             if (!firstRun) {
                                 waiterCount--;
@@ -89,21 +88,18 @@ namespace Dec.DiscordIPC {
                         Console.WriteLine("\nRECEIVIED:\n{0}", message.Json);
                         var jsonRoot = JsonDocument.Parse(message.Json).RootElement;
                         string cmd = jsonRoot.GetProperty("cmd").GetString();
-                        bool error = jsonRoot.TryGetProperty("evt", out JsonElement elem) &&
-                            elem.GetString() == "ERROR";
+                        string evt = "";
+                        if (jsonRoot.TryGetProperty("evt", out JsonElement elem))
+                            evt = elem.GetString();
 
                         if (cmd == "DISPATCH")
-                            DispatchEvent(message);
+                            ipcInstance.FireEvent(evt, message);
                         else
-                            SignalNewResponse(message, cmd, error);
+                            SignalNewResponse(message, cmd, evt == "ERROR");
                     });
                 }
             } catch (ThreadAbortException) {
             }
-        }
-
-        private void DispatchEvent(Message message) {
-            // TODO
         }
 
         private void SignalNewResponse(Message message, string cmd, bool error) {
