@@ -37,6 +37,9 @@ namespace Dec.DiscordIPC {
         public async Task SubscribeAsync(GuildStatus.Args args) =>
             await SubscribeAsync_Core("GUILD_STATUS", args);
 
+        public async Task SubscribeAsync(MessageCreate.Args args) =>
+            await SubscribeAsync_Core("MESSAGE_CREATE", args);
+
         private async Task SubscribeAsync_Core(string evt, dynamic args) {
             var nonce = Guid.NewGuid().ToString();
             dynamic payload = new {

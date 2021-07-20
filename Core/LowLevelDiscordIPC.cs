@@ -48,6 +48,7 @@ namespace Dec.DiscordIPC.Core {
         #region Events
 
         public event EventHandler<Ready.Data> OnReady;
+        public event EventHandler<MessageCreate.Data> OnMessageCreate;
         // More events on their way
 
         internal void FireEvent(string evt, IPCMessage message) {
