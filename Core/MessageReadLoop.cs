@@ -73,7 +73,7 @@ namespace Dec.DiscordIPC.Core {
             try {
                 byte[] bOpCode = new byte[4];
                 byte[] bLen = new byte[4];
-                Message message;
+                IPCMessage message;
 
                 while (true) {
                     pipe.Read(bOpCode, 0, 4);
@@ -82,7 +82,7 @@ namespace Dec.DiscordIPC.Core {
                     int len = BitConverter.ToInt32(bLen, 0);
                     byte[] data = new byte[len];
                     pipe.Read(data, 0, len);
-                    message = new Message(opCode, data);
+                    message = new IPCMessage(opCode, data);
 
                     Task.Run(() => {
                         Console.WriteLine("\nRECEIVIED:\n{0}", message.Json);
@@ -95,14 +95,14 @@ namespace Dec.DiscordIPC.Core {
                         if (cmd == "DISPATCH")
                             ipcInstance.FireEvent(evt, message);
                         else
-                            SignalNewResponse(message, cmd, evt == "ERROR");
+                            SignalNewResponse(message, evt == "ERROR");
                     });
                 }
             } catch (ThreadAbortException) {
             }
         }
 
-        private void SignalNewResponse(Message message, string cmd, bool error) {
+        private void SignalNewResponse(IPCMessage message, bool error) {
             countdownLatch.Wait();
             if (error) {
                 lock (errorResponses) {

@@ -1,4 +1,5 @@
-﻿namespace Dec.DiscordIPC.Entities {
+﻿// Done
+namespace Dec.DiscordIPC.Entities {
     public class User {
         public string id { get; set; }
         public string username { get; set; }

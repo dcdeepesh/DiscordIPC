@@ -28,7 +28,7 @@ namespace Dec.DiscordIPC.Core {
             EventHandler<Ready.Data> readyListener = (sender, data) => readyWaitHandle.Set();
             OnReady += readyListener;
 
-            await SendMessageAsync(Message.Handshake(JsonSerializer.SerializeToUtf8Bytes(new {
+            await SendMessageAsync(IPCMessage.Handshake(JsonSerializer.SerializeToUtf8Bytes(new {
                 client_id = clientId,
                 v = "1",
                 nonce = Guid.NewGuid().ToString()
@@ -41,7 +41,7 @@ namespace Dec.DiscordIPC.Core {
         }
 
         public async Task<dynamic> SendCommandWeakTypeAsync(dynamic payload) {
-            await SendMessageAsync(new Message(OpCode.FRAME, JsonSerializer.SerializeToUtf8Bytes<dynamic>(payload)));
+            await SendMessageAsync(new IPCMessage(OpCode.FRAME, JsonSerializer.SerializeToUtf8Bytes<dynamic>(payload)));
             return await messageReadLoop.WaitForResponse(payload.nonce);
         }
 
@@ -50,7 +50,7 @@ namespace Dec.DiscordIPC.Core {
         public event EventHandler<Ready.Data> OnReady;
         // More events on their way
 
-        internal void FireEvent(string evt, Message message) {
+        internal void FireEvent(string evt, IPCMessage message) {
             switch (evt) {
                 case "READY":
                     JsonElement elementObj = JsonSerializer.Deserialize<dynamic>(message.Json);
@@ -68,7 +68,7 @@ namespace Dec.DiscordIPC.Core {
 
         #region Private methods
 
-        private async Task SendMessageAsync(Message message) {
+        private async Task SendMessageAsync(IPCMessage message) {
             byte[] bOpCode = BitConverter.GetBytes((int) message.opCode);
             byte[] bLen = BitConverter.GetBytes(message.Length);
             if (!BitConverter.IsLittleEndian) {

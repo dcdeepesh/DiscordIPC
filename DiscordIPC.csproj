@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -46,15 +46,25 @@
     <Compile Include="Commands\Authenticate.cs" />
     <Compile Include="Commands\Authorize.cs" />
     <Compile Include="DiscordIPC.cs" />
+    <Compile Include="Entities\Application.cs" />
+    <Compile Include="Entities\Channel.cs" />
+    <Compile Include="Entities\Embed.cs" />
+    <Compile Include="Entities\Emoji.cs" />
     <Compile Include="Entities\Guild.cs" />
+    <Compile Include="Entities\Member.cs" />
+    <Compile Include="Entities\Message.cs" />
     <Compile Include="Entities\OAuth2AppStructure.cs" />
+    <Compile Include="Entities\Role.cs" />
     <Compile Include="Entities\RPCServerConfig.cs" />
+    <Compile Include="Entities\Sticker.cs" />
+    <Compile Include="Entities\Team.cs" />
     <Compile Include="Entities\User.cs" />
+    <Compile Include="Entities\VoiceState.cs" />
     <Compile Include="ErrorResponse.cs" />
     <Compile Include="ErrorResponseException.cs" />
     <Compile Include="Events\GuildStatus.cs" />
     <Compile Include="Events\Ready.cs" />
-    <Compile Include="Core\Message.cs" />
+    <Compile Include="Core\IPCMessage.cs" />
     <Compile Include="Core\MessageReadLoop.cs" />
     <Compile Include="Core\LowLevelDiscordIPC.cs" />
     <Compile Include="Extensions.cs" />
