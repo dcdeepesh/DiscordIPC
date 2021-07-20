@@ -67,7 +67,7 @@
     <Compile Include="Core\IPCMessage.cs" />
     <Compile Include="Core\MessageReadLoop.cs" />
     <Compile Include="Core\LowLevelDiscordIPC.cs" />
-    <Compile Include="Extensions.cs" />
+    <Compile Include="Core\Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
