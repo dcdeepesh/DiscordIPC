@@ -53,6 +53,22 @@ namespace Dec.DiscordIPC {
             await messageReadLoop.WaitForResponse(nonce);
         }
 
+        public async Task UnsubscribeAsync(MessageCreate.Args args) =>
+            await UnsubscribeAsync_Core("MESSAGE_CREATE", args);
+
+        private async Task UnsubscribeAsync_Core(string evt, dynamic args) {
+            var nonce = Guid.NewGuid().ToString();
+            dynamic payload = new {
+                cmd = "UNSUBSCRIBE",
+                nonce,
+                evt,
+                args
+            };
+
+            await SendCommandWeakTypeAsync(payload);
+            await messageReadLoop.WaitForResponse(nonce);
+        }
+
         #endregion
     }
 }
