@@ -53,12 +53,12 @@
     <Compile Include="Entities\Guild.cs" />
     <Compile Include="Entities\Member.cs" />
     <Compile Include="Entities\Message.cs" />
-    <Compile Include="Entities\OAuth2AppStructure.cs" />
+    <Compile Include="Entities\Presence.cs" />
     <Compile Include="Entities\Role.cs" />
-    <Compile Include="Entities\RPCServerConfig.cs" />
     <Compile Include="Entities\Sticker.cs" />
     <Compile Include="Entities\Team.cs" />
     <Compile Include="Entities\User.cs" />
+    <Compile Include="Entities\VoiceSettings.cs" />
     <Compile Include="Entities\VoiceState.cs" />
     <Compile Include="ErrorResponse.cs" />
     <Compile Include="ErrorResponseException.cs" />
