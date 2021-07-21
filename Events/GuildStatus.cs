@@ -8,7 +8,7 @@ namespace Dec.DiscordIPC.Events {
 
         public class Data {
             public Guild guild { get; set; }
-            public int online { get; set; }
+            // [Deprecated] online
         }
     }
 }

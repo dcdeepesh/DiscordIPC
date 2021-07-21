@@ -48,7 +48,26 @@ namespace Dec.DiscordIPC.Core {
         #region Events
 
         public event EventHandler<Ready.Data> OnReady;
+        // Event ERROR is handled differently
+        public event EventHandler<GuildStatus.Data> OnGuildStatus;
+        public event EventHandler<GuildCreate.Data> OnGuildCreate;
+        public event EventHandler<ChannelCreate.Data> OnChannelCreate;
+        public event EventHandler<VoiceChannelSelect.Data> OnVoiceChannelSelect;
+        public event EventHandler<VoiceStateCreate.Data> OnVoiceStateCreate;
+        public event EventHandler<VoiceStateUpdate.Data> OnVoiceStateUpdate;
+        public event EventHandler<VoiceStateDelete.Data> OnVoiceStateDelete;
+        public event EventHandler<VoiceSettingsUpdate.Data> OnVoiceSettingsUpdate;
+        public event EventHandler<VoiceConnectionStatus.Data> OnVoiceConnectionStatus;
+        public event EventHandler<SpeakingStart.Data> OnSpeakingStart;
+        public event EventHandler<SpeakingStop.Data> OnSpeakingStop;
         public event EventHandler<MessageCreate.Data> OnMessageCreate;
+        public event EventHandler<MessageUpdate.Data> OnMessageUpdate;
+        public event EventHandler<MessageDelete.Data> OnMessageDelete;
+        public event EventHandler<NotificationCreate.Data> OnNotificationCreate;
+        public event EventHandler<ActivityJoin.Data> OnActivityJoin;
+        public event EventHandler<ActivitySpectate.Data> OnActivitySpectate;
+        public event EventHandler<ActivityJoinRequest.Data> OnActivityJoinRequest;
+
         // More events on their way
 
         internal void FireEvent(string evt, IPCMessage message) {
