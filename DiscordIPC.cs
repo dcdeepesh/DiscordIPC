@@ -21,8 +21,8 @@ namespace Dec.DiscordIPC {
         public async Task<GetGuild.Data> SendCommandAsync(GetGuild.Args args) =>
             await SendCommandAsync_Core("GET_GUILD", args) as GetGuild.Data;
 
-        public async Task<GetGuilds.Data> SendCommandAsync(GetGuilds.Args args) =>
-            await SendCommandAsync_Core("GET_GUILDS", args) as GetGuilds.Data;
+        public async Task<GetGuilds.Data> SendCommandAsync(GetGuilds.Args _) =>
+            await SendCommandAsync_Core("GET_GUILDS", null) as GetGuilds.Data;
 
         public async Task<GetChannel.Data> SendCommandAsync(GetChannel.Args args) =>
             await SendCommandAsync_Core("GET_CHANNEL", args) as GetChannel.Data;
@@ -36,17 +36,17 @@ namespace Dec.DiscordIPC {
         public async Task<SelectVoiceChannel.Data> SendCommandAsync(SelectVoiceChannel.Args args) =>
              await SendCommandAsync_Core("SELECT_VOICE_CHANNEL", args) as SelectVoiceChannel.Data;
 
-        public async Task<GetSelectedVoiceChannel.Data> SendCommandAsync(GetSelectedVoiceChannel.Args args) =>
-            await SendCommandAsync_Core("GET_SELECTED_VOICE_CHANNEL", args) as GetSelectedVoiceChannel.Data;
+        public async Task<GetSelectedVoiceChannel.Data> SendCommandAsync(GetSelectedVoiceChannel.Args _) =>
+            await SendCommandAsync_Core("GET_SELECTED_VOICE_CHANNEL", null) as GetSelectedVoiceChannel.Data;
         
         public async Task<SelectTextChannel.Data> SendCommandAsync(SelectTextChannel.Args args) =>
             await SendCommandAsync_Core("SELECT_TEXT_CHANNEL", args) as SelectTextChannel.Data;
 
-        public async Task<GetVoiceSettings.Data> SendCommandAsync(GetVoiceSettings.Args args) =>
-            await SendCommandAsync_Core("GET_VOICE_SETTINGS", args) as GetVoiceSettings.Data;
+        public async Task<GetVoiceSettings.Data> SendCommandAsync(GetVoiceSettings.Args _) =>
+            await SendCommandAsync_Core("GET_VOICE_SETTINGS", null) as GetVoiceSettings.Data;
 
-        public async Task<SetVoiceSettings.Data> SendCommandAsync(SetVoiceSettings.Args args) =>
-            await SendCommandAsync_Core("SET_VOICE_SETTINGS", args) as SetVoiceSettings.Data;
+        public async Task<SetVoiceSettings.Data> SendCommandAsync(SetVoiceSettings.Args _) =>
+            await SendCommandAsync_Core("SET_VOICE_SETTINGS", null) as SetVoiceSettings.Data;
 
         public async Task SendCommandAsync(SetCertifiedDevices.Args args) =>
             await SendCommandAsync_Core("SET_CERTIFIED_DEVICES", args);
