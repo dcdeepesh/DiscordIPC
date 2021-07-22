@@ -41,7 +41,8 @@ namespace Dec.DiscordIPC.Core {
         }
 
         public async Task<dynamic> SendCommandWeakTypeAsync(dynamic payload) {
-            await SendMessageAsync(new IPCMessage(OpCode.FRAME, JsonSerializer.SerializeToUtf8Bytes<dynamic>(payload)));
+            await SendMessageAsync(new IPCMessage(OpCode.FRAME,
+                JsonSerializer.SerializeToUtf8Bytes<dynamic>(payload)));
             return await messageReadLoop.WaitForResponse(payload.nonce);
         }
 
@@ -71,10 +72,82 @@ namespace Dec.DiscordIPC.Core {
         // More events on their way
 
         internal void FireEvent(string evt, IPCMessage message) {
+            JsonElement obj = JsonSerializer.Deserialize<dynamic>(message.Json);
             switch (evt) {
                 case "READY":
-                    JsonElement elementObj = JsonSerializer.Deserialize<dynamic>(message.Json);
-                    OnReady?.Invoke(this, elementObj.ToObject<Ready.Data>());
+                    OnReady?.Invoke(this, obj.ToObject<Ready.Data>());
+                    break;
+
+                case "GUILD_STATUS":
+                    OnGuildStatus?.Invoke(this, obj.ToObject<GuildStatus.Data>());
+                    break;
+
+                case "GUILD_CREATE":
+                    OnGuildCreate?.Invoke(this, obj.ToObject<GuildCreate.Data>());
+                    break;
+
+                case "CHANNEL_CREATE":
+                    OnChannelCreate?.Invoke(this, obj.ToObject<ChannelCreate.Data>());
+                    break;
+
+                case "VOICE_CHANNEL_SELECT":
+                    OnVoiceChannelSelect?.Invoke(this, obj.ToObject<VoiceChannelSelect.Data>());
+                    break;
+
+                case "VOICE_STATE_CREATE":
+                    OnVoiceStateCreate?.Invoke(this, obj.ToObject<VoiceStateCreate.Data>());
+                    break;
+
+                case "VOICE_STATE_UPDATE":
+                    OnVoiceStateUpdate?.Invoke(this, obj.ToObject<VoiceStateUpdate.Data>());
+                    break;
+
+                case "VOICE_STATE_DELETE":
+                    OnVoiceStateDelete?.Invoke(this, obj.ToObject<VoiceStateDelete.Data>());
+                    break;
+
+                case "VOICE_SETTINGS_UPDATE":
+                    OnVoiceSettingsUpdate?.Invoke(this, obj.ToObject<VoiceSettingsUpdate.Data>());
+                    break;
+
+                case "VOICE_CONNECTION_STATUS":
+                    OnVoiceConnectionStatus?.Invoke(this, obj.ToObject<VoiceConnectionStatus.Data>());
+                    break;
+
+                case "SPEAKING_START":
+                    OnSpeakingStart?.Invoke(this, obj.ToObject<SpeakingStart.Data>());
+                    break;
+
+                case "SPEAKING_STOP":
+                    OnSpeakingStop?.Invoke(this, obj.ToObject<SpeakingStop.Data>());
+                    break;
+
+                case "MESSAGE_CREATE":
+                    OnMessageCreate?.Invoke(this, obj.ToObject<MessageCreate.Data>());
+                    break;
+
+                case "MESSAGE_UPDATE":
+                    OnMessageUpdate?.Invoke(this, obj.ToObject<MessageUpdate.Data>());
+                    break;
+
+                case "MESSAGE_DELETE":
+                    OnMessageDelete?.Invoke(this, obj.ToObject<MessageDelete.Data>());
+                    break;
+
+                case "NOTIFICATION_CREATE":
+                    OnNotificationCreate?.Invoke(this, obj.ToObject<NotificationCreate.Data>());
+                    break;
+
+                case "ACTIVITY_JOIN":
+                    OnActivityJoin?.Invoke(this, obj.ToObject<ActivityJoin.Data>());
+                    break;
+
+                case "ACTIVITY_SPECTATE":
+                    OnActivitySpectate?.Invoke(this, obj.ToObject<ActivitySpectate.Data>());
+                    break;
+
+                case "ACTIVITY_JOIN_REQUEST":
+                    OnActivityJoinRequest?.Invoke(this, obj.ToObject<ActivityJoinRequest.Data>());
                     break;
             }
         }
