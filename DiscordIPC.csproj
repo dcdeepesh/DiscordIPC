@@ -45,6 +45,20 @@
   <ItemGroup>
     <Compile Include="Commands\Authenticate.cs" />
     <Compile Include="Commands\Authorize.cs" />
+    <Compile Include="Commands\CloseActivityRequest.cs" />
+    <Compile Include="Commands\GetChannel.cs" />
+    <Compile Include="Commands\GetChannels.cs" />
+    <Compile Include="Commands\GetGuild.cs" />
+    <Compile Include="Commands\GetGuilds.cs" />
+    <Compile Include="Commands\GetSelectedVoiceChannel.cs" />
+    <Compile Include="Commands\GetVoiceSettings.cs" />
+    <Compile Include="Commands\SelectTextChannel.cs" />
+    <Compile Include="Commands\SelectVoiceChannel.cs" />
+    <Compile Include="Commands\SendActivityJoinInvite.cs" />
+    <Compile Include="Commands\SetActivity.cs" />
+    <Compile Include="Commands\SetCertifiedDevices.cs" />
+    <Compile Include="Commands\SetUserVoiceSettings.cs" />
+    <Compile Include="Commands\SetVoiceSettings.cs" />
     <Compile Include="DiscordIPC.cs" />
     <Compile Include="Entities\Application.cs" />
     <Compile Include="Entities\Channel.cs" />

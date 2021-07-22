@@ -18,14 +18,56 @@ namespace Dec.DiscordIPC {
         public async Task<Authenticate.Data> SendCommandAsync(Authenticate.Args args) =>
             await SendCommandAsync_Core("AUTHENTICATE", args) as Authenticate.Data;
 
+        public async Task<GetGuild.Data> SendCommandAsync(GetGuild.Args args) =>
+            await SendCommandAsync_Core("GET_GUILD", args) as GetGuild.Data;
+
+        public async Task<GetGuilds.Data> SendCommandAsync(GetGuilds.Args args) =>
+            await SendCommandAsync_Core("GET_GUILDS", args) as GetGuilds.Data;
+
+        public async Task<GetChannel.Data> SendCommandAsync(GetChannel.Args args) =>
+            await SendCommandAsync_Core("GET_CHANNEL", args) as GetChannel.Data;
+
+        public async Task<GetChannels.Data> SendCommandAsync(GetChannels.Args args) =>
+            await SendCommandAsync_Core("GET_CHANNELS", args) as GetChannels.Data;
+
+        public async Task<SetUserVoiceSettings.Data> SendCommandAsync(SetUserVoiceSettings.Args args) =>
+            await SendCommandAsync_Core("SET_USER_VOICE_SETTINGS", args) as SetUserVoiceSettings.Data;
+
+        public async Task<SelectVoiceChannel.Data> SendCommandAsync(SelectVoiceChannel.Args args) =>
+             await SendCommandAsync_Core("SELECT_VOICE_CHANNEL", args) as SelectVoiceChannel.Data;
+
+        public async Task<GetSelectedVoiceChannel.Data> SendCommandAsync(GetSelectedVoiceChannel.Args args) =>
+            await SendCommandAsync_Core("GET_SELECTED_VOICE_CHANNEL", args) as GetSelectedVoiceChannel.Data;
+        
+        public async Task<SelectTextChannel.Data> SendCommandAsync(SelectTextChannel.Args args) =>
+            await SendCommandAsync_Core("SELECT_TEXT_CHANNEL", args) as SelectTextChannel.Data;
+
+        public async Task<GetVoiceSettings.Data> SendCommandAsync(GetVoiceSettings.Args args) =>
+            await SendCommandAsync_Core("GET_VOICE_SETTINGS", args) as GetVoiceSettings.Data;
+
+        public async Task<SetVoiceSettings.Data> SendCommandAsync(SetVoiceSettings.Args args) =>
+            await SendCommandAsync_Core("SET_VOICE_SETTINGS", args) as SetVoiceSettings.Data;
+
+        public async Task SendCommandAsync(SetCertifiedDevices.Args args) =>
+            await SendCommandAsync_Core("SET_CERTIFIED_DEVICES", args);
+
+        public async Task SendCommandAsync(SetActivity.Args args) =>
+            await SendCommandAsync_Core("SET_ACTIVITY", args);
+
+        public async Task SendCommandAsync(SendActivityJoinInvite.Args args) =>
+            await SendCommandAsync_Core("SET_ACTIVITY_JOIN_INVITE", args);
+
+        public async Task SendCommandAsync(CloseActivityRequest.Args args) =>
+            await SendCommandAsync_Core("CLOSE_ACTIVITY_REQUEST", args);
+
         private async Task<dynamic> SendCommandAsync_Core(string cmd, dynamic args) {
             var nonce = Guid.NewGuid().ToString();
-            dynamic payload = new {
-                cmd,
-                nonce,
-                args
-            };
-
+            dynamic payload;
+            if (args is null)
+                payload = new { cmd, nonce };
+            else
+                payload = new { cmd, nonce, args };
+            
             JsonElement response = await SendCommandWeakTypeAsync(payload);
             return response.GetProperty("data").ToObject<Authorize.Data>();
         }

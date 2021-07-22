@@ -3,8 +3,10 @@
 namespace Dec.DiscordIPC.Commands {
     public class Authorize {
         public class Args {
-            public string client_id { get; set; }
             public List<string> scopes { get; set; }
+            public string client_id { get; set; }
+            public string rpc_token { get; set; }
+            public string username { get; set; }
         }
 
         public class Data {
