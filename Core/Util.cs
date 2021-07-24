@@ -8,8 +8,16 @@ namespace Dec.DiscordIPC {
     }
 
     internal class Util {
-        public static void Log(string msg) => Console.WriteLine(msg);
-        public static void Log(string format, params object[] arg) =>
-            Console.WriteLine(format, arg);
+        public static bool Verbose { get; set; }
+        
+        public static void Log(string msg) {
+            if (Verbose)
+                Console.WriteLine(msg);
+        }
+
+        public static void Log(string format, params object[] arg) {
+            if (Verbose)
+                Console.WriteLine(format, arg);
+        }
     }
 }

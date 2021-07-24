@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Dec.DiscordIPC {
     public class DiscordIPC : LowLevelDiscordIPC {
 
-        public DiscordIPC(string clientId) : base(clientId) { }
+        public DiscordIPC(string clientId, bool verbose = false) : base(clientId, verbose) { }
 
         #region Commands
 

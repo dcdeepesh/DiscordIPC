@@ -12,8 +12,9 @@ namespace Dec.DiscordIPC.Core {
         internal MessageReadLoop messageReadLoop;
         protected readonly string clientId;
 
-        public LowLevelDiscordIPC(string clientId) {
+        public LowLevelDiscordIPC(string clientId, bool verbose) {
             this.clientId = clientId;
+            Util.Verbose = verbose;
         }
 
         public async Task InitAsync() {
