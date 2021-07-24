@@ -174,7 +174,7 @@ namespace Dec.DiscordIPC.Core {
             Array.Copy(bOpCode, buffer, 4);
             Array.Copy(bLen, 0, buffer, 4, 4);
             Array.Copy(message.data, 0, buffer, 8, message.Length);
-            Console.WriteLine("\nSENDING:\n{0}", message.Json);
+            Util.Log("\nSENDING:\n{0}", message.Json);
             await pipe.WriteAsync(buffer, 0, buffer.Length);
         }
 

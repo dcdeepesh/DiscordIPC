@@ -85,7 +85,7 @@ namespace Dec.DiscordIPC.Core {
                     message = new IPCMessage(opCode, data);
 
                     Task.Run(() => {
-                        Console.WriteLine("\nRECEIVIED:\n{0}", message.Json);
+                        Util.Log("\nRECEIVIED:\n{0}", message.Json);
                         var jsonRoot = JsonDocument.Parse(message.Json).RootElement;
                         string cmd = jsonRoot.GetProperty("cmd").GetString();
                         string evt = "";
