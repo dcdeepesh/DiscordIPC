@@ -139,7 +139,6 @@ namespace Dec.DiscordIPC {
                 payload = new { cmd = "SUBSCRIBE", nonce, evt, args };
 
             await SendCommandWeakTypeAsync(payload);
-            await messageReadLoop.WaitForResponse(nonce);
         }
 
         #endregion
@@ -209,7 +208,6 @@ namespace Dec.DiscordIPC {
                 payload = new { cmd = "UNSUBSCRIBE", nonce, evt, args };
 
             await SendCommandWeakTypeAsync(payload);
-            await messageReadLoop.WaitForResponse(nonce);
         }
 
         #endregion
