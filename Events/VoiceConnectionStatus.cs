@@ -8,9 +8,10 @@ namespace Dec.DiscordIPC.Events {
         public class Data {
             public string state { get; set; }
             public string hostname { get; set; }
-            public List<int> pings { get; set; }
-            public int average_ping { get; set; }
-            public int last_ping { get; set; }
+            // "unreleased" problem (see docs)
+            public List<float?> pings { get; set; }
+            public float? average_ping { get; set; }
+            public float? last_ping { get; set; }
         }
     }
 }

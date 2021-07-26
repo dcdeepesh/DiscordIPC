@@ -15,10 +15,10 @@ namespace Dec.DiscordIPC.Commands {
             public Vendor vendor { get; set; }
             public Model model { get; set; }
             public List<string> related { get; set; }
-            public bool echo_cancellation { get; set; }
-            public bool noise_suppression { get; set; }
-            public bool automatic_gain_control { get; set; }
-            public bool hardware_mute { get; set; }
+            public bool? echo_cancellation { get; set; }
+            public bool? noise_suppression { get; set; }
+            public bool? automatic_gain_control { get; set; }
+            public bool? hardware_mute { get; set; }
 
             public class Type {
                 public static readonly string

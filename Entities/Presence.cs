@@ -17,9 +17,9 @@ namespace Dec.DiscordIPC.Entities {
 
         public class Activity {
             public string name { get; set; }
-            public int type { get; set; }
+            public int? type { get; set; }
             public string url { get; set; }
-            public int created_at { get; set; }
+            public int? created_at { get; set; }
             public Timestamps timestamps { get; set; }
             public string application_id { get; set; }
             public string details { get; set; }
@@ -28,26 +28,26 @@ namespace Dec.DiscordIPC.Entities {
             public Party party { get; set; }
             public Assets assets { get; set; }
             public Secrets secrets { get; set; }
-            public bool instance { get; set; }
-            public int flags { get; set; }
+            public bool? instance { get; set; }
+            public int? flags { get; set; }
             public List<Button> buttons { get; set; }
 
             public class Timestamps {
-                public int start { get; set; }
-                public int end { get; set; }
+                public int? start { get; set; }
+                public int? end { get; set; }
             }
 
             public class Emoji {
                 public string name { get; set; }
                 public string id { get; set; }
-                public bool animated { get; set; }
+                public bool? animated { get; set; }
             }
 
             public class Party {
                 public string id { get; set; }
-                public List<int> size { get; set; }
-                public int current_size => size[0];
-                public int max_size => size[1];
+                public List<int?> size { get; set; }
+                public int? current_size => size[0];
+                public int? max_size => size[1];
             }
 
             public class Assets {

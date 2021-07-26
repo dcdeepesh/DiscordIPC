@@ -5,7 +5,7 @@ namespace Dec.DiscordIPC.Events {
         // No args because this isn't a subscription event
 
         public class Data {
-            public int v { get; set; }
+            public int? v { get; set; }
             public RPCServerConfig config { get; set; }
             public User user { get; set; }
 

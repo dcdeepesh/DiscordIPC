@@ -8,7 +8,7 @@ namespace Dec.DiscordIPC.Entities {
         public string description { get; set; }
         public string url { get; set; }
         public string timestamp { get; set; }
-        public int color { get; set; }
+        public int? color { get; set; }
         public Footer footer { get; set; }
         public Media image { get; set; }
         public Media thumbnail { get; set; }
@@ -26,8 +26,8 @@ namespace Dec.DiscordIPC.Entities {
         public class Media {
             public string url { get; set; }
             public string proxy_url { get; set; }
-            public int height { get; set; }
-            public int width { get; set; }
+            public int? height { get; set; }
+            public int? width { get; set; }
         }
 
         public class Provider {
@@ -45,7 +45,7 @@ namespace Dec.DiscordIPC.Entities {
         public class Field {
             public string name { get; set; }
             public string value { get; set; }
-            public bool inline { get; set; }
+            public bool? inline { get; set; }
         }
     }
 }

@@ -11,16 +11,16 @@ namespace Dec.DiscordIPC.Entities {
         public string description { get; set; }
         public string tags { get; set; }
         // [Deprecated] asset
-        public int format_type { get; set; }
-        public bool available { get; set; }
+        public int? format_type { get; set; }
+        public bool? available { get; set; }
         public string guild_id { get; set; }
         public User user { get; set; }
-        public int sort_value { get; set; }
+        public int? sort_value { get; set; }
 
         public class Item {
             public string id { get; set; }
             public string name { get; set; }
-            public int format_type { get; set; }
+            public int? format_type { get; set; }
         }
     }
 }

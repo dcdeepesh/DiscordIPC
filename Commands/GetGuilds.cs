@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dec.DiscordIPC.Entities;
+using System;
 using System.Collections.Generic;
 
 namespace Dec.DiscordIPC.Commands {
@@ -7,7 +8,7 @@ namespace Dec.DiscordIPC.Commands {
         public class Args { }
 
         public class Data {
-            public List<Guid> guilds { get; set; }
+            public List<Guild> guilds { get; set; }
         }
     }
 }

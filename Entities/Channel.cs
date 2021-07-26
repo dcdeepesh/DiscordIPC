@@ -3,14 +3,14 @@
 namespace Dec.DiscordIPC.Entities {
     public class Channel {
         public string id { get; set; }
-        public int type { get; set; }
+        public int? type { get; set; }
         public string guild_id { get; set; }
-        public int position { get; set; }
+        public int? position { get; set; }
         public string name { get; set; }
         
         public string topic { get; set; }
-        public int bitrate { get; set; }
-        public int user_limit { get; set; }
+        public int? bitrate { get; set; }
+        public int? user_limit { get; set; }
         
         public List<VoiceState> voice_states { get; set; }
         public List<Message> messages { get; set; }
@@ -18,7 +18,7 @@ namespace Dec.DiscordIPC.Entities {
         public class Mention {
             public string id { get; set; }
             public string guild_id { get; set; }
-            public int type { get; set; }
+            public int? type { get; set; }
             public string name { get; set; }
         }
 

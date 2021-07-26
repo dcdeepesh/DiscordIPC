@@ -34,7 +34,9 @@ namespace Dec.DiscordIPC {
         }
         
         public static byte[] SerializeToBytes<T>(T obj) {
-            return JsonSerializer.SerializeToUtf8Bytes<T>(obj);
+            return JsonSerializer.SerializeToUtf8Bytes(obj, new JsonSerializerOptions() {
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            });
         }
     }
 }

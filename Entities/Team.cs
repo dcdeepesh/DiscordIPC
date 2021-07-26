@@ -10,7 +10,7 @@ namespace Dec.DiscordIPC.Entities {
         public string owner_user_id { get; set; }
 
         public class Member {
-            public int membership_state { get; set; }
+            public int? membership_state { get; set; }
             public List<string> permissions { get; set; }
             public string team_id { get; set; }
             public User user { get; set; }

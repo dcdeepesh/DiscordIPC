@@ -8,8 +8,8 @@ namespace Dec.DiscordIPC.Entities {
         public string icon { get; set; }
         public string description { get; set; }
         public List<string> rpc_origings { get; set; }
-        public bool bot_public { get; set; }
-        public bool bot_require_code_grant { get; set; }
+        public bool? bot_public { get; set; }
+        public bool? bot_require_code_grant { get; set; }
         public string terms_of_service_url { get; set; }
         public string private_policy_url { get; set; }
         public User owner { get; set; }
@@ -20,7 +20,7 @@ namespace Dec.DiscordIPC.Entities {
         public string primary_sku_id { get; set; }
         public string slug { get; set; }
         public string cover_image { get; set; }
-        public int flags { get; set; }
+        public int? flags { get; set; }
 
         public class Flags {
             public static readonly int
