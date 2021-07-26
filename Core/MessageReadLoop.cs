@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO.Pipes;
 using System.Text.Json;
 using System.Threading;
@@ -10,11 +10,8 @@ namespace Dec.DiscordIPC.Core {
         private readonly LowLevelDiscordIPC ipcInstance;
         private readonly NamedPipeClientStream pipe;
         private readonly Thread thread;
-        private EventWaitHandle newResponseEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
-        private CountdownEvent countdownLatch = new CountdownEvent(0);
-        private LinkedList<dynamic> unhandledResponses = new LinkedList<dynamic>();
-        private LinkedList<ErrorResponse> errorResponses = new LinkedList<ErrorResponse>();
-        private int waiterCount = 0;
+        private LinkedList<Waiter> waiters = new LinkedList<Waiter>();
+        private LinkedList<JsonElement> responses = new LinkedList<JsonElement>();
 
         public MessageReadLoop(NamedPipeClientStream pipe, LowLevelDiscordIPC ipcInstance) {
             this.pipe = pipe;
@@ -26,44 +23,29 @@ namespace Dec.DiscordIPC.Core {
         public void Start() => thread.Start();
         public void Stop() => thread.Abort();
 
-        public Task<dynamic> WaitForResponse(string nonce) {
+        public Task<JsonElement> WaitForResponse(string nonce) {
             return Task.Run(() => {
-                bool firstRun = true;
-                while (true) {
-                    lock (errorResponses) {
-                        foreach (var response in errorResponses)
-                            if (response.nonce == nonce)
-                                throw new ErrorResponseException(response);
+                Waiter waiter;
+                lock (responses) {
+                    JsonElement? result = null;
+                    foreach (var response in responses)
+                        if (response.GetProperty("nonce").GetString() == nonce)
+                            result = response;
+                    if (result.HasValue) {
+                        responses.Remove(result.Value);
+                        if (result.Value.IsErrorResponse())
+                            throw new ErrorResponseException(result.Value);
+                        else return result.Value;
                     }
 
-                    dynamic result = null;
-                    lock (unhandledResponses) {
-                        foreach (var response in unhandledResponses) {
-                            if (response.GetProperty("nonce").GetString() == nonce) {
-                                result = response;
-                                break;
-                            }
-                        }
-
-                        if (!(result is null)) {
-                            unhandledResponses.Remove(result);
-                            if (!firstRun) {
-                                waiterCount--;
-                                countdownLatch.Signal();
-                            }
-                            return result;
-                        }
-
-                        if (firstRun) {
-                            waiterCount++;
-                            firstRun = false;
-                        } else {
-                            countdownLatch.Signal();
-                        }
-                    }
-
-                    newResponseEvent.WaitOne();
+                    waiter = new Waiter(nonce);
+                    waiters.AddLast(waiter);
                 }
+
+                waiter.resetEvent.WaitOne();
+                if (waiter.response.IsErrorResponse())
+                    throw new ErrorResponseException(waiter.response);
+                else return waiter.response;
             });
         }
 
@@ -95,32 +77,37 @@ namespace Dec.DiscordIPC.Core {
                         if (cmd == "DISPATCH")
                             ipcInstance.FireEvent(evt, message);
                         else
-                            SignalNewResponse(message, evt == "ERROR");
+                            SignalNewResponse(message);
                     });
                 }
             } catch (ThreadAbortException) {
             }
         }
 
-        private void SignalNewResponse(IPCMessage message, bool error) {
-            countdownLatch.Wait();
-            if (error) {
-                lock (errorResponses) {
-                    if (countdownLatch.Wait(1)) {
-                        countdownLatch.Reset(waiterCount);
-                        errorResponses.AddLast(JsonSerializer.Deserialize<ErrorResponse>(message.Json));
-                        newResponseEvent.Set();
-                    }
-                }
-            } else {
-                lock (unhandledResponses) {
-                    if (countdownLatch.Wait(1)) {
-                        countdownLatch.Reset(waiterCount);
-                        unhandledResponses.AddLast(JsonSerializer.Deserialize<dynamic>(message.Json));
-                        newResponseEvent.Set();
-                    }
-                }
+        private void SignalNewResponse(IPCMessage message) {
+            JsonElement response = JsonSerializer.Deserialize<dynamic>(message.Json);
+            lock (responses) {
+                Waiter waiterToResume = null;
+                foreach (var waiter in waiters)
+                    if (waiter.nonce == response.GetProperty("nonce").GetString())
+                        waiterToResume = waiter;
+
+                if (waiterToResume is null is false) {
+                    waiters.Remove(waiterToResume);
+                    waiterToResume.response = response;
+                    waiterToResume.resetEvent.Set();
+                } else {
+                    responses.AddLast(response);
+                }                
             }
         }
+    }
+
+    internal class Waiter {
+        public string nonce;
+        public AutoResetEvent resetEvent = new AutoResetEvent(false);
+        public JsonElement response;
+
+        public Waiter(string nonce) => this.nonce = nonce;
     }
 }

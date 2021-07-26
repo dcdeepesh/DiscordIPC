@@ -41,7 +41,7 @@ namespace Dec.DiscordIPC.Core {
             });
         }
 
-        public async Task<dynamic> SendCommandWeakTypeAsync(dynamic payload) {
+        public async Task<JsonElement> SendCommandWeakTypeAsync(dynamic payload) {
             await SendMessageAsync(new IPCMessage(OpCode.FRAME,
                 JsonSerializer.SerializeToUtf8Bytes<dynamic>(payload)));
             return await messageReadLoop.WaitForResponse(payload.nonce);
