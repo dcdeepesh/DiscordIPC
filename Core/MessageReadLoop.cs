@@ -86,7 +86,7 @@ namespace Dec.DiscordIPC.Core {
         }
 
         private void SignalNewResponse(IPCMessage message) {
-            JsonElement response = JsonSerializer.Deserialize<dynamic>(message.Json);
+            JsonElement response = Json.Deserialize<dynamic>(message.Json);
             lock (responses) {
                 Waiter waiterToResume = null;
                 foreach (var waiter in waiters)

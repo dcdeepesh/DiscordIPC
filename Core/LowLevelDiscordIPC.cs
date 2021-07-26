@@ -29,7 +29,7 @@ namespace Dec.DiscordIPC.Core {
             EventHandler<Ready.Data> readyListener = (sender, data) => readyWaitHandle.Set();
             OnReady += readyListener;
 
-            await SendMessageAsync(IPCMessage.Handshake(JsonSerializer.SerializeToUtf8Bytes(new {
+            await SendMessageAsync(IPCMessage.Handshake(Json.SerializeToBytes(new {
                 client_id = clientId,
                 v = "1",
                 nonce = Guid.NewGuid().ToString()
@@ -43,7 +43,7 @@ namespace Dec.DiscordIPC.Core {
 
         public async Task<JsonElement> SendCommandWeakTypeAsync(dynamic payload) {
             await SendMessageAsync(new IPCMessage(OpCode.FRAME,
-                JsonSerializer.SerializeToUtf8Bytes<dynamic>(payload)));
+                Json.SerializeToBytes<dynamic>(payload)));
             return await messageReadLoop.WaitForResponse(payload.nonce);
         }
 
@@ -73,7 +73,7 @@ namespace Dec.DiscordIPC.Core {
         // More events on their way
 
         internal void FireEvent(string evt, IPCMessage message) {
-            JsonElement obj = JsonSerializer.Deserialize<dynamic>(message.Json).GetProperty("data");
+            JsonElement obj = Json.Deserialize<dynamic>(message.Json).GetProperty("data");
             switch (evt) {
                 case "READY":
                     OnReady?.Invoke(this, obj.ToObject<Ready.Data>());
