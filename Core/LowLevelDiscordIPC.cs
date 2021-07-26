@@ -73,7 +73,7 @@ namespace Dec.DiscordIPC.Core {
         // More events on their way
 
         internal void FireEvent(string evt, IPCMessage message) {
-            JsonElement obj = JsonSerializer.Deserialize<dynamic>(message.Json);
+            JsonElement obj = JsonSerializer.Deserialize<dynamic>(message.Json).GetProperty("data");
             switch (evt) {
                 case "READY":
                     OnReady?.Invoke(this, obj.ToObject<Ready.Data>());
