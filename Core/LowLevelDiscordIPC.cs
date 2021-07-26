@@ -155,10 +155,7 @@ namespace Dec.DiscordIPC.Core {
 
         #endregion
 
-        public void Dispose() {
-            messageReadLoop.Stop();
-            pipe.Dispose();
-        }
+        public void Dispose() => pipe.Dispose();
 
         #region Private methods
 

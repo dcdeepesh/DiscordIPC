@@ -17,11 +17,11 @@ namespace Dec.DiscordIPC.Core {
             this.pipe = pipe;
             this.ipcInstance = ipcInstance;
             thread = new Thread(Loop);
+            thread.IsBackground = true;
             thread.Name = "Message loop";
         }
 
         public void Start() => thread.Start();
-        public void Stop() => thread.Abort();
 
         public Task<JsonElement> WaitForResponse(string nonce) {
             return Task.Run(() => {
@@ -80,7 +80,8 @@ namespace Dec.DiscordIPC.Core {
                             SignalNewResponse(message);
                     });
                 }
-            } catch (ThreadAbortException) {
+            } catch (ObjectDisposedException) {
+                // can be thrown at exit time, no need to handle
             }
         }
 
