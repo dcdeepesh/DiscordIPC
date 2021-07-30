@@ -11,6 +11,7 @@ Because Discord's RPC is still under private beta, there are many inconsistencie
   - [Usage](#usage)
   - [Problems and changes](#problems-and-changes)
     - [Solving these problems](#solving-these-problems)
+  - [Updates and contributing](#updates-and-contributing)
   - [Queries and support](#queries-and-support)
 
 # Adding to your project
@@ -83,7 +84,12 @@ The RPC hasn't been officially released by Discord yet, which is why DiscordIPC 
 That being said, don't get the impression that DiscordIPC can't be reliably used at all. For the most part, these changes aren't breaking, the fundamental flow of IPC remains the same. So you can use it to build your own application and it will work well. **But still think of it as testing something in it's alpha stage, not knowing what may break tomorrow.**
 
 ## Solving these problems
-To see how to solve these problems, and information about other issues, see [how to extend LowLevedDiscordIPC yourself](https://github.com/dcdeepesh/DiscordIPC/blob/master/Documentation/Extending.md).
+To see how to solve these problems, and information about other issues, see [how to extend LowLevelDiscordIPC yourself](https://github.com/dcdeepesh/DiscordIPC/blob/master/Documentation/Extending.md).
+
+# Updates and contributing
+DiscordIPC is definitely not in a mature state as of right now. You may encounter some bugs and may have improvements in your mind. Feel free to suggest them as issues, contribute in the form of pull requests, or just [DM me](#queries-and-support) your suggestions directly.
+
+There are no strict requirements for pull requests and contributions. Just keep your commits restricted to a single fundamental change and commit messages clean.
 
 # Queries and support
-TODO
+If there is anything that you didn't understand from the documentation, or want to ask anything else about DiscordIPC directly to me, you can add and DM me on Discord (Krove#0001) or instagram ([@deepe.sh](https://www.instagram.com/deepe.sh/)). Yes this is me shamelessly promoting my socials.
