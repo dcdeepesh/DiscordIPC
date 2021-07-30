@@ -152,6 +152,10 @@ Combining all the above information, the general flow is:
 
 Here's a sample code using DiscordIPC:
 ```c#
+using Dec.DiscordIPC;
+using Dec.DiscordIPC.Commands;
+using Dec.DiscordIPC.Events;
+
 namespace Example {
     class Program {
         private static readonly string CLIENT_ID = "<CLIENT-ID>";
