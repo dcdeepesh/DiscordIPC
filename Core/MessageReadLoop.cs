@@ -10,8 +10,8 @@ namespace Dec.DiscordIPC.Core {
         private readonly LowLevelDiscordIPC ipcInstance;
         private readonly NamedPipeClientStream pipe;
         private readonly Thread thread;
-        private LinkedList<Waiter> waiters = new LinkedList<Waiter>();
-        private LinkedList<JsonElement> responses = new LinkedList<JsonElement>();
+        private readonly LinkedList<Waiter> waiters = new LinkedList<Waiter>();
+        private readonly LinkedList<JsonElement> responses = new LinkedList<JsonElement>();
 
         public MessageReadLoop(NamedPipeClientStream pipe, LowLevelDiscordIPC ipcInstance) {
             this.pipe = pipe;
