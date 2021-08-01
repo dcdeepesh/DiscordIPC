@@ -1,5 +1,5 @@
 # Usage
-This article/page/whatever explains how to use DiscordIPC. If you're lazy or just want a quick summary, head straight to the [summary](#summary).
+This is a complete guide on how to use DiscordIPC. If you're lazy or just want a quick summary, head straight to the [summary](#summary).
 
 # Table of contents
   - [Init/Dispose](#initdispose)
@@ -28,7 +28,7 @@ The constructor also takes another (boolean) argument `verbose`, which defaults 
 
 This call just stores these two values internally, no substantial task is done. It's all done in the following call:
 ```c#
-discordIPC.InitAsync();
+await discordIPC.InitAsync();
 ```
 
 This does everything like connecting to the pipe etc. Now you're ready to do the real stuff.
@@ -49,10 +49,10 @@ All commands are defined in the `Dec.DiscordIPC.Commands` namespace. Each comman
 ## Sending commands
 To send a command, do:
 ```c#
-var responseData = discordIPC.SendCommandAsync(/* args */);
+var responseData = await discordIPC.SendCommandAsync(/* args */);
 
 // e.g. To send the GET_GUILD command
-GetGuild.Data data = discordIPC.SendCommandAsync(new GetGuild.Args() {
+GetGuild.Data data = await discordIPC.SendCommandAsync(new GetGuild.Args() {
     guild_id = "<guild-id>"
 });
 ```
@@ -84,7 +84,7 @@ To subscribe to an event, do:
 var handler = (sender, data) => { /* do stuff */};
 
 discordIPC.OnMessageCreate += handler;
-discordIPC.SubscribeAsync(new MessageCreate.Args() {
+await discordIPC.SubscribeAsync(new MessageCreate.Args() {
     channel_id = "<channel-id>"
 });
 ```
@@ -99,7 +99,7 @@ To unsubscribe from an event, do:
 // 2. De-register the handler
 
 // e.g. To unsubscribe from the MESSAGE_CREATE event
-discordIPC.UnsubscribeAsync(new MessageCreate.Args() {
+await discordIPC.UnsubscribeAsync(new MessageCreate.Args() {
     channel_id = "<channel-id>"
 });
 discordIPC.OnMessageCreate -= handler;
@@ -117,11 +117,11 @@ var args = new MessageCreate.Args() {
 };
 
 discordIPC.OnMessageCreate += handler;
-discordIPC.SubscribeAsync(args);
+await discordIPC.SubscribeAsync(args);
 
 // ...
 
-discordIPC.UnsubscribeAsync(args);
+await discordIPC.UnsubscribeAsync(args);
 discordIPC.OnMessageCreate -= handler;
 ```
 
@@ -160,13 +160,13 @@ namespace Example {
     class Program {
         private static readonly string CLIENT_ID = "<CLIENT-ID>";
         static async Task Main() {
-            DiscordIPC discordIPC = new DiscordIPC(CLIENT_ID));
-            discordIPC.InitAsync();
+            DiscordIPC discordIPC = new DiscordIPC(CLIENT_ID);
+            await discordIPC.InitAsync();
 
             // Authorize
             string accessToken = "";
             try {
-                discordIPC.Authorize(new Authorize.Args() {
+                await discordIPC.SendCommandAsync(new Authorize.Args() {
                     scopes = new List<string>() { "rpc" },
                     client_id = CLIENT_ID
                 });
@@ -176,7 +176,7 @@ namespace Example {
             }
 
             // Authenticate (ignoring the response here)
-            discordIPC.Authenticate(new Authenticate.Args() {
+            await discordIPC.SendCommandAsync(new Authenticate.Args() {
                 access_token = accessToken
             });
 
@@ -186,7 +186,7 @@ namespace Example {
                 channel_id = "<some-text-channel-id>"
             };
             discordIPC.OnMessageCreate += handler;
-            discordIPC.SubscribeAsync(args);
+            await discordIPC.SubscribeAsync(args);
 
             // Use commands
             GetChannel.Data response = discordIPC.SendCommandAsync(new GetChannel.Args() {
@@ -197,7 +197,7 @@ namespace Example {
             // ... (do random stuff)
 
             // Unsubscribe from the event
-            discordIPC.UnsubscribeAsync(args);
+            await discordIPC.UnsubscribeAsync(args);
             discordIPC.OnMessageCreate -= handler;
 
             // Dispose

@@ -29,12 +29,12 @@ namespace Example {
         private static readonly string CLIENT_ID = "<CLIENT-ID>";
         static async Task Main() {
             DiscordIPC discordIPC = new DiscordIPC(CLIENT_ID));
-            discordIPC.InitAsync();
+            await discordIPC.InitAsync();
 
             // Authorize
             string accessToken = "";
             try {
-                discordIPC.Authorize(new Authorize.Args() {
+                await discordIPC.SendCommandAsync(new Authorize.Args() {
                     scopes = new List<string>() { "rpc" },
                     client_id = CLIENT_ID
                 });
@@ -44,7 +44,7 @@ namespace Example {
             }
 
             // Authenticate (ignoring the response here)
-            discordIPC.Authenticate(new Authenticate.Args() {
+            await discordIPC.SendCommandAsync(new Authenticate.Args() {
                 access_token = accessToken
             });
 
@@ -54,10 +54,10 @@ namespace Example {
                 channel_id = "<some-text-channel-id>"
             };
             discordIPC.OnMessageCreate += handler;
-            discordIPC.SubscribeAsync(args);
+            await discordIPC.SubscribeAsync(args);
 
             // Use commands
-            GetChannel.Data response = discordIPC.SendCommandAsync(new GetChannel.Args() {
+            GetChannel.Data response = await discordIPC.SendCommandAsync(new GetChannel.Args() {
                 channel_id = "<some-channel-id>"
             });
             Console.Log(response.name);
@@ -65,7 +65,7 @@ namespace Example {
             // ... (do random stuff)
 
             // Unsubscribe from the event
-            discordIPC.UnsubscribeAsync(args);
+            await discordIPC.UnsubscribeAsync(args);
             discordIPC.OnMessageCreate -= handler;
 
             // Dispose
@@ -87,9 +87,9 @@ That being said, don't get the impression that DiscordIPC can't be reliably used
 To see how to solve these problems, and information about other issues, see [how to extend LowLevelDiscordIPC yourself](https://github.com/dcdeepesh/DiscordIPC/blob/master/Documentation/Extending.md).
 
 # Updates and contributing
-DiscordIPC is definitely not in a mature state as of right now. You may encounter some bugs and may have improvements in your mind. Feel free to suggest them as issues, contribute in the form of pull requests, or just [DM me](#queries-and-support) your suggestions directly.
+DiscordIPC is definitely not in a mature state as of right now. You may encounter some bugs and may have improvements in your mind. Feel free to suggest them as issues, contribute in the form of pull requests, or just DM me your suggestions directly.
 
 There are no strict requirements for pull requests and contributions. Just keep your commits restricted to a single fundamental change and commit messages clean.
 
 # Queries and support
-If there is anything that you didn't understand from the documentation, or want to ask anything else about DiscordIPC directly to me, you can add and DM me on Discord (Krove#0001) or instagram ([@deepe.sh](https://www.instagram.com/deepe.sh/)). Yes this is me shamelessly promoting my socials.
+If there is anything that you didn't understand from the documentation, or want to ask anything else about DiscordIPC directly to me, you can add and DM me on Discord (Krove#0001).
