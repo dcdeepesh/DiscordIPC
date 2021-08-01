@@ -338,3 +338,9 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+###
+# Visual studio template ends here
+###
+
+deploy.bat
