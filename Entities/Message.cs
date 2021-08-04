@@ -41,7 +41,7 @@ namespace Dec.DiscordIPC.Entities {
         public string author_color { get; set; }
 
         public class ContentParsed {
-            public string content { get; set; }
+            public dynamic content { get; set; }
             public string type { get; set; }
         }
 

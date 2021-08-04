@@ -35,7 +35,7 @@ namespace Dec.DiscordIPC.Entities {
             public string type { get; set; }
             public bool? auto_threshold { get; set; }
             public float? threshold { get; set; }
-            public ShortcutKeyCombo shortcut { get; set; }
+            public List<ShortcutKeyCombo> shortcut { get; set; }
             public float? delay { get; set; }
         }
 

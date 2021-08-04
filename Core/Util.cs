@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -35,6 +36,7 @@ namespace Dec.DiscordIPC {
         
         public static byte[] SerializeToBytes<T>(T obj) {
             return JsonSerializer.SerializeToUtf8Bytes(obj, new JsonSerializerOptions() {
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             });
         }
