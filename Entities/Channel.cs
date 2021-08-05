@@ -7,11 +7,11 @@ namespace Dec.DiscordIPC.Entities {
         public string guild_id { get; set; }
         public int? position { get; set; }
         public string name { get; set; }
-        
+
         public string topic { get; set; }
         public int? bitrate { get; set; }
         public int? user_limit { get; set; }
-        
+
         public List<VoiceState> voice_states { get; set; }
         public List<Message> messages { get; set; }
 

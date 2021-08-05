@@ -6,8 +6,7 @@ namespace Dec.DiscordIPC.Commands {
             public List<Device> devices { get; set; }
         }
 
-        // Always null; dummy
-        public class Data { }
+        // No data
 
         public class Device {
             public string type { get; set; }

@@ -1,9 +1,10 @@
-﻿using Dec.DiscordIPC.Commands;
-using Dec.DiscordIPC.Core;
-using Dec.DiscordIPC.Events;
-using System;
+﻿using System;
 using System.Text.Json;
 using System.Threading.Tasks;
+
+using Dec.DiscordIPC.Commands;
+using Dec.DiscordIPC.Core;
+using Dec.DiscordIPC.Events;
 
 namespace Dec.DiscordIPC {
     public class DiscordIPC : LowLevelDiscordIPC {
@@ -38,7 +39,7 @@ namespace Dec.DiscordIPC {
 
         public async Task<GetSelectedVoiceChannel.Data> SendCommandAsync(GetSelectedVoiceChannel.Args _) =>
             await SendCommandAsync_Core<GetSelectedVoiceChannel.Data>("GET_SELECTED_VOICE_CHANNEL", null);
-        
+
         public async Task<SelectTextChannel.Data> SendCommandAsync(SelectTextChannel.Args args) =>
             await SendCommandAsync_Core<SelectTextChannel.Data>("SELECT_TEXT_CHANNEL", args);
 
@@ -68,7 +69,7 @@ namespace Dec.DiscordIPC {
                 payload = new { cmd, nonce };
             else
                 payload = new { cmd, nonce, args };
-            
+
             JsonElement response = await SendCommandWeakTypeAsync(payload);
             return convert ? response.GetProperty("data").ToObject<T>() : default;
         }

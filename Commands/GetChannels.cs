@@ -1,5 +1,6 @@
-﻿using Dec.DiscordIPC.Entities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
+using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Commands {
     public class GetChannels {

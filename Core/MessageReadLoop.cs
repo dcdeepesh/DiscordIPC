@@ -1,9 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO.Pipes;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace Dec.DiscordIPC.Core {
     internal class MessageReadLoop {
@@ -16,9 +16,10 @@ namespace Dec.DiscordIPC.Core {
         public MessageReadLoop(NamedPipeClientStream pipe, LowLevelDiscordIPC ipcInstance) {
             this.pipe = pipe;
             this.ipcInstance = ipcInstance;
-            thread = new Thread(Loop);
-            thread.IsBackground = true;
-            thread.Name = "Message loop";
+            thread = new Thread(Loop) {
+                IsBackground = true,
+                Name = "Message loop"
+            };
         }
 
         public void Start() => thread.Start();
@@ -99,7 +100,7 @@ namespace Dec.DiscordIPC.Core {
                     waiterToResume.resetEvent.Set();
                 } else {
                     responses.AddLast(response);
-                }                
+                }
             }
         }
     }

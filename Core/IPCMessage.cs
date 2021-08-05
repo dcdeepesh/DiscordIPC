@@ -12,9 +12,8 @@ namespace Dec.DiscordIPC.Core {
             this.data = data;
         }
 
-        public static IPCMessage Handshake(byte[] data) => new IPCMessage(OpCode.HANDSHAKE, data);
-        public static IPCMessage Frame(byte[] data) => new IPCMessage(OpCode.FRAME, data);
-        public static IPCMessage Close(byte[] data) => new IPCMessage(OpCode.CLOSE, data);
+        public static IPCMessage Handshake(byte[] data) =>
+            new IPCMessage(OpCode.HANDSHAKE, data);
     }
 
     internal enum OpCode {

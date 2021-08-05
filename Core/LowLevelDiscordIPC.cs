@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Text.Json;
 using System.IO.Pipes;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Dec.DiscordIPC.Events;
-using System.Threading;
 
 namespace Dec.DiscordIPC.Core {
     public class LowLevelDiscordIPC {

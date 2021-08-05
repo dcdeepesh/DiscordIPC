@@ -17,7 +17,7 @@ namespace Dec.DiscordIPC {
 
     internal class Util {
         public static bool Verbose { get; set; }
-        
+
         public static void Log(string msg) {
             if (Verbose)
                 Console.WriteLine(msg);
@@ -33,7 +33,7 @@ namespace Dec.DiscordIPC {
         public static T Deserialize<T>(string json) {
             return JsonSerializer.Deserialize<T>(json);
         }
-        
+
         public static byte[] SerializeToBytes<T>(T obj) {
             return JsonSerializer.SerializeToUtf8Bytes(obj, new JsonSerializerOptions() {
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
