@@ -3,9 +3,24 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
     <RootNamespace>Dec.DiscordIPC</RootNamespace>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	  <AssemblyTitle>DiscordIPC</AssemblyTitle>
+	  <AssemblyVersion>1.0.1.0</AssemblyVersion>
+	  <Product>DiscordIPC</Product>
+	  <Copyright>Copyright ©  2021 Deckilio</Copyright>
+	  <RegisterForComInterop>false</RegisterForComInterop>
+	  
+	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	  <PackageId>Dec.DiscordIPC</PackageId>
+	  <Version>1.0.1</Version>
+	  <Authors>Deckilio</Authors>
+	  <Owners>Deckilio</Owners>
+	  <Company>Oyster</Company>
+	  <Description>A wrapper for Discord's IPC based RPC</Description>
+	  <PackageProjectUrl>https://github.com/dcdeepesh/DiscordIPC</PackageProjectUrl>
+	  <RepositoryUrl>https://github.com/dcdeepesh/DiscordIPC</RepositoryUrl>
+	  <PackageReleaseNotes>First release of DiscordIPC</PackageReleaseNotes>
   </PropertyGroup>
+	
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
