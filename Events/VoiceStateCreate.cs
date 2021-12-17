@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using Dec.DiscordIPC.Commands.Interfaces;
+using Dec.DiscordIPC.Development;
 using Dec.DiscordIPC.Entities;
 using Dec.DiscordIPC.Events.DataObjects;
 
@@ -8,6 +9,7 @@ namespace Dec.DiscordIPC.Events {
     /// Sent when a user joins a subscribed voice channel
     /// </summary>
     public class VoiceStateCreate {
+        [DiscordRPC("VOICE_STATE_CREATE")]
         public class Args : ICommandArgs {
             [JsonPropertyName("channel_id")]
             public string ChannelID { get; set; }

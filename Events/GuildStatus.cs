@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using Dec.DiscordIPC.Commands.Interfaces;
+using Dec.DiscordIPC.Development;
 using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events {
@@ -7,6 +8,7 @@ namespace Dec.DiscordIPC.Events {
     /// Sent when a subscribed server's state changes
     /// </summary>
     public class GuildStatus {
+        [DiscordRPC("GUILD_STATUS")]
         public class Args : ICommandArgs {
             [JsonPropertyName("guild_id")]
             public string GuildID { get; set; }

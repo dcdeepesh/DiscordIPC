@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using Dec.DiscordIPC.Commands.Interfaces;
+using Dec.DiscordIPC.Development;
 using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events {
@@ -7,6 +8,7 @@ namespace Dec.DiscordIPC.Events {
     /// Sent when a message is created in a subscribed text channel
     /// </summary>
     public class MessageCreate {
+        [DiscordRPC("MESSAGE_CREATE")]
         public class Args : ICommandArgs {
             [JsonPropertyName("channel_id")]
             public string ChannelID { get; set; }

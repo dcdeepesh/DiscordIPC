@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using Dec.DiscordIPC.Commands.Interfaces;
+using Dec.DiscordIPC.Development;
 using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events {
@@ -7,7 +8,7 @@ namespace Dec.DiscordIPC.Events {
     /// Sent when the client receives a notification (mention or new message in eligible channels)
     /// </summary>
     public class NotificationCreate {
-        // No arguments; dummy
+        [DiscordRPC("NOTIFICATION_CREATE")]
         public class Args : IDummyCommandArgs { }
         
         public class Data {

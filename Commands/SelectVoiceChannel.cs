@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Dec.DiscordIPC.Commands.Interfaces;
+using Dec.DiscordIPC.Commands.Payloads;
+using Dec.DiscordIPC.Development;
 using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Commands {
@@ -8,7 +10,8 @@ namespace Dec.DiscordIPC.Commands {
     /// Used to join or leave a voice channel, group dm, or dm
     /// </summary>
     public class SelectVoiceChannel {
-        public class Args : ICommandArgs {
+        [DiscordRPC("SELECT_VOICE_CHANNEL")]
+        public class Args : IPayloadResponse<Data> {
             [JsonPropertyName("channel_id")]
             public string ChannelID { get; set; }
             

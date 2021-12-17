@@ -1,5 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Dec.DiscordIPC.Commands.Interfaces;
+using Dec.DiscordIPC.Commands.Payloads;
+using Dec.DiscordIPC.Development;
 using Dec.DiscordIPC.Events.DataObjects;
 
 namespace Dec.DiscordIPC.Commands {
@@ -7,7 +9,8 @@ namespace Dec.DiscordIPC.Commands {
     /// Used to change voice settings of users in voice channels
     /// </summary>
     public class SetUserVoiceSettings {
-        public class Args : ICommandArgs {
+        [DiscordRPC("SET_USER_VOICE_SETTINGS")]
+        public class Args : IPayloadResponse<Data> {
             [JsonPropertyName("user_id")]
             public string UserID { get; set; }
             

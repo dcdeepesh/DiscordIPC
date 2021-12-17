@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Dec.DiscordIPC.Commands.Interfaces;
+using Dec.DiscordIPC.Commands.Payloads;
+using Dec.DiscordIPC.Development;
 using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Commands {
@@ -8,7 +10,8 @@ namespace Dec.DiscordIPC.Commands {
     /// Used to authenticate an existing client with your app
     /// </summary>
     public class Authenticate {
-        public class Args : ICommandArgs {
+        [DiscordRPC("AUTHENTICATE")]
+        public class Args : IPayloadResponse<Data> {
             [JsonPropertyName("access_token")]
             public string AccessToken { get; set; }
         }

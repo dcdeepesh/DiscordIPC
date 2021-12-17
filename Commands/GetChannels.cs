@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Dec.DiscordIPC.Commands.Interfaces;
+using Dec.DiscordIPC.Commands.Payloads;
+using Dec.DiscordIPC.Development;
 using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Commands {
@@ -8,7 +9,8 @@ namespace Dec.DiscordIPC.Commands {
     /// Used to retrieve a list of channels for a guild from the client
     /// </summary>
     public class GetChannels {
-        public class Args : ICommandArgs {
+        [DiscordRPC("GET_CHANNELS")]
+        public class Args : IPayloadResponse<Data> {
             [JsonPropertyName("guild_id")]
             public string GuildID { get; set; }
         }

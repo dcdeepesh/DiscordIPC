@@ -1,13 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Dec.DiscordIPC.Commands.Interfaces;
+using Dec.DiscordIPC.Commands.Payloads;
+using Dec.DiscordIPC.Development;
 
 namespace Dec.DiscordIPC.Commands {
     /// <summary>
     /// Used to send info about certified hardware devices
     /// </summary>
     public class SetCertifiedDevices {
-        public class Args : ICommandArgs {
+        [DiscordRPC("SET_CERTIFIED_DEVICES")]
+        public class Args : IPayloadResponse {
             [JsonPropertyName("devices")]
             public List<Device> Devices { get; set; }
         }

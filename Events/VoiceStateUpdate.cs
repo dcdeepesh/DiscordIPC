@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using Dec.DiscordIPC.Commands.Interfaces;
+using Dec.DiscordIPC.Development;
 using Dec.DiscordIPC.Entities;
 using Dec.DiscordIPC.Events.DataObjects;
 
@@ -8,6 +9,7 @@ namespace Dec.DiscordIPC.Events {
     /// Sent when a user's voice state changes in a subscribed voice channel (mute, volume, etc.)
     /// </summary>
     public class VoiceStateUpdate {
+        [DiscordRPC("VOICE_STATE_UPDATE")]
         public class Args : ICommandArgs {
             [JsonPropertyName("channel_id")]
             public string ChannelID { get; set; }

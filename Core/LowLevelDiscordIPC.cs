@@ -14,6 +14,12 @@ namespace Dec.DiscordIPC.Core {
         protected readonly string ClientId;
         private readonly CancellationTokenSource SourceToken = new CancellationTokenSource();
         protected CancellationToken CancellationToken => this.SourceToken.Token;
+        private string NamedPipe {
+            get {
+                const string NAME = "discord-ipc-0";
+                return RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? $"{Environment.GetEnvironmentVariable("XDG_RUNTIME_DIR")}/{NAME}" : NAME;
+            }
+        }
         
         public LowLevelDiscordIPC(string clientId, bool verbose) {
             this.ClientId = clientId;
@@ -22,7 +28,7 @@ namespace Dec.DiscordIPC.Core {
         
         public async Task InitAsync() {
             Util.Log("CONNECT: Pipe connecting");
-            this.Pipe = new NamedPipeClientStream(".", this.GetNamedPipe(), PipeDirection.InOut, PipeOptions.Asynchronous);
+            this.Pipe = new NamedPipeClientStream(".", this.NamedPipe, PipeDirection.InOut, PipeOptions.Asynchronous);
             await this.Pipe.ConnectAsync(this.CancellationToken);
             Util.Log("CONNECT: Pipe connected");
             
@@ -45,9 +51,8 @@ namespace Dec.DiscordIPC.Core {
             }, this.CancellationToken);
         }
         
-        public async Task<JsonElement> SendCommandWeakTypeAsync(CommandPayload payload) {
-            await this.SendMessageAsync(new IPCMessage(OpCode.FRAME,
-                Json.SerializeToBytes<dynamic>(payload)));
+        public async Task<JsonElement> SendCommandAsync(CommandPayload payload) {
+            await this.SendMessageAsync(new IPCMessage(OpCode.FRAME, Json.SerializeToBytes<dynamic>(payload)));
             return await this.MessageReadLoop.WaitForResponse(payload.Nonce, this.CancellationToken);
         }
         
@@ -133,10 +138,6 @@ namespace Dec.DiscordIPC.Core {
             Array.Copy(message.Data, 0, buffer, 8, message.Length);
             Util.Log("TRANSMIT: {0}", message.Json);
             await this.Pipe.WriteAsync(buffer, 0, buffer.Length, this.CancellationToken);
-        }
-        private string GetNamedPipe() {
-            const string NAME = "discord-ipc-0";
-            return RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? $"{Environment.GetEnvironmentVariable("XDG_RUNTIME_DIR")}/{NAME}" : NAME;
         }
         
         #endregion
