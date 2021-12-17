@@ -11,7 +11,8 @@ The fork was mainly created because some things didn't work in my Linux environm
 + Changed C# version to 8.0
 + Fixed some typo's that were present in Objects used for JSON serialization
 + Updated some Objects for JSON Serialization that were updated by Discord
-+ Added CancellationTokens to await methods that is called when calling .Dispose()
++ Added CancellationTokens to await methods that are Cancelled when calling .Dispose() on the IPC Client
+ - Not cancelling awaiting methods can cause the app to hang when waiting for ipc messages
 + Changed JSON Serialization to use JsonPropertyNameAttributes
 + Added Discord Documentation to some objects
 ```
@@ -23,6 +24,8 @@ Because Discord's RPC is still under private beta, there are many inconsistencie
 1) Create an [Application](https://discord.com/developers/applications)
 2) Add accounts to the `Application Testers` list
 3) Use RPC on those accounts
+
+Discord IPC still has a number of bugs in it that can cause issues in runtime. If the client is moved into a channel that it does not have permission to join, calling `GET_SELECTED_VOICE_CHANNEL` will never get a response back from Discord. This will cause any `await`ing methods to hang indefinitely. CancellationTokens have been built into this Fork to safely stop the application if this occurs.
 
 # Usage
 Here is the general usage:
