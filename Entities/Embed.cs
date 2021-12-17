@@ -1,51 +1,47 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using Dec.DiscordIPC.Entities.Objects;
 
 // Done
 namespace Dec.DiscordIPC.Entities {
     public class Embed {
-        public string title { get; set; }
-        public string type { get; set; }
-        public string description { get; set; }
-        public string url { get; set; }
-        public string timestamp { get; set; }
-        public int? color { get; set; }
-        public Footer footer { get; set; }
-        public Media image { get; set; }
-        public Media thumbnail { get; set; }
-        public Media video { get; set; }
-        public Provider provider { get; set; }
-        public Author author { get; set; }
-        public List<Field> fields { get; set; }
-
-        public class Footer {
-            public string text { get; set; }
-            public string icon_url { get; set; }
-            public string proxy_icon_url { get; set; }
-        }
-
-        public class Media {
-            public string url { get; set; }
-            public string proxy_url { get; set; }
-            public int? height { get; set; }
-            public int? width { get; set; }
-        }
-
-        public class Provider {
-            public string name { get; set; }
-            public string url { get; set; }
-        }
-
-        public class Author {
-            public string name { get; set; }
-            public string url { get; set; }
-            public string icon_url { get; set; }
-            public string proxy_icon_url { get; set; }
-        }
-
-        public class Field {
-            public string name { get; set; }
-            public string value { get; set; }
-            public bool? inline { get; set; }
-        }
+        [JsonPropertyName("title")]
+        public string Title { get; set; }
+        
+        [JsonPropertyName("type")]
+        public string Type { get; set; }
+        
+        [JsonPropertyName("description")]
+        public string Description { get; set; }
+        
+        [JsonPropertyName("url")]
+        public string URL { get; set; }
+        
+        [JsonPropertyName("timestamp")]
+        public string Timestamp { get; set; }
+        
+        [JsonPropertyName("color")]
+        public int? Color { get; set; }
+        
+        [JsonPropertyName("footer")]
+        public Footer Footer { get; set; }
+        
+        [JsonPropertyName("image")]
+        public Media Image { get; set; }
+        
+        [JsonPropertyName("thumbnail")]
+        public Media Thumbnail { get; set; }
+        
+        [JsonPropertyName("video")]
+        public Media Video { get; set; }
+        
+        [JsonPropertyName("provider")]
+        public Provider Provider { get; set; }
+        
+        [JsonPropertyName("author")]
+        public Author Author { get; set; }
+        
+        [JsonPropertyName("fields")]
+        public List<Field> Fields { get; set; }
     }
 }

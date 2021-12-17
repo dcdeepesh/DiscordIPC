@@ -1,17 +1,31 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using Dec.DiscordIPC.Commands.Interfaces;
 
 namespace Dec.DiscordIPC.Events {
+    /// <summary>
+    /// Sent when the client's voice connection status changes
+    /// </summary>
     public class VoiceConnectionStatus {
         // No arguments; dummy
-        public class Args { }
-
+        public class Args : IDummyCommandArgs { }
+        
         public class Data {
-            public string state { get; set; }
-            public string hostname { get; set; }
+            [JsonPropertyName("state")]
+            public string State { get; set; }
+            
+            [JsonPropertyName("hostname")]
+            public string HostName { get; set; }
+            
             // "unreleased" problem (see docs)
-            public List<float?> pings { get; set; }
-            public float? average_ping { get; set; }
-            public float? last_ping { get; set; }
+            [JsonPropertyName("pings")]
+            public List<float?> Pings { get; set; }
+            
+            [JsonPropertyName("average_ping")]
+            public float? AveragePing { get; set; }
+            
+            [JsonPropertyName("last_ping")]
+            public float? LastPing { get; set; }
         }
     }
 }

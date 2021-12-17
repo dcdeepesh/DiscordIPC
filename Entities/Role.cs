@@ -1,21 +1,44 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Dec.DiscordIPC.Entities {
     public class Role {
-        public string id { get; set; }
-        public string name { get; set; }
-        public int? color { get; set; }
-        public bool? hoist { get; set; }
-        public int? position { get; set; }
-        public string permissions { get; set; }
-        public bool? managed { get; set; }
-        public bool? mentionable { get; set; }
-        public List<Tag> tags { get; set; }
+        [JsonPropertyName("id")]
+        public string ID { get; set; }
+        
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+        
+        [JsonPropertyName("color")]
+        public int? Color { get; set; }
+        
+        [JsonPropertyName("host")]
+        public bool? Hoist { get; set; }
+        
+        [JsonPropertyName("position")]
+        public int? Position { get; set; }
+        
+        [JsonPropertyName("permissions")]
+        public string Permissions { get; set; }
+        
+        [JsonPropertyName("managed")]
+        public bool? Managed { get; set; }
+        
+        [JsonPropertyName("mentionable")]
+        public bool? Mentionable { get; set; }
+        
+        [JsonPropertyName("tags")]
+        public List<Tag> Tags { get; set; }
 
         public class Tag {
-            public string bot_id { get; set; }
-            public string integration_id { get; set; }
-            public object premium_subscriber { get; set; }
+            [JsonPropertyName("bot_id")]
+            public string BotID { get; set; }
+            
+            [JsonPropertyName("integration_id")]
+            public string IntegrationID { get; set; }
+            
+            [JsonPropertyName("premium_subscriber")]
+            public object PremiumSubscriber { get; set; }
         }
     }
 }

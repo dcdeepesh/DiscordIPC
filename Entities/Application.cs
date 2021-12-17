@@ -1,28 +1,64 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 // Done
 namespace Dec.DiscordIPC.Entities {
     public class Application {
-        public string id { get; set; }
-        public string name { get; set; }
-        public string icon { get; set; }
-        public string description { get; set; }
-        public List<string> rpc_origings { get; set; }
-        public bool? bot_public { get; set; }
-        public bool? bot_require_code_grant { get; set; }
-        public string terms_of_service_url { get; set; }
-        public string private_policy_url { get; set; }
-        public User owner { get; set; }
-        public string summary { get; set; }
-        public string verify_key { get; set; }
-        public Team team { get; set; }
-        public string guild_id { get; set; }
-        public string primary_sku_id { get; set; }
-        public string slug { get; set; }
-        public string cover_image { get; set; }
-        public int? flags { get; set; }
-
-        public class Flags {
+        [JsonPropertyName("id")]
+        public string ID { get; set; }
+        
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+        
+        [JsonPropertyName("icon")]
+        public string Icon { get; set; }
+        
+        [JsonPropertyName("description")]
+        public string Description { get; set; }
+        
+        [JsonPropertyName("rpc_origins")]
+        public List<string> RPCOrigins { get; set; }
+        
+        [JsonPropertyName("bot_public")]
+        public bool? BotPublic { get; set; }
+        
+        [JsonPropertyName("bot_require_code_grant")]
+        public bool? BotRequireCodeGrant { get; set; }
+        
+        [JsonPropertyName("terms_of_service_url")]
+        public string TermsOfServiceURL { get; set; }
+        
+        [JsonPropertyName("private_policy_url")]
+        public string PrivatePolicyURL { get; set; }
+        
+        [JsonPropertyName("owner")]
+        public User Owner { get; set; }
+        
+        [JsonPropertyName("summary")]
+        public string Summary { get; set; }
+        
+        [JsonPropertyName("verify_key")]
+        public string VerifyKey { get; set; }
+        
+        [JsonPropertyName("team")]
+        public Team Team { get; set; }
+        
+        [JsonPropertyName("guild_id")]
+        public string GuildID { get; set; }
+        
+        [JsonPropertyName("primary_sku_id")]
+        public string PrimarySkuID { get; set; }
+        
+        [JsonPropertyName("slug")]
+        public string Slug { get; set; }
+        
+        [JsonPropertyName("cover_image")]
+        public string CoverImage { get; set; }
+        
+        [JsonPropertyName("flags")]
+        public int? Flags { get; set; }
+        
+        public class FlagTypes {
             public static readonly int
                 GATEWAY_PRESENCE = 1 << 12,
                 GATEWAY_PRESENCE_LIMITED = 1 << 13,

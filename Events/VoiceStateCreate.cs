@@ -1,23 +1,36 @@
-﻿using Dec.DiscordIPC.Entities;
+﻿using System.Text.Json.Serialization;
+using Dec.DiscordIPC.Commands.Interfaces;
+using Dec.DiscordIPC.Entities;
+using Dec.DiscordIPC.Events.DataObjects;
 
 namespace Dec.DiscordIPC.Events {
+    /// <summary>
+    /// Sent when a user joins a subscribed voice channel
+    /// </summary>
     public class VoiceStateCreate {
-        public class Args {
-            public string channel_id { get; set; }
+        public class Args : ICommandArgs {
+            [JsonPropertyName("channel_id")]
+            public string ChannelID { get; set; }
         }
-
+        
         public class Data {
-            public VoiceState voice_state { get; set; }
-            public User user { get; set; }
-            public string nick { get; set; }
-            public float? volume { get; set; }
-            public bool? mute { get; set; }
-            public Pan pan { get; set; }
-
-            public class Pan {
-                public float? left { get; set; }
-                public float? right { get; set; }
-            }
+            [JsonPropertyName("voice_state")]
+            public VoiceState VoiceState { get; set; }
+            
+            [JsonPropertyName("user")]
+            public User User { get; set; }
+            
+            [JsonPropertyName("nick")]
+            public string Nick { get; set; }
+            
+            [JsonPropertyName("volume")]
+            public float? Volume { get; set; }
+            
+            [JsonPropertyName("mute")]
+            public bool? Mute { get; set; }
+            
+            [JsonPropertyName("pan")]
+            public Pan Pan { get; set; }
         }
     }
 }

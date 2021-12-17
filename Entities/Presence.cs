@@ -1,72 +1,130 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using Dec.DiscordIPC.Entities.Objects;
 
 // Done
 namespace Dec.DiscordIPC.Entities {
     public class Presence {
-        public User user { get; set; }
-        public string guild_id { get; set; }
-        public string status { get; set; }
-        public List<Activity> activities { get; set; }
-        public ClientStatus client_status { get; set; }
-
-        public class ClientStatus {
-            public string desktop { get; set; }
-            public string mobile { get; set; }
-            public string web { get; set; }
-        }
-
+        [JsonPropertyName("user")]
+        public User User { get; set; }
+        
+        [JsonPropertyName("guild_id")]
+        public string GuildID { get; set; }
+        
+        [JsonPropertyName("status")]
+        public string Status { get; set; }
+        
+        [JsonPropertyName("activities")]
+        public List<Activity> Activities { get; set; }
+        
+        [JsonPropertyName("client_status")]
+        public ClientStatus ClientStatus { get; set; }
+        
         public class Activity {
-            public string name { get; set; }
-            public int? type { get; set; }
-            public string url { get; set; }
-            public int? created_at { get; set; }
-            public Timestamps timestamps { get; set; }
-            public string application_id { get; set; }
-            public string details { get; set; }
-            public string state { get; set; }
-            public Emoji emoji { get; set; }
-            public Party party { get; set; }
-            public Assets assets { get; set; }
-            public Secrets secrets { get; set; }
-            public bool? instance { get; set; }
-            public int? flags { get; set; }
-            public List<Button> buttons { get; set; }
-
-            public class Timestamps {
-                public int? start { get; set; }
-                public int? end { get; set; }
-            }
-
-            public class Emoji {
-                public string name { get; set; }
-                public string id { get; set; }
-                public bool? animated { get; set; }
-            }
-
-            public class Party {
-                public string id { get; set; }
-                public List<int?> size { get; set; }
-                public int? current_size => size[0];
-                public int? max_size => size[1];
-            }
-
-            public class Assets {
-                public string large_image { get; set; }
-                public string large_text { get; set; }
-                public string small_image { get; set; }
-                public string small_text { get; set; }
-            }
-
-            public class Secrets {
-                public string join { get; set; }
-                public string spectate { get; set; }
-                public string match { get; set; }
-            }
-
-            public class Button {
-                public string label { get; set; }
-                public string url { get; set; }
-            }
+            [JsonPropertyName("name")]
+            public string Name { get; set; }
+            
+            [JsonPropertyName("type")]
+            public int? Type { get; set; }
+            
+            [JsonPropertyName("url")]
+            public string URL { get; set; }
+            
+            [JsonPropertyName("created_at")]
+            public int? CreatedAt { get; set; }
+            
+            [JsonPropertyName("timestamps")]
+            public Timestamps Timestamps { get; set; }
+            
+            [JsonPropertyName("application_id")]
+            public string ApplicationID { get; set; }
+            
+            [JsonPropertyName("details")]
+            public string Details { get; set; }
+            
+            [JsonPropertyName("state")]
+            public string State { get; set; }
+            
+            [JsonPropertyName("emoji")]
+            public Emoji Emoji { get; set; }
+            
+            [JsonPropertyName("party")]
+            public Party Party { get; set; }
+            
+            [JsonPropertyName("assets")]
+            public Assets Assets { get; set; }
+            
+            [JsonPropertyName("secrets")]
+            public Secrets Secrets { get; set; }
+            
+            [JsonPropertyName("instance")]
+            public bool? Instance { get; set; }
+            
+            [JsonPropertyName("flags")]
+            public int? Flags { get; set; }
+            
+            [JsonPropertyName("buttons")]
+            public List<Button> Buttons { get; set; }
+        }
+        public class Timestamps {
+            [JsonPropertyName("start")]
+            public int? Start { get; set; }
+            
+            [JsonPropertyName("end")]
+            public int? End { get; set; }
+        }
+        public class Emoji {
+            [JsonPropertyName("name")]
+            public string Name { get; set; }
+            
+            [JsonPropertyName("id")]
+            public string ID { get; set; }
+            
+            [JsonPropertyName("animated")]
+            public bool? Animated { get; set; }
+        }
+        public class Party {
+            [JsonPropertyName("id")]
+            public string ID { get; set; }
+            
+            [JsonPropertyName("size")]
+            public List<int?> Size { get; set; }
+            
+            [JsonPropertyName("current_size")]
+            public int? CurrentSize => this.Size[0];
+            
+            [JsonPropertyName("max_size")]
+            public int? MaxSize => this.Size[1];
+        }
+        public class Assets {
+            [JsonPropertyName("large_image")]
+            public string LargeImage { get; set; }
+            
+            [JsonPropertyName("large_text")]
+            public string LargeText { get; set; }
+            
+            [JsonPropertyName("small_image")]
+            public string SmallImage { get; set; }
+            
+            [JsonPropertyName("small_text")]
+            public string SmallText { get; set; }
+        }
+        public class Secrets {
+            [JsonPropertyName("join")]
+            public string Join { get; set; }
+            
+            [JsonPropertyName("spectate")]
+            public string Spectate { get; set; }
+            
+            [JsonPropertyName("match")]
+            public string Match { get; set; }
+        }
+        public class Button {
+            [JsonPropertyName("label")]
+            public string Label { get; set; }
+            
+            [JsonPropertyName("url")]
+            public string URL { get; set; }
         }
     }
 }

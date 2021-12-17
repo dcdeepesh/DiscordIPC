@@ -1,16 +1,42 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
-// Done
 namespace Dec.DiscordIPC.Entities {
     public class Member {
-        public User user { get; set; }
-        public string nick { get; set; }
-        public List<string> roles { get; set; }
-        public string joined_at { get; set; }
-        public string premium_since { get; set; }
-        public bool? deaf { get; set; }
-        public bool? mute { get; set; }
-        public bool? pending { get; set; }
-        public string permissions { get; set; }
+        /// <summary></summary>
+        [JsonPropertyName("user")]
+        public User User { get; set; }
+        
+        /// <summary></summary>
+        [JsonPropertyName("nick")]
+        public string Nick { get; set; }
+        
+        /// <summary></summary>
+        [JsonPropertyName("roles")]
+        public List<string> Roles { get; set; }
+        
+        /// <summary></summary>
+        [JsonPropertyName("joined_at")]
+        public string JoinedAt { get; set; }
+        
+        /// <summary></summary>
+        [JsonPropertyName("premium_since")]
+        public string PremiumSince { get; set; }
+        
+        /// <summary></summary>
+        [JsonPropertyName("deaf")]
+        public bool? Deaf { get; set; }
+        
+        /// <summary></summary>
+        [JsonPropertyName("mute")]
+        public bool? Mute { get; set; }
+        
+        /// <summary></summary>
+        [JsonPropertyName("pending")]
+        public bool? Pending { get; set; }
+        
+        /// <summary></summary>
+        [JsonPropertyName("permissions")]
+        public string Permissions { get; set; }
     }
 }

@@ -1,16 +1,30 @@
-﻿using Dec.DiscordIPC.Entities;
+﻿using System.Text.Json.Serialization;
+using Dec.DiscordIPC.Commands.Interfaces;
+using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events {
+    /// <summary>
+    /// Sent when the client receives a notification (mention or new message in eligible channels)
+    /// </summary>
     public class NotificationCreate {
         // No arguments; dummy
-        public class Args { }
-
+        public class Args : IDummyCommandArgs { }
+        
         public class Data {
-            public string channe_id { get; set; }
-            public Message message { get; set; }
-            public string icon_url { get; set; }
-            public string title { get; set; }
-            public string body { get; set; }
+            [JsonPropertyName("channel_id")]
+            public string ChannelID { get; set; }
+            
+            [JsonPropertyName("message")]
+            public Message Message { get; set; }
+            
+            [JsonPropertyName("icon_url")]
+            public string IconURL { get; set; }
+            
+            [JsonPropertyName("title")]
+            public string Title { get; set; }
+            
+            [JsonPropertyName("body")]
+            public string Body { get; set; }
         }
     }
 }

@@ -1,54 +1,58 @@
 ﻿using System;
 using System.IO.Pipes;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Dec.DiscordIPC.Commands.Payloads;
 using Dec.DiscordIPC.Events;
 
 namespace Dec.DiscordIPC.Core {
-    public class LowLevelDiscordIPC {
-        private NamedPipeClientStream pipe;
-        internal MessageReadLoop messageReadLoop;
-        protected readonly string clientId;
-
+    public class LowLevelDiscordIPC : IDisposable {
+        private NamedPipeClientStream Pipe;
+        internal MessageReadLoop MessageReadLoop;
+        protected readonly string ClientId;
+        private readonly CancellationTokenSource SourceToken = new CancellationTokenSource();
+        protected CancellationToken CancellationToken => this.SourceToken.Token;
+        
         public LowLevelDiscordIPC(string clientId, bool verbose) {
-            this.clientId = clientId;
+            this.ClientId = clientId;
             Util.Verbose = verbose;
         }
-
+        
         public async Task InitAsync() {
-            pipe = new NamedPipeClientStream(".", "discord-ipc-0",
-                PipeDirection.InOut, PipeOptions.Asynchronous);
-            await pipe.ConnectAsync();
-
-            messageReadLoop = new MessageReadLoop(pipe, this);
-            messageReadLoop.Start();
-
+            Util.Log("CONNECT: Pipe connecting");
+            this.Pipe = new NamedPipeClientStream(".", this.GetNamedPipe(), PipeDirection.InOut, PipeOptions.Asynchronous);
+            await this.Pipe.ConnectAsync(this.CancellationToken);
+            Util.Log("CONNECT: Pipe connected");
+            
+            this.MessageReadLoop = new MessageReadLoop(this.Pipe, this);
+            this.MessageReadLoop.Start();
+            
             EventWaitHandle readyWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
-            EventHandler<Ready.Data> readyListener = (sender, data) => readyWaitHandle.Set();
-            OnReady += readyListener;
-
-            await SendMessageAsync(IPCMessage.Handshake(Json.SerializeToBytes(new {
-                client_id = clientId,
+            void ReadyListener(object sender, Ready.Data data) => readyWaitHandle.Set();
+            this.OnReady += ReadyListener;
+            
+            await this.SendMessageAsync(IPCMessage.Handshake(Json.SerializeToBytes(new {
+                client_id = this.ClientId,
                 v = "1",
                 nonce = Guid.NewGuid().ToString()
             })));
-
+            
             await Task.Run(() => {
                 readyWaitHandle.WaitOne();
-                OnReady -= readyListener;
-            });
+                this.OnReady -= ReadyListener;
+            }, this.CancellationToken);
         }
-
-        public async Task<JsonElement> SendCommandWeakTypeAsync(dynamic payload) {
-            await SendMessageAsync(new IPCMessage(OpCode.FRAME,
+        
+        public async Task<JsonElement> SendCommandWeakTypeAsync(CommandPayload payload) {
+            await this.SendMessageAsync(new IPCMessage(OpCode.FRAME,
                 Json.SerializeToBytes<dynamic>(payload)));
-            return await messageReadLoop.WaitForResponse(payload.nonce);
+            return await this.MessageReadLoop.WaitForResponse(payload.Nonce, this.CancellationToken);
         }
-
+        
         #region Events
-
+        
         public event EventHandler<Ready.Data> OnReady;
         // Event ERROR is handled differently
         public event EventHandler<GuildStatus.Data> OnGuildStatus;
@@ -69,112 +73,72 @@ namespace Dec.DiscordIPC.Core {
         public event EventHandler<ActivityJoin.Data> OnActivityJoin;
         public event EventHandler<ActivitySpectate.Data> OnActivitySpectate;
         public event EventHandler<ActivityJoinRequest.Data> OnActivityJoinRequest;
-
+        
         // More events on their way
-
+        
         internal void FireEvent(string evt, IPCMessage message) {
             JsonElement obj = Json.Deserialize<dynamic>(message.Json).GetProperty("data");
-            switch (evt) {
-                case "READY":
-                    OnReady?.Invoke(this, obj.ToObject<Ready.Data>());
-                    break;
-
-                case "GUILD_STATUS":
-                    OnGuildStatus?.Invoke(this, obj.ToObject<GuildStatus.Data>());
-                    break;
-
-                case "GUILD_CREATE":
-                    OnGuildCreate?.Invoke(this, obj.ToObject<GuildCreate.Data>());
-                    break;
-
-                case "CHANNEL_CREATE":
-                    OnChannelCreate?.Invoke(this, obj.ToObject<ChannelCreate.Data>());
-                    break;
-
-                case "VOICE_CHANNEL_SELECT":
-                    OnVoiceChannelSelect?.Invoke(this, obj.ToObject<VoiceChannelSelect.Data>());
-                    break;
-
-                case "VOICE_STATE_CREATE":
-                    OnVoiceStateCreate?.Invoke(this, obj.ToObject<VoiceStateCreate.Data>());
-                    break;
-
-                case "VOICE_STATE_UPDATE":
-                    OnVoiceStateUpdate?.Invoke(this, obj.ToObject<VoiceStateUpdate.Data>());
-                    break;
-
-                case "VOICE_STATE_DELETE":
-                    OnVoiceStateDelete?.Invoke(this, obj.ToObject<VoiceStateDelete.Data>());
-                    break;
-
-                case "VOICE_SETTINGS_UPDATE":
-                    OnVoiceSettingsUpdate?.Invoke(this, obj.ToObject<VoiceSettingsUpdate.Data>());
-                    break;
-
-                case "VOICE_CONNECTION_STATUS":
-                    OnVoiceConnectionStatus?.Invoke(this, obj.ToObject<VoiceConnectionStatus.Data>());
-                    break;
-
-                case "SPEAKING_START":
-                    OnSpeakingStart?.Invoke(this, obj.ToObject<SpeakingStart.Data>());
-                    break;
-
-                case "SPEAKING_STOP":
-                    OnSpeakingStop?.Invoke(this, obj.ToObject<SpeakingStop.Data>());
-                    break;
-
-                case "MESSAGE_CREATE":
-                    OnMessageCreate?.Invoke(this, obj.ToObject<MessageCreate.Data>());
-                    break;
-
-                case "MESSAGE_UPDATE":
-                    OnMessageUpdate?.Invoke(this, obj.ToObject<MessageUpdate.Data>());
-                    break;
-
-                case "MESSAGE_DELETE":
-                    OnMessageDelete?.Invoke(this, obj.ToObject<MessageDelete.Data>());
-                    break;
-
-                case "NOTIFICATION_CREATE":
-                    OnNotificationCreate?.Invoke(this, obj.ToObject<NotificationCreate.Data>());
-                    break;
-
-                case "ACTIVITY_JOIN":
-                    OnActivityJoin?.Invoke(this, obj.ToObject<ActivityJoin.Data>());
-                    break;
-
-                case "ACTIVITY_SPECTATE":
-                    OnActivitySpectate?.Invoke(this, obj.ToObject<ActivitySpectate.Data>());
-                    break;
-
-                case "ACTIVITY_JOIN_REQUEST":
-                    OnActivityJoinRequest?.Invoke(this, obj.ToObject<ActivityJoinRequest.Data>());
-                    break;
-            }
+            object _ = evt switch {
+                "READY" => this.InvokeEvent(this.OnReady, obj),
+                "GUILD_STATUS" => this.InvokeEvent(this.OnGuildStatus, obj),
+                "GUILD_CREATE" => this.InvokeEvent(this.OnGuildCreate, obj),
+                "CHANNEL_CREATE" => this.InvokeEvent(this.OnChannelCreate, obj),
+                "VOICE_CHANNEL_SELECT" => this.InvokeEvent(this.OnVoiceChannelSelect, obj),
+                "VOICE_STATE_CREATE" => this.InvokeEvent(this.OnVoiceStateCreate, obj),
+                "VOICE_STATE_UPDATE" => this.InvokeEvent(this.OnVoiceStateUpdate, obj),
+                "VOICE_STATE_DELETE" => this.InvokeEvent(this.OnVoiceStateDelete, obj),
+                "VOICE_SETTINGS_UPDATE" => this.InvokeEvent(this.OnVoiceSettingsUpdate, obj),
+                "VOICE_CONNECTION_STATUS" => this.InvokeEvent(this.OnVoiceConnectionStatus, obj),
+                "SPEAKING_START" => this.InvokeEvent(this.OnSpeakingStart, obj),
+                "SPEAKING_STOP" => this.InvokeEvent(this.OnSpeakingStop, obj),
+                "MESSAGE_CREATE" => this.InvokeEvent(this.OnMessageCreate, obj),
+                "MESSAGE_UPDATE" => this.InvokeEvent(this.OnMessageUpdate, obj),
+                "MESSAGE_DELETE" => this.InvokeEvent(this.OnMessageDelete, obj),
+                "NOTIFICATION_CREATE" => this.InvokeEvent(this.OnNotificationCreate, obj),
+                "ACTIVITY_JOIN" => this.InvokeEvent(this.OnActivityJoin, obj),
+                "ACTIVITY_SPECTATE" => this.InvokeEvent(this.OnActivitySpectate, obj),
+                "ACTIVITY_JOIN_REQUEST" => this.InvokeEvent(this.OnActivityJoinRequest, obj),
+                _ => null
+            };
+        }
+        
+        public T InvokeEvent<T>(EventHandler<T> handler, JsonElement element) {
+            T obj = element.ToObject<T>();
+            
+            handler.Invoke(this, obj);
+            
+            return obj;
+        }
+        
+        #endregion
+        
+        public void Dispose() {
+            this.SourceToken.Dispose();
+            this.Pipe.Dispose();
         }
 
-        #endregion
-
-        public void Dispose() => pipe.Dispose();
-
         #region Private methods
-
+        
         private async Task SendMessageAsync(IPCMessage message) {
-            byte[] bOpCode = BitConverter.GetBytes((int) message.opCode);
+            byte[] bOpCode = BitConverter.GetBytes((int) message.OpCode);
             byte[] bLen = BitConverter.GetBytes(message.Length);
             if (!BitConverter.IsLittleEndian) {
                 Array.Reverse(bOpCode);
                 Array.Reverse(bLen);
             }
-
+            
             byte[] buffer = new byte[4 + 4 + message.Length];
             Array.Copy(bOpCode, buffer, 4);
             Array.Copy(bLen, 0, buffer, 4, 4);
-            Array.Copy(message.data, 0, buffer, 8, message.Length);
-            Util.Log("\nSENDING:\n{0}", message.Json);
-            await pipe.WriteAsync(buffer, 0, buffer.Length);
+            Array.Copy(message.Data, 0, buffer, 8, message.Length);
+            Util.Log("TRANSMIT: {0}", message.Json);
+            await this.Pipe.WriteAsync(buffer, 0, buffer.Length, this.CancellationToken);
         }
-
+        private string GetNamedPipe() {
+            const string NAME = "discord-ipc-0";
+            return RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? $"{Environment.GetEnvironmentVariable("XDG_RUNTIME_DIR")}/{NAME}" : NAME;
+        }
+        
         #endregion
     }
 }

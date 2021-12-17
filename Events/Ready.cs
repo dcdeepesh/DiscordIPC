@@ -1,18 +1,32 @@
-﻿using Dec.DiscordIPC.Entities;
+﻿using System.Text.Json.Serialization;
+using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events {
+    /// <summary>
+    /// Non-subscription event sent immediately after connecting, contains server information
+    /// </summary>
     public class Ready {
         // No args because this isn't a subscription event
-
+        
         public class Data {
-            public int? v { get; set; }
-            public RPCServerConfig config { get; set; }
-            public User user { get; set; }
-
+            [JsonPropertyName("v")]
+            public int? Version { get; set; }
+            
+            [JsonPropertyName("config")]
+            public RPCServerConfig Config { get; set; }
+            
+            [JsonPropertyName("user")]
+            public User User { get; set; }
+            
             public class RPCServerConfig {
-                public string cdn_host { get; set; }
-                public string api_endpoint { get; set; }
-                public string environment { get; set; }
+                [JsonPropertyName("cdn_host")]
+                public string CDNHost { get; set; }
+                
+                [JsonPropertyName("api_endpoint")]
+                public string APIEndpoint { get; set; }
+                
+                [JsonPropertyName("environment")]
+                public string Environment { get; set; }
             }
         }
     }

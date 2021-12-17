@@ -1,21 +1,28 @@
 # DiscordIPC
 DiscordIPC is a wrapper for Discord's IPC-based RPC. It supports all commands and events unlike the other wrappers that support only activity-related commands and events.
 
-> **WARNING!: Documentation is WIP. This warning will be removed once it's completed.**
+## This is a Fork
+This repo is a fork of [DiscordIPC](https://www.github.com/dcdeepesh/DiscordIPC) created by [dcdeepesh](https://www.github.com/dcdeepesh).
+
+The fork was mainly created because some things didn't work in my Linux environment, and I wanted to fix them. A couple of other tweaks were made as well:
+
+```diff
++ Added named pipe support for Linux
++ Changed C# version to 8.0
++ Fixed some typo's that were present in Objects used for JSON serialization
++ Updated some Objects for JSON Serialization that were updated by Discord
++ Added CancellationTokens to await methods that is called when calling .Dispose()
++ Changed JSON Serialization to use JsonPropertyNameAttributes
++ Added Discord Documentation to some objects
+```
 
 ## Before you use it
 Because Discord's RPC is still under private beta, there are many inconsistencies, errors and outdated information in the documentation. See [problems and changes](#problems-and-changes) for more.
 
-# Table of contents
-  - [Adding to your project](#adding-to-your-project)
-  - [Usage](#usage)
-  - [Problems and changes](#problems-and-changes)
-    - [Solving these problems](#solving-these-problems)
-  - [Updates and contributing](#updates-and-contributing)
-  - [Queries and support](#queries-and-support)
-
-# Adding to your project
-DiscordIPC can be installed as (NuGet package).
+**Discord RPC and IPC are currently only allowed to be used in [Applications](https://discord.com/developers/applications) whitelisted by Discord. Currently Discord is not accepting any new applications onto the whitelist.** The only way to currently bypass the whitelist is to add any accounts to the `Application Testers` list of your application.
+1) Create an [Application](https://discord.com/developers/applications)
+2) Add accounts to the `Application Testers` list
+3) Use RPC on those accounts
 
 # Usage
 Here is the general usage:
@@ -26,70 +33,59 @@ using Dec.DiscordIPC.Events;
 
 namespace Example {
     class Program {
-        private static readonly string CLIENT_ID = "<CLIENT-ID>";
-        static async Task Main() {
-            DiscordIPC discordIPC = new DiscordIPC(CLIENT_ID));
+        // Replace CLIENT_ID with your Applications Client ID
+        private const string CLIENT_ID = "<CLIENT-ID>";
+        
+        static async Task Main(string[] args) {
+            // Create the IPC Connection with the Client ID
+            using DiscordIPC discordIPC = new DiscordIPC(Program.CLIENT_ID));
+            
+            // Connect to IPC
             await discordIPC.InitAsync();
-
+            
+            // Initialize the return OAuth information
+            Authorize.Data data;
+            
             // Authorize
-            string accessToken = "";
             try {
-                await discordIPC.SendCommandAsync(new Authorize.Args() {
-                    scopes = new List<string>() { "rpc" },
-                    client_id = CLIENT_ID
+                // Send a popup to the Discord Client to authenticate
+                data = await discordIPC.SendCommandAsync(new Authorize.Args() {
+                    Scopes = new List<string>() { "rpc" },
+                    ClientID = CLIENT_ID,
+                    CallbackURL = "http://localhost"
                 });
             } catch (ErrorResponseException e) {
                 Console.Log("User denied authorization");
                 return;
             }
-
-            // Authenticate (ignoring the response here)
+            
+            // TODO: ... Leverage 'data' to fetch an OAuth Access Token
+            string accessToken = "<ACCESS-TOKEN>";
+            
+            // Authenticate using accessToken (ignoring the response here)
             await discordIPC.SendCommandAsync(new Authenticate.Args() {
-                access_token = accessToken
+                AccessToken = accessToken
             });
-
-            // Subscribe to an event
-            var handler = (sender, data) => Console.Log("New message!");
-            var args = new MessageCreate.Args() {
-                channel_id = "<some-text-channel-id>"
-            };
-            discordIPC.OnMessageCreate += handler;
-            await discordIPC.SubscribeAsync(args);
-
-            // Use commands
+            
+            // Add an event listener by creating a lamba callback
+            // (Or Reference to a method)
+            discordIPC.OnMessageCreate += (sender, data) => Console.Log("New message!");
+            
+            // Send the event subscribe so we start receiving on our listener
+            await discordIPC.SubscribeAsync(new MessageCreate.Args() {
+                ChannelID = "<some-text-channel-id>"
+            });
+            
+            // Use commands to get information about a channel
             GetChannel.Data response = await discordIPC.SendCommandAsync(new GetChannel.Args() {
-                channel_id = "<some-channel-id>"
+                ChannelID = "<some-channel-id>"
             });
             Console.Log(response.name);
-
-            // ... (do random stuff)
-
-            // Unsubscribe from the event
-            await discordIPC.UnsubscribeAsync(args);
-            discordIPC.OnMessageCreate -= handler;
-
-            // Dispose
-            discordIPC.Dispose();
+            
+            // TODO: ... (do other stuff)
+            
+            // Our discordIPC object is discarded here due to the using statement
         }
     }
 }
 ```
-Make sure to include the `rpc` scope when authorizing your app.
-
-See the [complete usage documentation](https://github.com/dcdeepesh/DiscordIPC/blob/master/Documentation/Usage.md) for more information.
-
-# Problems and changes
-The RPC hasn't been officially released by Discord yet, which is why DiscordIPC uses the IPC directly instead of the upcoming RPC, which poses problems of its own. Because it's still unofficial, Discord's documention about RPC isn't complete, and some of the existing documentation is also outdated. This means any changes in the implementation are not guaranteed to be documented, up until it's finally released. It also means some things in DiscordIPC may break every now and then. Needless to say, it's not wise to use it in production, the best choice is to wait for the RPC to release (if it will ever be released in the first place).
-
-That being said, don't get the impression that DiscordIPC can't be reliably used at all. For the most part, these changes aren't breaking, the fundamental flow of IPC remains the same. So you can use it to build your own application and it will work well. **But still think of it as testing something in it's alpha stage, not knowing what may break tomorrow.**
-
-## Solving these problems
-To see how to solve these problems, and information about other issues, see [how to extend LowLevelDiscordIPC yourself](https://github.com/dcdeepesh/DiscordIPC/blob/master/Documentation/Extending.md).
-
-# Updates and contributing
-DiscordIPC is definitely not in a mature state as of right now. You may encounter some bugs and may have improvements in your mind. Feel free to suggest them as issues, contribute in the form of pull requests, or just DM me your suggestions directly.
-
-There are no strict requirements for pull requests and contributions. Just keep your commits restricted to a single fundamental change and commit messages clean.
-
-# Queries and support
-If there is anything that you didn't understand from the documentation, or want to ask anything else about DiscordIPC directly to me, you can add and DM me on Discord (Krove#0001).

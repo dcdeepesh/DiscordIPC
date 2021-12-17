@@ -1,12 +1,18 @@
-﻿using Dec.DiscordIPC.Entities;
+﻿using System.Text.Json.Serialization;
+using Dec.DiscordIPC.Commands.Interfaces;
+using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events {
+    /// <summary>
+    /// Sent when the user receives a Rich Presence Ask to Join request
+    /// </summary>
     public class ActivityJoinRequest {
         // No arguments; dummy
-        public class Args { }
-
+        public class Args : IDummyCommandArgs { }
+        
         public class Data {
-            public User user { get; set; }
+            [JsonPropertyName("user")]
+            public User User { get; set; }
         }
     }
 }

@@ -1,72 +1,157 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using Dec.DiscordIPC.Entities.Objects;
 
 // TODO
 namespace Dec.DiscordIPC.Entities {
     public class Message {
-        public string id { get; set; }
-        public string channel_id { get; set; }
-        public string guild_id { get; set; }
-        public User author { get; set; }
-        public Member member { get; set; }
-        public string content { get; set; }
-        public string timestamp { get; set; }
-        public string edited_timestamp { get; set; }
-        public bool? tts { get; set; }
-        public bool? mention_everyone { get; set; }
+        [JsonPropertyName("id")]
+        public string ID { get; set; }
+        
+        [JsonPropertyName("channel_id")]
+        public string ChannelID { get; set; }
+        
+        [JsonPropertyName("guild_id")]
+        public string GuildID { get; set; }
+        
+        [JsonPropertyName("author")]
+        public User Author { get; set; }
+        
+        [JsonPropertyName("member")]
+        public Member Member { get; set; }
+        
+        [JsonPropertyName("content")]
+        public string Content { get; set; }
+        
+        [JsonPropertyName("timestamp")]
+        public string Timestamp { get; set; }
+        
+        [JsonPropertyName("edited_timestamp")]
+        public string EditedTimestamp { get; set; }
+        
+        [JsonPropertyName("tts")]
+        public bool? TTS { get; set; }
+        
+        [JsonPropertyName("mention_everyone")]
+        public bool? MentionEveryone { get; set; }
+        
         // mentions
-        public List<string> mention_roles { get; set; }
-        public List<Channel.Mention> mention_channels { get; set; }
-        public List<Attachment> attachments { get; set; }
-        public List<Embed> embeds { get; set; }
-        public List<Reaction> reactions { get; set; }
-        public object nonce { get; set; }
-        public bool? pinned { get; set; }
-        public string webhook_id { get; set; }
-        public int? type { get; set; }
+        [JsonPropertyName("mention_roles")]
+        public List<string> MentionRoles { get; set; }
+        
+        [JsonPropertyName("mention_channels")]
+        public List<Mention> MentionChannels { get; set; }
+        
+        [JsonPropertyName("attachments")]
+        public List<Attachment> Attachments { get; set; }
+        
+        [JsonPropertyName("embeds")]
+        public List<Embed> Embeds { get; set; }
+        
+        [JsonPropertyName("reactions")]
+        public List<Reaction> Reactions { get; set; }
+        
+        [JsonPropertyName("nonce")]
+        public object Nonce { get; set; }
+        
+        [JsonPropertyName("pinned")]
+        public bool? Pinned { get; set; }
+        
+        [JsonPropertyName("webhook_id")]
+        public string WebhookID { get; set; }
+        
+        [JsonPropertyName("type")]
+        public int? Type { get; set; }
+        
+        [JsonPropertyName("activity")]
         public Activity activity { get; set; }
-        public Application application { get; set; }
-        public string application_id { get; set; }
-        public Reference message_reference { get; set; }
-        public int? flags { get; set; }
-        public Message referenced_message { get; set; }
+        
+        [JsonPropertyName("application")]
+        public Application Application { get; set; }
+        
+        [JsonPropertyName("application_id")]
+        public string ApplicationID { get; set; }
+        
+        [JsonPropertyName("message_reference")]
+        public Reference MessageReference { get; set; }
+        
+        [JsonPropertyName("flags")]
+        public int? Flags { get; set; }
+        
+        [JsonPropertyName("references_message")]
+        public Message ReferencedMessage { get; set; }
+        
         // interaction
-        public Channel thread { get; set; }
-        // componenets
-        public List<Sticker.Item> sticker_items { get; set; }
+        [JsonPropertyName("thread")]
+        public Channel Thread { get; set; }
+        
+        // components
+        [JsonPropertyName("sticker_items")]
+        public List<Sticker.Item> StickerItems { get; set; }
         // [Deprecated] stickers
-
-
-        public bool? blocked { get; set; }
+        
+        [JsonPropertyName("blocked")]
+        public bool? Blocked { get; set; }
+        
+        [JsonPropertyName("content_parsed")]
         public List<ContentParsed> content_parsed { get; set; }
-        public string author_color { get; set; }
-
+        
+        [JsonPropertyName("author_color")]
+        public string AuthorColor { get; set; }
+        
         public class ContentParsed {
-            public dynamic content { get; set; }
-            public string type { get; set; }
+            [JsonPropertyName("content")]
+            public dynamic Content { get; set; }
+            
+            [JsonPropertyName("type")]
+            public string Type { get; set; }
         }
-
+        
         public class Reaction {
-            public int? count { get; set; }
-            public bool? me { get; set; }
-            public Emoji emoji { get; set; }
+            [JsonPropertyName("count")]
+            public int? Count { get; set; }
+            
+            [JsonPropertyName("me")]
+            public bool? Me { get; set; }
+            
+            [JsonPropertyName("emoji")]
+            public Emoji Emoji { get; set; }
         }
-
+        
         public class Attachment {
-            public string id { get; set; }
-            public string filename { get; set; }
-            public string content_type { get; set; }
-            public int? size { get; set; }
-            public string url { get; set; }
-            public string proxy_url { get; set; }
-            public int? height { get; set; }
-            public int? width { get; set; }
+            [JsonPropertyName("id")]
+            public string ID { get; set; }
+            
+            [JsonPropertyName("filename")]
+            public string Filename { get; set; }
+            
+            [JsonPropertyName("content_type")]
+            public string ContentType { get; set; }
+            
+            [JsonPropertyName("size")]
+            public int? Size { get; set; }
+            
+            [JsonPropertyName("url")]
+            public string URL { get; set; }
+            
+            [JsonPropertyName("proxy_url")]
+            public string ProxyURL { get; set; }
+            
+            [JsonPropertyName("height")]
+            public int? Height { get; set; }
+            
+            [JsonPropertyName("width")]
+            public int? Width { get; set; }
         }
 
         public class Activity {
-            public int? type { get; set; }
-            public string party_id { get; set; }
-
-            public class Type {
+            [JsonPropertyName("type")]
+            public int? Type { get; set; }
+            
+            [JsonPropertyName("party_id")]
+            public string PartyID { get; set; }
+            
+            public class Types {
                 public static readonly int
                     JOIN = 1,
                     SPECTATE = 2,
@@ -74,12 +159,19 @@ namespace Dec.DiscordIPC.Entities {
                     JOIN_REQUEST = 5;
             }
         }
-
+        
         public class Reference {
-            public string message_id { get; set; }
-            public string channel_id { get; set; }
-            public string guild_id { get; set; }
-            public bool? fail_if_not_exists { get; set; }
+            [JsonPropertyName("message_id")]
+            public string MessageID { get; set; }
+            
+            [JsonPropertyName("channel_id")]
+            public string ChannelID { get; set; }
+            
+            [JsonPropertyName("guild_id")]
+            public string GuildID { get; set; }
+            
+            [JsonPropertyName("fail_if_not_exists")]
+            public bool? FailIfNotExists { get; set; }
         }
     }
 }
