@@ -12,8 +12,8 @@ namespace Dec.DiscordIPC.Core {
         private NamedPipeClientStream Pipe;
         internal MessageReadLoop MessageReadLoop;
         protected readonly string ClientId;
-        private readonly CancellationTokenSource SourceToken = new CancellationTokenSource();
-        protected CancellationToken CancellationToken => this.SourceToken.Token;
+        /*private readonly CancellationTokenSource SourceToken = new CancellationTokenSource();
+        protected CancellationToken CancellationToken => this.SourceToken.Token;*/
         private string NamedPipe {
             get {
                 const string NAME = "discord-ipc-0";
@@ -26,11 +26,12 @@ namespace Dec.DiscordIPC.Core {
             Util.Verbose = verbose;
         }
         
-        public async Task InitAsync() {
-            Util.Log("CONNECT: Pipe connecting");
+        public async Task InitAsync(CancellationToken cancellationToken = default) {
             this.Pipe = new NamedPipeClientStream(".", this.NamedPipe, PipeDirection.InOut, PipeOptions.Asynchronous);
-            await this.Pipe.ConnectAsync(this.CancellationToken);
-            Util.Log("CONNECT: Pipe connected");
+            
+            Console.WriteLine("CONNECT: Pipe connecting");
+            await this.Pipe.ConnectAsync(cancellationToken);
+            Console.WriteLine("CONNECT: Pipe connected");
             
             this.MessageReadLoop = new MessageReadLoop(this.Pipe, this);
             this.MessageReadLoop.Start();
@@ -43,17 +44,17 @@ namespace Dec.DiscordIPC.Core {
                 client_id = this.ClientId,
                 v = "1",
                 nonce = Guid.NewGuid().ToString()
-            })));
+            })), cancellationToken);
             
             await Task.Run(() => {
                 readyWaitHandle.WaitOne();
                 this.OnReady -= ReadyListener;
-            }, this.CancellationToken);
+            }, cancellationToken);
         }
         
-        public async Task<JsonElement> SendCommandAsync(CommandPayload payload) {
-            await this.SendMessageAsync(new IPCMessage(OpCode.FRAME, Json.SerializeToBytes<dynamic>(payload)));
-            return await this.MessageReadLoop.WaitForResponse(payload.Nonce, this.CancellationToken);
+        public async Task<JsonElement> SendCommandAsync(CommandPayload payload, CancellationToken cancellationToken = default) {
+            await this.SendMessageAsync(new IPCMessage(OpCode.FRAME, Json.SerializeToBytes<dynamic>(payload)), cancellationToken);
+            return await this.MessageReadLoop.WaitForResponse(payload.Nonce, cancellationToken);
         }
         
         #region Events
@@ -117,14 +118,11 @@ namespace Dec.DiscordIPC.Core {
         
         #endregion
         
-        public void Dispose() {
-            this.SourceToken.Dispose();
-            this.Pipe.Dispose();
-        }
-
+        public void Dispose() => this.Pipe.Dispose();
+        
         #region Private methods
         
-        private async Task SendMessageAsync(IPCMessage message) {
+        private async Task SendMessageAsync(IPCMessage message, CancellationToken cancellationToken = default) {
             byte[] bOpCode = BitConverter.GetBytes((int) message.OpCode);
             byte[] bLen = BitConverter.GetBytes(message.Length);
             if (!BitConverter.IsLittleEndian) {
@@ -137,7 +135,7 @@ namespace Dec.DiscordIPC.Core {
             Array.Copy(bLen, 0, buffer, 4, 4);
             Array.Copy(message.Data, 0, buffer, 8, message.Length);
             Util.Log("TRANSMIT: {0}", message.Json);
-            await this.Pipe.WriteAsync(buffer, 0, buffer.Length, this.CancellationToken);
+            await this.Pipe.WriteAsync(buffer, 0, buffer.Length, cancellationToken);
         }
         
         #endregion

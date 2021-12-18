@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Dec.DiscordIPC.Commands.Interfaces;
 using Dec.DiscordIPC.Commands.Payloads;
@@ -16,24 +17,24 @@ namespace Dec.DiscordIPC {
         #region Commands
         
         /// <summary>Send a command payload that does not have a return type</summary>
-        public async Task SendCommandAsync(IPayloadResponse args) {
+        public async Task SendCommandAsync(IPayloadResponse args, CancellationToken cancellationToken = default) {
             Type type = args.GetType();
             DiscordRPCAttribute attribute = type.GetCustomAttribute<DiscordRPCAttribute>() ?? throw new ArgumentException("Payloads must have the DiscordRPC Attribute", nameof(args));
-            await this.SendCommandAsync(attribute.Command, args);
+            await this.SendCommandAsync(attribute.Command, args, cancellationToken);
         }
         
         /// <summary>Emit a command that has no return type</summary>
-        private Task SendCommandAsync(string cmd, ICommandArgs args) => this.SendCommandAsync<object>(cmd, args);
+        private Task SendCommandAsync(string cmd, ICommandArgs args, CancellationToken cancellationToken = default) => this.SendCommandAsync<object>(cmd, args, cancellationToken);
         
         /// <summary>Send a command payload that has a return type</summary>
-        public async Task<T> SendCommandAsync<T>(IPayloadResponse<T> args) {
+        public async Task<T> SendCommandAsync<T>(IPayloadResponse<T> args, CancellationToken cancellationToken = default) {
             Type type = args.GetType();
             DiscordRPCAttribute attribute = type.GetCustomAttribute<DiscordRPCAttribute>() ?? throw new ArgumentException("Payloads must have the DiscordRPC Attribute", nameof(args));
-            return await this.SendCommandAsync<T>(attribute.Command, args);
+            return await this.SendCommandAsync<T>(attribute.Command, args, cancellationToken);
         }
         
         /// <summary>Emit a command that has a return type</summary>
-        private async Task<T> SendCommandAsync<T>(string cmd, ICommandArgs args) {
+        private async Task<T> SendCommandAsync<T>(string cmd, ICommandArgs args, CancellationToken cancellationToken = default) {
             string nonce = Guid.NewGuid().ToString();
             CommandPayload payload;
             if (args is null || args is IDummyCommandArgs)
@@ -48,7 +49,7 @@ namespace Dec.DiscordIPC {
                     Args = args
                 };
             
-            JsonElement response = await this.SendCommandAsync(payload);
+            JsonElement response = await this.SendCommandAsync(payload, cancellationToken);
             return typeof(T) == typeof(object) ? default : response.GetProperty("data").ToObject<T>();
         }
         
@@ -56,16 +57,16 @@ namespace Dec.DiscordIPC {
         
         #region Event subscription
         
-        public async Task SubscribeAllAsync(IEnumerable<ICommandArgs> list) {
+        public async Task SubscribeAllAsync(IEnumerable<ICommandArgs> list, CancellationToken cancellationToken = default) {
             foreach (ICommandArgs args in list)
-                await this.SubscribeAsync(args);
+                await this.SubscribeAsync(args, cancellationToken);
         }
-        public Task SubscribeAsync(ICommandArgs args) {
+        public Task SubscribeAsync(ICommandArgs args, CancellationToken cancellationToken = default) {
             Type type = args.GetType();
             DiscordRPCAttribute attribute = type.GetCustomAttribute<DiscordRPCAttribute>() ?? throw new ArgumentException("Payloads must have the DiscordRPC Attribute", nameof(args));
-            return this.SubscribeAsync(attribute.Command, args);
+            return this.SubscribeAsync(attribute.Command, args, cancellationToken);
         }
-        private async Task SubscribeAsync(string evnt, ICommandArgs args) {
+        private async Task SubscribeAsync(string evnt, ICommandArgs args, CancellationToken cancellationToken = default) {
             string nonce = Guid.NewGuid().ToString();
             EventPayload payload;
             if (args is null || args is IDummyCommandArgs)
@@ -82,23 +83,23 @@ namespace Dec.DiscordIPC {
                     Args = args
                 };
             
-            await this.SendCommandAsync(payload);
+            await this.SendCommandAsync(payload, cancellationToken);
         }
         
         #endregion
         
         #region Event un-subscription
         
-        public async Task UnsubscribeAllAsync(IEnumerable<ICommandArgs> list) {
+        public async Task UnsubscribeAllAsync(IEnumerable<ICommandArgs> list, CancellationToken cancellationToken = default) {
             foreach (ICommandArgs args in list)
-                await this.UnsubscribeAsync(args);
+                await this.UnsubscribeAsync(args, cancellationToken);
         }
-        public Task UnsubscribeAsync(ICommandArgs args) {
+        public Task UnsubscribeAsync(ICommandArgs args, CancellationToken cancellationToken = default) {
             Type type = args.GetType();
             DiscordRPCAttribute attribute = type.GetCustomAttribute<DiscordRPCAttribute>() ?? throw new ArgumentException("Payloads must have the DiscordRPC Attribute", nameof(args));
-            return this.UnsubscribeAsync(attribute.Command, args);
+            return this.UnsubscribeAsync(attribute.Command, args, cancellationToken);
         }
-        private async Task UnsubscribeAsync(string evnt, ICommandArgs args) {
+        private async Task UnsubscribeAsync(string evnt, ICommandArgs args, CancellationToken cancellationToken = default) {
             string nonce = Guid.NewGuid().ToString();
             EventPayload payload;
             if (args is null || args is IDummyCommandArgs)
@@ -115,7 +116,7 @@ namespace Dec.DiscordIPC {
                     Args = args
                 };
             
-            await this.SendCommandAsync(payload);
+            await this.SendCommandAsync(payload, cancellationToken);
         }
         
         #endregion
