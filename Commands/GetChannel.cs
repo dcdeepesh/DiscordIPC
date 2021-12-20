@@ -15,7 +15,7 @@ namespace Dec.DiscordIPC.Commands {
             public int? type { get; set; }
             public string topic { get; set; }
             public int? bitrate { get; set; }
-            public int? user_limite { get; set; }
+            public int? user_limit { get; set; }
             public int? position { get; set; }
             public List<VoiceState> voice_states { get; set; }
             public List<Message> messages { get; set; }

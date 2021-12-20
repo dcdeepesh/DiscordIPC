@@ -2,13 +2,8 @@
 
 namespace Dec.DiscordIPC.Events {
     public class MessageUpdate {
-        public class Args {
-            public string channel_id { get; set; }
-        }
+        public class Args : MessageCreate.Args { }
 
-        public class Data {
-            public string channel_id { get; set; }
-            public Message message { get; set; }
-        }
+        public class Data : MessageCreate.Data { }
     }
 }

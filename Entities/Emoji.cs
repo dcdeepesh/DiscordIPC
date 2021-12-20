@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 
-
-// Done
 namespace Dec.DiscordIPC.Entities {
     public class Emoji {
         public string id { get; set; }

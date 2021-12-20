@@ -7,6 +7,6 @@ namespace Dec.DiscordIPC.Commands {
             public int? timeout { get; set; }
         }
 
-        public class Data : Channel { }
+        public class Data : GetChannel.Data { }
     }
 }

@@ -5,6 +5,6 @@ namespace Dec.DiscordIPC.Commands {
         // No arguments; dummy
         public class Args { }
 
-        public class Data : Channel { }
+        public class Data : GetChannel.Data { }
     }
 }

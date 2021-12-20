@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 
-// Done
 namespace Dec.DiscordIPC.Entities {
     public class Embed {
         public string title { get; set; }

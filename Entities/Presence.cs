@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 
-// Done
 namespace Dec.DiscordIPC.Entities {
     public class Presence {
         public User user { get; set; }
@@ -31,6 +30,29 @@ namespace Dec.DiscordIPC.Entities {
             public bool? instance { get; set; }
             public int? flags { get; set; }
             public List<Button> buttons { get; set; }
+            
+            public class Type {
+                public static readonly int
+                    Game = 0,
+                    Streaming = 1,
+                    Listening = 2,
+                    Watching = 3,
+                    Custom = 4,
+                    Competing = 5;
+            }
+
+            public class Flag {
+                public static readonly int
+                    INSTANCE = 1 << 0,
+                    JOIN = 1 << 1,
+                    SPECTATE = 1 << 2,
+                    JOIN_REQUEST = 1 << 3,
+                    SYNC = 1 << 4,
+                    PLAY = 1 << 5,
+                    PARTY_PRIVACY_FRIENDS = 1 << 6,
+                    PARTY_PRIVACY_VOICE_CHANNEL = 1 << 7,
+                    EMBEDDED = 1 << 8;
+            }
 
             public class Timestamps {
                 public int? start { get; set; }

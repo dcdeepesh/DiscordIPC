@@ -6,9 +6,12 @@ namespace Dec.DiscordIPC.Entities {
         public int? type { get; set; }
         public string guild_id { get; set; }
         public int? position { get; set; }
+        // permission_overwrites
         public string name { get; set; }
-
         public string topic { get; set; }
+        public bool? nsfw { get; set; }
+        public string last_message_id { get; set; }
+
         public int? bitrate { get; set; }
         public int? user_limit { get; set; }
 

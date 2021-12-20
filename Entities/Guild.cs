@@ -50,7 +50,8 @@ namespace Dec.DiscordIPC.Entities {
         public int? approximate_presence_count { get; set; }
         public WelcomeScreen welcome_screen { get; set; }
         public int? nsfw_level { get; set; }
-        public List<StageInstance> state_instances { get; set; }
+        public List<StageInstance> stage_instances { get; set; }
+        public List<Sticker> stickers { get; set; }
 
         public class WelcomeScreen {
             public string description { get; set; }

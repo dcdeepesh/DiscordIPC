@@ -6,7 +6,7 @@ namespace Dec.DiscordIPC.Events {
         public class Args { }
 
         public class Data {
-            public string channe_id { get; set; }
+            public string channel_id { get; set; }
             public Message message { get; set; }
             public string icon_url { get; set; }
             public string title { get; set; }

@@ -6,6 +6,8 @@ namespace Dec.DiscordIPC.Entities {
         public string name { get; set; }
         public int? color { get; set; }
         public bool? hoist { get; set; }
+        public string icon { get; set; }
+        public string unicode_emoji { get; set; }
         public int? position { get; set; }
         public string permissions { get; set; }
         public bool? managed { get; set; }
