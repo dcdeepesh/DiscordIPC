@@ -1,6 +1,4 @@
-﻿using Dec.DiscordIPC.Entities;
-
-namespace Dec.DiscordIPC.Commands {
+﻿namespace Dec.DiscordIPC.Commands {
     public class SelectTextChannel {
         public class Args {
             public string channel_id { get; set; }

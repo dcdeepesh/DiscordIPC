@@ -30,7 +30,7 @@ namespace Dec.DiscordIPC.Entities {
             public bool? instance { get; set; }
             public int? flags { get; set; }
             public List<Button> buttons { get; set; }
-            
+
             public class Type {
                 public static readonly int
                     Game = 0,

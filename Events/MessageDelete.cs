@@ -1,6 +1,4 @@
-﻿using Dec.DiscordIPC.Entities;
-
-namespace Dec.DiscordIPC.Events {
+﻿namespace Dec.DiscordIPC.Events {
     public class MessageDelete {
         public class Args : MessageCreate.Args { }
 
