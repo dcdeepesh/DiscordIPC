@@ -344,3 +344,4 @@ healthchecksdb
 ###
 
 deploy.bat
+/Properties/launchSettings.json

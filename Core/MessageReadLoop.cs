@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Pipes;
 using System.Text.Json;
 using System.Threading;
@@ -53,36 +54,39 @@ namespace Dec.DiscordIPC.Core {
         // Private methods
 
         private void Loop() {
-            try {
-                byte[] bOpCode = new byte[4];
-                byte[] bLen = new byte[4];
-                IPCMessage message;
+            byte[] bOpCode = new byte[4];
+            byte[] bLen = new byte[4];
+            IPCMessage message;
 
-                while (true) {
-                    pipe.Read(bOpCode, 0, 4);
+            while (true) {
+                try {
+                    if (pipe.Read(bOpCode, 0, 4) == 0)
+                        break;
                     OpCode opCode = (OpCode) BitConverter.ToInt32(bOpCode, 0);
-                    pipe.Read(bLen, 0, 4);
+                    if (pipe.Read(bLen, 0, 4) == 0)
+                        break;
                     int len = BitConverter.ToInt32(bLen, 0);
                     byte[] data = new byte[len];
-                    pipe.Read(data, 0, len);
+                    if (pipe.Read(data, 0, len) == 0)
+                        break;
                     message = new IPCMessage(opCode, data);
-
-                    Task.Run(() => {
-                        Util.Log("\nRECEIVIED:\n{0}", message.Json);
-                        var jsonRoot = JsonDocument.Parse(message.Json).RootElement;
-                        string cmd = jsonRoot.GetProperty("cmd").GetString();
-                        string evt = "";
-                        if (jsonRoot.TryGetProperty("evt", out JsonElement elem))
-                            evt = elem.GetString();
-
-                        if (cmd == "DISPATCH")
-                            ipcInstance.FireEvent(evt, message);
-                        else
-                            SignalNewResponse(message);
-                    });
+                } catch (Exception e) when (e is ObjectDisposedException || e is InvalidOperationException) {
+                    break;
                 }
-            } catch (ObjectDisposedException) {
-                // can be thrown at exit time, no need to handle
+
+                Task.Run(() => {
+                    Util.Log("\nRECEIVIED:\n{0}", message.Json);
+                    var jsonRoot = JsonDocument.Parse(message.Json).RootElement;
+                    string cmd = jsonRoot.GetProperty("cmd").GetString();
+                    string evt = "";
+                    if (jsonRoot.TryGetProperty("evt", out JsonElement elem))
+                        evt = elem.GetString();
+
+                    if (cmd == "DISPATCH")
+                        ipcInstance.FireEvent(evt, message);
+                    else
+                        SignalNewResponse(message);
+                });
             }
         }
 
