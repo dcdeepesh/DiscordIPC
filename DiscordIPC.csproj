@@ -4,21 +4,23 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Dec.DiscordIPC</RootNamespace>
 	  <AssemblyTitle>DiscordIPC</AssemblyTitle>
-	  <AssemblyVersion>1.0.1.0</AssemblyVersion>
+	  <AssemblyVersion>1.1.0.0</AssemblyVersion>
 	  <Product>DiscordIPC</Product>
-	  <Copyright>Copyright ©  2021 Deckilio</Copyright>
+	  <Copyright>Copyright ©  2021 Deepesh</Copyright>
 	  <RegisterForComInterop>false</RegisterForComInterop>
 	  
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	  <PackageId>Dec.DiscordIPC</PackageId>
-	  <Version>1.0.1</Version>
-	  <Authors>Deckilio</Authors>
+	  <Version>1.1</Version>
+	  <Authors>Deepesh</Authors>
 	  <Owners>Deckilio</Owners>
 	  <Company>Oyster</Company>
 	  <Description>A wrapper for Discord's IPC based RPC</Description>
 	  <PackageProjectUrl>https://github.com/dcdeepesh/DiscordIPC</PackageProjectUrl>
 	  <RepositoryUrl>https://github.com/dcdeepesh/DiscordIPC</RepositoryUrl>
-	  <PackageReleaseNotes>First release of DiscordIPC</PackageReleaseNotes>
+	  <PackageReleaseNotes>First update</PackageReleaseNotes>
+	  <PackageTags>discord</PackageTags>
+	  <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 	
   <ItemGroup>
