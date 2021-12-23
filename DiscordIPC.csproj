@@ -12,8 +12,8 @@
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	  <PackageId>Dec.DiscordIPC</PackageId>
 	  <Version>1.1</Version>
-	  <Authors>Deepesh</Authors>
-	  <Owners>Deckilio</Owners>
+	  <Authors>Deepesh Choudhary</Authors>
+	  <Owners>Deepesh Choudhary</Owners>
 	  <Company>Oyster</Company>
 	  <Description>A wrapper for Discord's IPC based RPC</Description>
 	  <PackageProjectUrl>https://github.com/dcdeepesh/DiscordIPC</PackageProjectUrl>
@@ -21,6 +21,12 @@
 	  <PackageReleaseNotes>First update</PackageReleaseNotes>
 	  <PackageTags>discord</PackageTags>
 	  <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DocumentationFile>C:\Users\dcdee\CC\Programs\DiscordIPC\DiscordIPC.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
 	
   <ItemGroup>

@@ -17,6 +17,10 @@ namespace Dec.DiscordIPC.Core {
             Util.Verbose = verbose;
         }
 
+        /// <summary>
+        /// Initializes the IPC client. Use this before calling any other methods.
+        /// </summary>
+        /// <returns></returns>
         public async Task InitAsync() {
             pipe = new NamedPipeClientStream(".", "discord-ipc-0",
                 PipeDirection.InOut, PipeOptions.Asynchronous);
@@ -155,6 +159,9 @@ namespace Dec.DiscordIPC.Core {
 
         #endregion
 
+        /// <summary>
+        /// Disposes the client. Use when the client is no longer in use.
+        /// </summary>
         public void Dispose() => pipe.Dispose();
 
         #region Private methods

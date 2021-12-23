@@ -7,8 +7,20 @@ using Dec.DiscordIPC.Core;
 using Dec.DiscordIPC.Events;
 
 namespace Dec.DiscordIPC {
+    /// <summary>
+    /// The main access point for user programs to use DiscordIPC.
+    /// </summary>
     public class DiscordIPC : LowLevelDiscordIPC {
-
+        /// <summary>
+        /// Creates a client instance.
+        /// </summary>
+        /// <remarks>
+        /// Does not actually initialize the client.
+        /// Use <see cref="LowLevelDiscordIPC.InitAsync"/> after this to initialize the client.
+        /// </remarks>
+        /// <param name="clientId">Client ID of your app.</param>
+        /// <param name="verbose">If true, DiscordIPC logs every JSON
+        /// sent and received to the console.</param>
         public DiscordIPC(string clientId, bool verbose = false) : base(clientId, verbose) { }
 
         #region Commands
