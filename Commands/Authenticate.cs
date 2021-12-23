@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Dec.DiscordIPC.Commands.Interfaces;
 using Dec.DiscordIPC.Commands.Payloads;
 using Dec.DiscordIPC.Development;
 using Dec.DiscordIPC.Entities;

@@ -1,19 +1,20 @@
 ﻿using System;
+using System.IO;
 using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Dec.DiscordIPC.Commands;
+using Dec.DiscordIPC.Commands.Interfaces;
 using Dec.DiscordIPC.Commands.Payloads;
 using Dec.DiscordIPC.Events;
 
 namespace Dec.DiscordIPC.Core {
     public class LowLevelDiscordIPC : IDisposable {
-        private NamedPipeClientStream Pipe;
-        internal MessageReadLoop MessageReadLoop;
+        private readonly LeakyPipeConnection Pipe;
+        private readonly IPCHello<LowLevelDiscordIPC> UserHello;
         protected readonly string ClientId;
-        /*private readonly CancellationTokenSource SourceToken = new CancellationTokenSource();
-        protected CancellationToken CancellationToken => this.SourceToken.Token;*/
         private string NamedPipe {
             get {
                 const string NAME = "discord-ipc-0";
@@ -21,41 +22,38 @@ namespace Dec.DiscordIPC.Core {
             }
         }
         
-        public LowLevelDiscordIPC(string clientId, bool verbose) {
+        public LowLevelDiscordIPC(
+            string clientId,
+            IPCHello<LowLevelDiscordIPC> beforeAuthorize,
+            IPCHello<LowLevelDiscordIPC> afterAuthorize,
+            bool verbose = false
+        ) {
             this.ClientId = clientId;
+            this.UserHello = beforeAuthorize;
             Util.Verbose = verbose;
+            this.Pipe = new LeakyPipeConnection(this.NamedPipe, this.HelloEvent, () => afterAuthorize(this), this.FireEvent);
+        }
+        public LowLevelDiscordIPC(string clientId, bool verbose = false): this(clientId, LowLevelDiscordIPC.EmptyHello, LowLevelDiscordIPC.EmptyHello, verbose) {}
+        
+        /// <summary>
+        /// Start the connection loop
+        /// </summary>
+        public void Init() => this.Pipe.Start();
+        
+        public async Task<JsonElement> SendCommandAsync(CommandPayload payload, bool authorized = true, CancellationToken cancellationToken = default) {
+            await this.SendMessageAsync(new IPCMessage(OpCode.FRAME, Json.SerializeToBytes<dynamic>(payload)), authorized, cancellationToken);
+            return await this.Pipe.WaitForResponse(payload.Nonce, cancellationToken);
         }
         
-        public async Task InitAsync(CancellationToken cancellationToken = default) {
-            this.Pipe = new NamedPipeClientStream(".", this.NamedPipe, PipeDirection.InOut, PipeOptions.Asynchronous);
-            
-            Console.WriteLine("CONNECT: Pipe connecting");
-            await this.Pipe.ConnectAsync(cancellationToken);
-            Console.WriteLine("CONNECT: Pipe connected");
-            
-            this.MessageReadLoop = new MessageReadLoop(this.Pipe, this);
-            this.MessageReadLoop.Start();
-            
-            EventWaitHandle readyWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
-            void ReadyListener(object sender, Ready.Data data) => readyWaitHandle.Set();
-            this.OnReady += ReadyListener;
-            
-            await this.SendMessageAsync(IPCMessage.Handshake(Json.SerializeToBytes(new {
-                client_id = this.ClientId,
-                v = "1",
-                nonce = Guid.NewGuid().ToString()
-            })), cancellationToken);
-            
-            await Task.Run(() => {
-                readyWaitHandle.WaitOne();
-                this.OnReady -= ReadyListener;
-            }, cancellationToken);
-        }
+        /// <summary>
+        /// Wait for the Stream to Connect
+        /// </summary>
+        public Task AwaitConnectedAsync(CancellationToken cancellationToken = default) => this.Pipe.AwaitConnectedAsync(cancellationToken);
         
-        public async Task<JsonElement> SendCommandAsync(CommandPayload payload, CancellationToken cancellationToken = default) {
-            await this.SendMessageAsync(new IPCMessage(OpCode.FRAME, Json.SerializeToBytes<dynamic>(payload)), cancellationToken);
-            return await this.MessageReadLoop.WaitForResponse(payload.Nonce, cancellationToken);
-        }
+        /// <summary>
+        /// Wait for the HELLO Event (After connecting) to have been sent
+        /// </summary>
+        public Task AwaitHelloAsync(CancellationToken cancellationToken = default) => this.Pipe.AwaitHelloAsync(cancellationToken);
         
         #region Events
         
@@ -80,10 +78,38 @@ namespace Dec.DiscordIPC.Core {
         public event EventHandler<ActivitySpectate.Data> OnActivitySpectate;
         public event EventHandler<ActivityJoinRequest.Data> OnActivityJoinRequest;
         
-        // More events on their way
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="cancellationToken"></param>
+        private async Task HelloEvent(NamedPipeClientStream stream, CancellationToken cancellationToken) {
+            EventWaitHandle readyWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+            void ReadyListener(object sender, Ready.Data data) => readyWaitHandle.Set();
+            this.OnReady += ReadyListener;
+            
+            await this.SendMessageAsync(stream, IPCMessage.Handshake(Json.SerializeToBytes(new {
+                client_id = this.ClientId,
+                v = "1",
+                nonce = Guid.NewGuid()
+                    .ToString()
+            })), cancellationToken);
+            
+            await Task.Run(() => {
+                readyWaitHandle.WaitOne();
+                this.OnReady -= ReadyListener;
+            }, cancellationToken);
+            
+            await this.UserHello(this, cancellationToken);
+        }
         
-        internal void FireEvent(string evt, IPCMessage message) {
-            JsonElement obj = Json.Deserialize<dynamic>(message.Json).GetProperty("data");
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="evt"></param>
+        /// <param name="message"></param>
+        private void FireEvent(string evt, IPCMessage message) {
+            JsonElement obj = Json.Deserialize<dynamic>(message.RawData).GetProperty("data");
             object _ = evt switch {
                 "READY" => this.InvokeEvent(this.OnReady, obj),
                 "GUILD_STATUS" => this.InvokeEvent(this.OnGuildStatus, obj),
@@ -122,7 +148,7 @@ namespace Dec.DiscordIPC.Core {
         
         #region Private methods
         
-        private async Task SendMessageAsync(IPCMessage message, CancellationToken cancellationToken = default) {
+        private async Task SendMessageAsync(IPCMessage message, bool authorized = true, CancellationToken cancellationToken = default) {
             byte[] bOpCode = BitConverter.GetBytes((int) message.OpCode);
             byte[] bLen = BitConverter.GetBytes(message.Length);
             if (!BitConverter.IsLittleEndian) {
@@ -134,10 +160,29 @@ namespace Dec.DiscordIPC.Core {
             Array.Copy(bOpCode, buffer, 4);
             Array.Copy(bLen, 0, buffer, 4, 4);
             Array.Copy(message.Data, 0, buffer, 8, message.Length);
-            Util.Log("TRANSMIT: {0}", message.Json);
-            await this.Pipe.WriteAsync(buffer, 0, buffer.Length, cancellationToken);
+            await this.Pipe.WriteAsync(buffer, 0, buffer.Length, authorized, cancellationToken);
+            Util.Log("TRANSMIT: {0}", message.RawData);
+        }
+        
+        private async Task SendMessageAsync(Stream client, IPCMessage message, CancellationToken cancellationToken = default) {
+            byte[] bOpCode = BitConverter.GetBytes((int) message.OpCode);
+            byte[] bLen = BitConverter.GetBytes(message.Length);
+            if (!BitConverter.IsLittleEndian) {
+                Array.Reverse(bOpCode);
+                Array.Reverse(bLen);
+            }
+            
+            byte[] buffer = new byte[4 + 4 + message.Length];
+            Array.Copy(bOpCode, buffer, 4);
+            Array.Copy(bLen, 0, buffer, 4, 4);
+            Array.Copy(message.Data, 0, buffer, 8, message.Length);
+            Util.Log("TRANSMIT: {0}", message.RawData);
+            await client.WriteAsync(buffer, 0, buffer.Length, cancellationToken);
         }
         
         #endregion
+        
+        internal static Task EmptyHello(LowLevelDiscordIPC ipc, CancellationToken token) => Task.CompletedTask;
+        internal static bool IsAuthorizedPayload(ICommandArgs payload) => !(payload is Authenticate.Args || payload is Authorize.Args);
     }
 }

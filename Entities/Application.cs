@@ -28,8 +28,8 @@ namespace Dec.DiscordIPC.Entities {
         [JsonPropertyName("terms_of_service_url")]
         public string TermsOfServiceURL { get; set; }
         
-        [JsonPropertyName("private_policy_url")]
-        public string PrivatePolicyURL { get; set; }
+        [JsonPropertyName("privacy_policy_url")]
+        public string PrivacyPolicyURL { get; set; }
         
         [JsonPropertyName("owner")]
         public User Owner { get; set; }

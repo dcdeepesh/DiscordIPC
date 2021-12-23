@@ -1,30 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <OutputType>Library</OutputType>
-    <RootNamespace>Dec.DiscordIPC</RootNamespace>
-	  <AssemblyTitle>DiscordIPC</AssemblyTitle>
-	  <AssemblyVersion>1.0.1.0</AssemblyVersion>
-	  <Product>DiscordIPC</Product>
-	  <Copyright>Copyright ©  2021 Deckilio</Copyright>
-	  <RegisterForComInterop>false</RegisterForComInterop>
-	  
-	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	  <PackageId>Dec.DiscordIPC</PackageId>
-	  <Version>1.0.1</Version>
-	  <Authors>Deckilio</Authors>
-	  <Owners>Deckilio</Owners>
-	  <Company>Oyster</Company>
-	  <Description>A wrapper for Discord's IPC based RPC</Description>
-	  <PackageProjectUrl>https://github.com/dcdeepesh/DiscordIPC</PackageProjectUrl>
-	  <RepositoryUrl>https://github.com/dcdeepesh/DiscordIPC</RepositoryUrl>
-	  <PackageReleaseNotes>First release of DiscordIPC</PackageReleaseNotes>
-	  <LangVersion>8</LangVersion>
-  </PropertyGroup>
-	
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-    <PackageReference Include="System.Text.Json" Version="5.0.2" />
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <OutputType>Library</OutputType>
+        <RootNamespace>Dec.DiscordIPC</RootNamespace>
+        <AssemblyTitle>DiscordIPC</AssemblyTitle>
+        <AssemblyVersion>1.0.1.0</AssemblyVersion>
+        <Product>DiscordIPC</Product>
+        <Copyright>Copyright ©  2021 Deckilio</Copyright>
+        <RegisterForComInterop>false</RegisterForComInterop>
+        
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>Dec.DiscordIPC</PackageId>
+        <Version>1.0.1</Version>
+        <Authors>Deckilio</Authors>
+        <Owners>Deckilio</Owners>
+        <Company>Oyster</Company>
+        <Description>A wrapper for Discord's IPC based RPC</Description>
+        <PackageProjectUrl>https://github.com/dcdeepesh/DiscordIPC</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/dcdeepesh/DiscordIPC</RepositoryUrl>
+        <PackageReleaseNotes>First release of DiscordIPC</PackageReleaseNotes>
+        <LangVersion>8</LangVersion>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+        <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+        <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+        <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
+        <PackageReference Include="System.Text.Json" Version="6.0.1" />
+    </ItemGroup>
 </Project>

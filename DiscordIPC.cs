@@ -12,7 +12,13 @@ using Dec.DiscordIPC.Development;
 namespace Dec.DiscordIPC {
     public class DiscordIPC : LowLevelDiscordIPC {
         
-        public DiscordIPC(string clientId, bool verbose = false) : base(clientId, verbose) { }
+        public DiscordIPC(
+            string clientId,
+            IPCHello<DiscordIPC> beforeAuthorize,
+            IPCHello<DiscordIPC> afterAuthorize,
+            bool verbose = false
+        ) : base(clientId, (ipc, can) => beforeAuthorize(ipc as DiscordIPC, can), (ipc, can) => afterAuthorize(ipc as DiscordIPC, can), verbose) {}
+        public DiscordIPC(string clientId, bool verbose = false) : this(clientId, LowLevelDiscordIPC.EmptyHello, LowLevelDiscordIPC.EmptyHello, verbose) { }
         
         #region Commands
         
@@ -49,7 +55,7 @@ namespace Dec.DiscordIPC {
                     Args = args
                 };
             
-            JsonElement response = await this.SendCommandAsync(payload, cancellationToken);
+            JsonElement response = await this.SendCommandAsync(payload, LowLevelDiscordIPC.IsAuthorizedPayload(args), cancellationToken);
             return typeof(T) == typeof(object) ? default : response.GetProperty("data").ToObject<T>();
         }
         
@@ -83,7 +89,7 @@ namespace Dec.DiscordIPC {
                     Args = args
                 };
             
-            await this.SendCommandAsync(payload, cancellationToken);
+            await this.SendCommandAsync(payload, cancellationToken: cancellationToken);
         }
         
         #endregion
@@ -116,9 +122,10 @@ namespace Dec.DiscordIPC {
                     Args = args
                 };
             
-            await this.SendCommandAsync(payload, cancellationToken);
+            await this.SendCommandAsync(payload, cancellationToken: cancellationToken);
         }
         
         #endregion
+        
     }
 }
