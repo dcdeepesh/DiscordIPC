@@ -4,10 +4,17 @@
         <name>DiscordIPC</name>
     </assembly>
     <members>
-        <member name="M:Dec.DiscordIPC.Core.LowLevelDiscordIPC.InitAsync">
+        <member name="M:Dec.DiscordIPC.Core.LowLevelDiscordIPC.InitAsync(System.Int32)">
             <summary>
             Initializes the IPC client. Use this before calling any other methods.
             </summary>
+            <remarks>
+            Attempts to connect to <c>discord-ipc-&lt;pipeNumber&gt;</c> with a 2 second<br/>
+            timeout and throws an IOException if connection is unsuccessful.<br/>
+            No need to specify the pipe number explicitly unless connecting to a<br/>
+            secondary discord client (e.g. Canary).
+            </remarks>
+            <param name="pipeNumber">Pipe number to connect to.</param>
             <returns></returns>
         </member>
         <member name="M:Dec.DiscordIPC.Core.LowLevelDiscordIPC.Dispose">
@@ -26,7 +33,7 @@
             </summary>
             <remarks>
             Does not actually initialize the client.
-            Use <see cref="M:Dec.DiscordIPC.Core.LowLevelDiscordIPC.InitAsync"/> after this to initialize the client.
+            Use <see cref="M:Dec.DiscordIPC.Core.LowLevelDiscordIPC.InitAsync(System.Int32)"/> after this to initialize the client.
             </remarks>
             <param name="clientId">Client ID of your app.</param>
             <param name="verbose">If true, DiscordIPC logs every JSON

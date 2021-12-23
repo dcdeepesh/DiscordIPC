@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.IO.Pipes;
 using System.Text.Json;
 using System.Threading;
@@ -20,11 +21,23 @@ namespace Dec.DiscordIPC.Core {
         /// <summary>
         /// Initializes the IPC client. Use this before calling any other methods.
         /// </summary>
+        /// <remarks>
+        /// Attempts to connect to <c>discord-ipc-&lt;pipeNumber&gt;</c> with a 2 second<br/>
+        /// timeout and throws an IOException if connection is unsuccessful.<br/>
+        /// No need to specify the pipe number explicitly unless connecting to a<br/>
+        /// secondary discord client (e.g. Canary).
+        /// </remarks>
+        /// <param name="pipeNumber">Pipe number to connect to.</param>
         /// <returns></returns>
-        public async Task InitAsync() {
-            pipe = new NamedPipeClientStream(".", "discord-ipc-0",
-                PipeDirection.InOut, PipeOptions.Asynchronous);
-            await pipe.ConnectAsync();
+        public async Task InitAsync(int pipeNumber = 0) {
+            string pipeName = "discord-ipc-" + pipeNumber.ToString();
+            try {
+                pipe = new NamedPipeClientStream(".", pipeName,
+                    PipeDirection.InOut, PipeOptions.Asynchronous);
+                await pipe.ConnectAsync(2000);
+            } catch (TimeoutException) {
+                throw new IOException("Could not connect to pipe " + pipeName);
+            }
 
             messageReadLoop = new MessageReadLoop(pipe, this);
             messageReadLoop.Start();
