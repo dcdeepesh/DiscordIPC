@@ -4,7 +4,6 @@ This is a complete guide on how to use DiscordIPC. If you're lazy or just want a
 # Table of contents
   - [Init/Dispose](#initdispose)
     - [Init](#init)
-    - [Dispose](#dispose)
   - [Commands](#commands)
     - [Sending commands](#sending-commands)
     - [Which commands can be sent](#which-commands-can-be-sent)
@@ -19,29 +18,36 @@ This is a complete guide on how to use DiscordIPC. If you're lazy or just want a
 # Init/Dispose
 
 ## Init
-The first you do is instantiate `DiscordIPC`, providing it your client ID.
+The first thing you want to do is instantiate `DiscordIPC`, providing it your client ID.
 ```c#
 DiscordIPC discordIPC = new DiscordIPC("<YOUR-CLIENT-ID>");
 ```
 
-The constructor also takes another (boolean) argument `verbose`, which defaults to `false`. Settings it to true will tell DiscordIPC to log every json sent and received.
+The constructor takes a total of 4 properties,
 
-This call just stores these two values internally, no substantial task is done. It's all done in the following call:
+- `string: clientID` This is the Client ID that is sent in the Handshake Event
+- `IPCHello<DiscordIPC>: beforeAuthorize` Defaults to `Task.CompletedTask`. An async method that is called *before* authenticating. If you want to authenticate your connects, do so here. This `delegate` is called every time the pipe reconnects.
+- `IPCHello<DiscordIPC>: afterAuthorize` Defaults to `Task.CompletedTask`. An async method that is called *after* authenticating. If you want to subscribe to events after connecting, do so here. This `delegate` is called every time the pipe reconnects.
+- `bool: verbose` Defaults to `false`. Settings it to true will tell DiscordIPC to log every json sent and received.
+
+`IPCHello` is a `delegate` that returns a `Task` and provides the constructed `DiscordIPC` and a `CancellationToken`
+
 ```c#
-await discordIPC.InitAsync();
+delegate Task IPCHello<in T>(T arg, CancellationToken cancellationToken = default)
 ```
 
-This does everything like connecting to the pipe etc. Now you're ready to do the real stuff.
+No tasks are performed after constructing the `DiscordIPC` until `Start` is called, which will maintain the connection to the pipe until `Dispose` is called.
+```c#
+discordIPC.Start();
+```
 
-> As of right now, DiscordIPC connects only to `discord-ipc-0` if it can, and doesn't check/connect to other pipes. So you can't connect to another pipe if you have two discord clients running (e.g. Canary).
-
-> If you want to receive the payload sent in the `READY` event, register a handler to the `OnReady` event before calling `InitAsync`. More [here](#what-events-can-i-subscribe-to).
-
-## Dispose
-Okay before you see how to actually use it, remember when you're done using DiscordIPC, dispose the instance.
 ```c#
 discordIPC.Dispose();
 ```
+
+> As of right now, DiscordIPC connects only to `discord-ipc-0` if it can, and doesn't check/connect to other pipes. So you can't connect to another pipe if you have two discord clients running (e.g. Canary).
+
+> If you want to receive the payload sent in the `READY` event, register a handler to the `OnReady` event before calling `Init`. More [here](#what-events-can-i-subscribe-to).
 
 # Commands
 All commands are defined in the `Dec.DiscordIPC.Commands` namespace. Each command has a class, a subclass `Args` which defines the arguments to provide when sending that command, and a subclass `Data` which defines the data returned in response to that command.
@@ -129,7 +135,7 @@ discordIPC.OnMessageCreate -= handler;
 All of them! Not just the ones related to rich presence (a.k.a. activity).
 
 Ok all except 2:
-  - `READY`: because it's only fired once upon initialization. To handle this event, register a listener to `OnReady` before calling `InitAsync`.
+  - `READY`: because it's only fired once upon initialization. To handle this event, register a listener to `OnReady` before calling `Init`.
   - `ERROR`: because they're handled automatically internally in the form of `ErrorResponseException`.
 
 If you don't know all the events, their semantics and other things, [here's the documentation](https://discord.com/developers/docs/topics/rpc#commands-and-events-rpc-events).
@@ -148,6 +154,8 @@ Combining all the above information, the general flow is:
   5. Sub/unsub to events
   6. Dispose
 
+> Disposing of the IPC Connection closes it, you only want to do this if you're finished receiving events
+
 > You need to authenticate (authorize before authenticating if necessary) before you can use the IPC. More information [here](https://discord.com/developers/docs/topics/rpc#authenticating).
 
 Here's a sample code using DiscordIPC:
@@ -156,53 +164,59 @@ using Dec.DiscordIPC;
 using Dec.DiscordIPC.Commands;
 using Dec.DiscordIPC.Events;
 
-namespace Example {
-    class Program {
-        private static readonly string CLIENT_ID = "<CLIENT-ID>";
-        static async Task Main() {
-            DiscordIPC discordIPC = new DiscordIPC(CLIENT_ID);
-            await discordIPC.InitAsync();
+// Replace CLIENT_ID with your Applications Client ID
+private const string CLIENT_ID = "<CLIENT-ID>";
 
-            // Authorize
-            string accessToken = "";
-            try {
-                await discordIPC.SendCommandAsync(new Authorize.Args() {
-                    scopes = new List<string>() { "rpc" },
-                    client_id = CLIENT_ID
-                });
-            } catch (ErrorResponseException e) {
-                Console.Log("User denied authorization");
-                return;
-            }
-
-            // Authenticate (ignoring the response here)
-            await discordIPC.SendCommandAsync(new Authenticate.Args() {
-                access_token = accessToken
-            });
-
-            // Subscribe to an event
-            var handler = (sender, data) => Console.Log("New message!");
-            var args = new MessageCreate.Args() {
-                channel_id = "<some-text-channel-id>"
-            };
-            discordIPC.OnMessageCreate += handler;
-            await discordIPC.SubscribeAsync(args);
-
-            // Use commands
-            GetChannel.Data response = discordIPC.SendCommandAsync(new GetChannel.Args() {
-                channel_id = "<some-channel-id>"
-            });
-            Console.Log(response.name);
-
-            // ... (do random stuff)
-
-            // Unsubscribe from the event
-            await discordIPC.UnsubscribeAsync(args);
-            discordIPC.OnMessageCreate -= handler;
-
-            // Dispose
-            discordIPC.Dispose();
-        }
+static async Task Main(string[] args) {
+    // Create the IPC Connection with the Client ID
+    using DiscordIPC discordIPC = new DiscordIPC(Program.CLIENT_ID));
+    
+    // Start the IPC reading thread
+    // The thread will automatically reconnect to IPC
+    //   if the connection is lost, or if Discord is
+    //   restarted.
+    discordIPC.Init();
+    
+    Authorize.Data data;
+    
+    // Authorize
+    try {
+        // Send a popup to the Discord Client to authenticate
+        data = await discordIPC.SendCommandAsync(new Authorize.Args() {
+            Scopes = new List<string>() { "rpc" },
+            ClientID = CLIENT_ID,
+            CallbackURL = "http://localhost"
+        });
+    } catch (ErrorResponseException e) {
+        Console.Log("User denied authorization");
+        return;
     }
+    
+    // TODO: ... Leverage 'data' to fetch an OAuth Access Token
+    string accessToken = "<ACCESS-TOKEN>";
+    
+    // Authenticate using accessToken (ignoring the response here)
+    await discordIPC.SendCommandAsync(new Authenticate.Args() {
+        AccessToken = accessToken
+    });
+    
+    // Add an event listener by creating a lamba callback
+    // (Or Reference to a method)
+    discordIPC.OnMessageCreate += (sender, data) => Console.Log("New message!");
+    
+    // Send the event subscribe so we start receiving on our listener
+    await discordIPC.SubscribeAsync(new MessageCreate.Args() {
+        ChannelID = "<some-text-channel-id>"
+    });
+    
+    // Use commands to get information about a channel
+    GetChannel.Data response = await discordIPC.SendCommandAsync(new GetChannel.Args() {
+        ChannelID = "<some-channel-id>"
+    });
+    Console.Log(response.name);
+    
+    // TODO: ... (do other stuff)
+    
+    // Our discordIPC object is discarded here due to the using statement
 }
 ```

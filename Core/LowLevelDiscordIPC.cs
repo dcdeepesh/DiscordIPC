@@ -38,7 +38,7 @@ namespace Dec.DiscordIPC.Core {
         /// <summary>
         /// Start the connection loop
         /// </summary>
-        public void Init() => this.Pipe.Start();
+        public void Start() => this.Pipe.Start();
         
         public async Task<JsonElement> SendCommandAsync(CommandPayload payload, bool authorized = true, CancellationToken cancellationToken = default) {
             await this.SendMessageAsync(new IPCMessage(OpCode.FRAME, Json.SerializeToBytes<dynamic>(payload)), authorized, cancellationToken);

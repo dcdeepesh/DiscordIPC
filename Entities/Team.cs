@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-// Done
 namespace Dec.DiscordIPC.Entities {
     public class Team {
         [JsonPropertyName("icon")]

@@ -14,11 +14,19 @@ namespace Dec.DiscordIPC {
         
         public DiscordIPC(
             string clientId,
+            bool verbose = false
+        ) : this(clientId, LowLevelDiscordIPC.EmptyHello, LowLevelDiscordIPC.EmptyHello, verbose) {}
+        public DiscordIPC(
+            string clientId,
+            IPCHello<DiscordIPC> beforeAuthorize,
+            bool verbose = false
+        ) : base(clientId, (ipc, can) => beforeAuthorize(ipc as DiscordIPC, can), LowLevelDiscordIPC.EmptyHello, verbose) {}
+        public DiscordIPC(
+            string clientId,
             IPCHello<DiscordIPC> beforeAuthorize,
             IPCHello<DiscordIPC> afterAuthorize,
             bool verbose = false
         ) : base(clientId, (ipc, can) => beforeAuthorize(ipc as DiscordIPC, can), (ipc, can) => afterAuthorize(ipc as DiscordIPC, can), verbose) {}
-        public DiscordIPC(string clientId, bool verbose = false) : this(clientId, LowLevelDiscordIPC.EmptyHello, LowLevelDiscordIPC.EmptyHello, verbose) { }
         
         #region Commands
         

@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-
-// Done
 namespace Dec.DiscordIPC.Entities {
     public class Emoji {
         [JsonPropertyName("id")]

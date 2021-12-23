@@ -2,7 +2,6 @@
 using System.Text.Json.Serialization;
 using Dec.DiscordIPC.Entities.Objects;
 
-// Done
 namespace Dec.DiscordIPC.Entities {
     public class Presence {
         [JsonPropertyName("user")]

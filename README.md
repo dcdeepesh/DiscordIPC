@@ -28,67 +28,141 @@ Because Discord's RPC is still under private beta, there are many inconsistencie
 Discord IPC still has a number of bugs in it that can cause issues in runtime. If the client is moved into a channel that it does not have permission to join, calling `GET_SELECTED_VOICE_CHANNEL` will never get a response back from Discord. This will cause any `await`ing methods to hang indefinitely. CancellationTokens have been built into this Fork to safely stop the application if this occurs.
 
 # Usage
-Here is the general usage:
+Here is a generic way of connecting to the IPC socket briefly:
 ```c#
 using Dec.DiscordIPC;
 using Dec.DiscordIPC.Commands;
 using Dec.DiscordIPC.Events;
 
-namespace Example {
-    class Program {
-        // Replace CLIENT_ID with your Applications Client ID
-        private const string CLIENT_ID = "<CLIENT-ID>";
-        
-        static async Task Main(string[] args) {
-            // Create the IPC Connection with the Client ID
-            using DiscordIPC discordIPC = new DiscordIPC(Program.CLIENT_ID));
-            
-            // Connect to IPC
-            await discordIPC.InitAsync();
-            
-            // Initialize the return OAuth information
-            Authorize.Data data;
-            
-            // Authorize
-            try {
-                // Send a popup to the Discord Client to authenticate
-                data = await discordIPC.SendCommandAsync(new Authorize.Args() {
-                    Scopes = new List<string>() { "rpc" },
-                    ClientID = CLIENT_ID,
-                    CallbackURL = "http://localhost"
-                });
-            } catch (ErrorResponseException e) {
-                Console.Log("User denied authorization");
-                return;
-            }
-            
-            // TODO: ... Leverage 'data' to fetch an OAuth Access Token
-            string accessToken = "<ACCESS-TOKEN>";
-            
-            // Authenticate using accessToken (ignoring the response here)
-            await discordIPC.SendCommandAsync(new Authenticate.Args() {
-                AccessToken = accessToken
-            });
-            
-            // Add an event listener by creating a lamba callback
-            // (Or Reference to a method)
-            discordIPC.OnMessageCreate += (sender, data) => Console.Log("New message!");
-            
-            // Send the event subscribe so we start receiving on our listener
-            await discordIPC.SubscribeAsync(new MessageCreate.Args() {
-                ChannelID = "<some-text-channel-id>"
-            });
-            
-            // Use commands to get information about a channel
-            GetChannel.Data response = await discordIPC.SendCommandAsync(new GetChannel.Args() {
-                ChannelID = "<some-channel-id>"
-            });
-            Console.Log(response.name);
-            
-            // TODO: ... (do other stuff)
-            
-            // Our discordIPC object is discarded here due to the using statement
-        }
+// Replace CLIENT_ID with your Applications Client ID
+private const string CLIENT_ID = "<CLIENT-ID>";
+
+static async Task Main(string[] args) {
+    // Create the IPC Connection with the Client ID
+    using DiscordIPC discordIPC = new DiscordIPC(Program.CLIENT_ID));
+    
+    // Start the IPC reading thread
+    // The thread will automatically reconnect to IPC
+    //   if the connection is lost, or if Discord is
+    //   restarted.
+    discordIPC.Start();
+    
+    Authorize.Data data;
+    
+    // Authorize
+    try {
+        // Send a popup to the Discord Client to authenticate
+        data = await discordIPC.SendCommandAsync(new Authorize.Args() {
+            Scopes = new List<string>() { "rpc" },
+            ClientID = CLIENT_ID,
+            CallbackURL = "http://localhost"
+        });
+    } catch (ErrorResponseException e) {
+        Console.Log("User denied authorization");
+        return;
     }
+    
+    // TODO: ... Leverage 'data' to fetch an OAuth Access Token
+    string accessToken = "<ACCESS-TOKEN>";
+    
+    // Authenticate using accessToken (ignoring the response here)
+    await discordIPC.SendCommandAsync(new Authenticate.Args() {
+        AccessToken = accessToken
+    });
+    
+    // Add an event listener by creating a lamba callback
+    // (Or Reference to a method)
+    discordIPC.OnMessageCreate += (sender, data) => Console.Log("New message!");
+    
+    // Send the event subscribe so we start receiving on our listener
+    await discordIPC.SubscribeAsync(new MessageCreate.Args() {
+        ChannelID = "<some-text-channel-id>"
+    });
+    
+    // Use commands to get information about a channel
+    GetChannel.Data response = await discordIPC.SendCommandAsync(new GetChannel.Args() {
+        ChannelID = "<some-channel-id>"
+    });
+    Console.Log(response.name);
+    
+    // TODO: ... (do other stuff)
+    
+    // Our discordIPC object is discarded here due to the using statement
+}
+```
+
+If you want to be able to set the IPC socket and then forget it, it can be created in such a way that it will automatically run a login event after connecting, and each time after it disconnects and reconnects.
+
+```c#
+using Dec.DiscordIPC;
+using Dec.DiscordIPC.Commands;
+using Dec.DiscordIPC.Events;
+
+// Replace CLIENT_ID with your Applications Client ID
+private const string CLIENT_ID = "<CLIENT-ID>";
+
+static void Main(string[] args) {
+    // Create the IPC Connection
+    DiscordIPC discordIPC = new DiscordIPC(
+        Program.CLIENT_ID, // Pass in the Client ID for Authenticating
+        Authenticate, // Authenticate method, called automatically after connecting
+        Listen // Listening method, called automatically after READY event received
+    );
+    
+    // Start the IPC reading thread
+    // The thread will automatically reconnect to IPC
+    //   if the connection is lost, or if Discord is
+    //   restarted.
+    discordIPC.Start();
+}
+
+// The Authenticate method will be called 1 second after the IPC pipe opens
+// This is where you can authenticate with the client in order to make priviledged requests
+// Attempting to run any priviledged requests here (Such as Subscribing to Events) will hang
+static async Task Authenticate(DiscordIPC discordIPC, CancellationToken cancellationToken) {
+    Authorize.Data data;
+    
+    // Authorize
+    try {
+        // Send a popup to the Discord Client to authenticate
+        data = await discordIPC.SendCommandAsync(new Authorize.Args() {
+            Scopes = new List<string>() { "rpc" },
+            ClientID = CLIENT_ID,
+            CallbackURL = "http://localhost"
+        });
+    } catch (ErrorResponseException e) {
+        Console.Log("User denied authorization");
+        return;
+    }
+    
+    // TODO: ... Leverage 'data' to fetch an OAuth Access Token
+    string accessToken = "<ACCESS-TOKEN>";
+    
+    // Authenticate using accessToken (ignoring the response here)
+    await discordIPC.SendCommandAsync(new Authenticate.Args() {
+        AccessToken = accessToken
+    });
+    
+    // Add an event listener by creating a lamba callback
+    // (Or Reference to a method)
+    discordIPC.OnMessageCreate += (sender, data) => Console.Log("New message!");
+}
+
+// The Listen method runs after the Authenticate method has completed,
+// and Discord sends the READY payload. Here priviledged requests such as subscribing
+// to events can be made.
+static async Task Listen(DiscordIPC discordIPC, CancellationToken cancellationToken) {
+    // Send the event subscribe so we start receiving on our listener
+    await discordIPC.SubscribeAsync(new MessageCreate.Args() {
+        ChannelID = "<some-text-channel-id>"
+    });
+    
+    // Use commands to get information about a channel
+    GetChannel.Data response = await discordIPC.SendCommandAsync(new GetChannel.Args() {
+        ChannelID = "<some-channel-id>"
+    });
+    Console.Log(response.name);
+    
+    // TODO: ... (do other stuff)
 }
 ```
