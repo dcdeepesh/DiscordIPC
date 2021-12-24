@@ -215,7 +215,6 @@ namespace Dec.DiscordIPC.Core {
         public void Dispose() {
             this.TokenSource.Cancel();
             this.TokenSource.Dispose();
-            this.Thread.Abort();
         }
     }
     
