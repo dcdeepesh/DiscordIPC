@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Dec.DiscordIPC.Commands.Interfaces;
+using Dec.DiscordIPC.Development;
 
 namespace Dec.DiscordIPC {
     internal static class Extensions {
@@ -12,6 +15,11 @@ namespace Dec.DiscordIPC {
             if (element.TryGetProperty("evt", out JsonElement evt))
                 return evt.GetString() == "ERROR";
             return false;
+        }
+        
+        public static string GetArgCommand(this ICommandArgs args) {
+            Type type = args.GetType();
+            return type.GetCustomAttribute<DiscordRPCAttribute>()?.Command ?? throw new ArgumentException("Payloads must have the DiscordRPC Attribute", nameof(args));
         }
     }
     
@@ -30,9 +38,7 @@ namespace Dec.DiscordIPC {
     }
     
     internal class Json {
-        public static T Deserialize<T>(string json) {
-            return JsonSerializer.Deserialize<T>(json);
-        }
+        public static T Deserialize<T>(string json) => JsonSerializer.Deserialize<T>(json);
         
         public static byte[] SerializeToBytes<T>(T obj) {
             return JsonSerializer.SerializeToUtf8Bytes(obj, new JsonSerializerOptions {

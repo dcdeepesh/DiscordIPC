@@ -9,7 +9,7 @@ namespace Dec.DiscordIPC.Commands {
     /// Used to authenticate an existing client with your app
     /// </summary>
     public class Authenticate {
-        [DiscordRPC("AUTHENTICATE")]
+        [DiscordRPC("AUTHENTICATE", false)]
         public class Args : IPayloadResponse<Data> {
             [JsonPropertyName("access_token")]
             public string AccessToken { get; set; }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Dec.DiscordIPC.Commands.Interfaces;
 using Dec.DiscordIPC.Commands.Payloads;
 using Dec.DiscordIPC.Development;
 
@@ -9,7 +8,7 @@ namespace Dec.DiscordIPC.Commands {
     /// Used to authorize a new client with your app
     /// </summary>
     public class Authorize {
-        [DiscordRPC("AUTHORIZE")]
+        [DiscordRPC("AUTHORIZE", false)]
         public class Args : IPayloadResponse<Data> {
             [JsonPropertyName("scopes")]
             public List<string> Scopes { get; set; }

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO.Pipes;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Nito.AsyncEx;
 
 namespace Dec.DiscordIPC.Core {
     internal sealed class LeakyPipeConnection : IDisposable {
@@ -36,28 +38,46 @@ namespace Dec.DiscordIPC.Core {
         /// </summary>
         public void Start() => this.Thread.Start();
         
-        public Task<JsonElement> WaitForResponse(string nonce, CancellationToken token) {
-            return Task.Run(() => {
+        #region Writers
+        
+        /// <summary>
+        /// Await the response from the pipe for a nonce
+        /// </summary>
+        /// <param name="nonce"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        /// <exception cref="ErrorResponseException"></exception>
+        public Task<JsonElement> WaitForResponseAsync(string nonce, CancellationToken token = default) {
+            return Task.Run(async () => {
                 Waiter waiter;
                 lock (this.Responses) {
                     JsonElement? result = null;
-                    foreach (JsonElement response in this.Responses)
-                        if (response.GetProperty("nonce").GetString() == nonce)
-                            result = response;
-                    if (result.HasValue) {
-                        this.Responses.Remove(result.Value);
-                        if (result.Value.IsErrorResponse())
-                            throw new ErrorResponseException(result.Value);
-                        else return result.Value;
+                    foreach (JsonElement response in this.Responses.Where(response => response.GetProperty("nonce").GetString() == nonce)) {
+                        result = response;
+                        break;
                     }
-
+                    
+                    if (result is JsonElement element) {
+                        this.Responses.Remove(element);
+                        
+                        if (element.IsErrorResponse())
+                            throw new ErrorResponseException(element);
+                        
+                        return element;
+                    }
+                    
+                    // Create a new Waiter
                     waiter = new Waiter(nonce);
                     this.Waiters.AddLast(waiter);
                 }
                 
-                waiter.ResetEvent.WaitOne();
+                // Await the waiter response
+                await waiter.ResetEvent.WaitAsync(token);
+                
+                // Throw if the response is an error
                 if (waiter.Response.IsErrorResponse())
                     throw new ErrorResponseException(waiter.Response);
+                
                 return waiter.Response;
             }, token);
         }
@@ -78,6 +98,10 @@ namespace Dec.DiscordIPC.Core {
             await clientStream.WriteAsync(buffer, offset, count, cancellationToken);
         }
         
+        #endregion
+        
+        #region Awaiters
+        
         /// <summary>
         /// Wait for the Stream to Connect
         /// </summary>
@@ -87,6 +111,10 @@ namespace Dec.DiscordIPC.Core {
         /// Wait for the HELLO Event (After connecting) to have been sent
         /// </summary>
         public Task AwaitHelloAsync(CancellationToken cancellationToken = default) => this.Factory.AwaitHelloAsync(cancellationToken);
+        
+        #endregion
+        
+        #region Thread Loop Methods
         
         /// <summary>
         /// Loop on the thread forever to listen for messages
@@ -100,7 +128,7 @@ namespace Dec.DiscordIPC.Core {
                         this.Run(cancellationToken);
                     } catch (EndOfPipeException) {
                         // Throw when the client is no longer useful
-                        this.Factory.Dispose();
+                        this.Factory.Close();
                     }
                 }
             } catch (ObjectDisposedException e) {
@@ -109,7 +137,7 @@ namespace Dec.DiscordIPC.Core {
             } catch (Exception e) {
                 Console.WriteLine(e);
             } finally {
-                this.Factory.Dispose();
+                this.Factory.Close();
             }
         }
         
@@ -166,32 +194,36 @@ namespace Dec.DiscordIPC.Core {
         /// Signal responses to messages
         /// </summary>
         private void SignalNewResponse(IPCMessage message) {
-            JsonElement response = Json.Deserialize<dynamic>(message.RawData);
             lock (this.Responses) {
-                Waiter waiterToResume = null;
-                foreach (Waiter waiter in this.Waiters)
-                    if (waiter.Nonce == response.GetProperty("nonce").GetString())
-                        waiterToResume = waiter;
-                
-                if (waiterToResume is null is false) {
+                // Get the first matching Waiter (or null)
+                if (this.Waiters.FirstOrDefault(waiter => waiter.Nonce == message.Json.GetProperty("nonce").GetString()) is {} waiterToResume) {
+                    // Remove the waiter from the list
                     this.Waiters.Remove(waiterToResume);
-                    waiterToResume.Response = response;
+                    
+                    // Pass the waiters Response
+                    waiterToResume.Response = message.Json;
+                    
+                    // Trigger the waiting await
                     waiterToResume.ResetEvent.Set();
                 } else {
-                    this.Responses.AddLast(response);
+                    // Add the response as received before triggering a waiter
+                    this.Responses.AddLast(message.Json);
                 }
             }
         }
         
+        #endregion
+        
         public void Dispose() {
             this.TokenSource.Cancel();
             this.TokenSource.Dispose();
+            this.Thread.Abort();
         }
     }
     
     internal class Waiter {
         public readonly string Nonce;
-        public readonly AutoResetEvent ResetEvent = new AutoResetEvent(false);
+        public readonly AsyncAutoResetEvent ResetEvent = new AsyncAutoResetEvent(false);
         public JsonElement Response;
         
         public Waiter(string nonce) => this.Nonce = nonce;

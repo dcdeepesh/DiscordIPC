@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.IO.Pipes;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Dec.DiscordIPC.Commands;
-using Dec.DiscordIPC.Commands.Interfaces;
 using Dec.DiscordIPC.Commands.Payloads;
+using Dec.DiscordIPC.Development;
 using Dec.DiscordIPC.Events;
 
 namespace Dec.DiscordIPC.Core {
@@ -33,17 +33,34 @@ namespace Dec.DiscordIPC.Core {
             Util.Verbose = verbose;
             this.Pipe = new LeakyPipeConnection(this.NamedPipe, this.HelloEvent, () => afterAuthorize(this), this.FireEvent);
         }
-        public LowLevelDiscordIPC(string clientId, bool verbose = false): this(clientId, LowLevelDiscordIPC.EmptyHello, LowLevelDiscordIPC.EmptyHello, verbose) {}
+        public LowLevelDiscordIPC(
+            string clientId,
+            IPCHello<LowLevelDiscordIPC> beforeAuthorize,
+            bool verbose = false
+        ): this(clientId, beforeAuthorize, LowLevelDiscordIPC.EmptyHello, verbose) {}
+        public LowLevelDiscordIPC(
+            string clientId,
+            bool verbose = false
+        ): this(clientId, LowLevelDiscordIPC.EmptyHello, verbose) {}
         
         /// <summary>
         /// Start the connection loop
         /// </summary>
         public void Start() => this.Pipe.Start();
         
-        public async Task<JsonElement> SendCommandAsync(CommandPayload payload, bool authorized = true, CancellationToken cancellationToken = default) {
-            await this.SendMessageAsync(new IPCMessage(OpCode.FRAME, Json.SerializeToBytes<dynamic>(payload)), authorized, cancellationToken);
-            return await this.Pipe.WaitForResponse(payload.Nonce, cancellationToken);
+        public async Task<JsonElement> SendCommandAsync(CommandPayload payload, CancellationToken cancellationToken = default) {
+            // If the payload should wait for authentication before sending
+            bool priviledged = payload is CommandPayloadArgs arged
+                && arged.Args?.GetType().GetCustomAttribute<DiscordRPCAttribute>() is {Authenticated: true};
+            
+            // Send the message (Wait for the connection before sending)
+            await this.SendMessageAsync(new IPCMessage(OpCode.FRAME, Json.SerializeToBytes<dynamic>(payload)), priviledged, cancellationToken);
+            
+            // Await the Nonce response
+            return await this.Pipe.WaitForResponseAsync(payload.Nonce, cancellationToken);
         }
+        
+        #region Awaitables
         
         /// <summary>
         /// Wait for the Stream to Connect
@@ -54,6 +71,8 @@ namespace Dec.DiscordIPC.Core {
         /// Wait for the HELLO Event (After connecting) to have been sent
         /// </summary>
         public Task AwaitHelloAsync(CancellationToken cancellationToken = default) => this.Pipe.AwaitHelloAsync(cancellationToken);
+        
+        #endregion
         
         #region Events
         
@@ -183,6 +202,5 @@ namespace Dec.DiscordIPC.Core {
         #endregion
         
         internal static Task EmptyHello(LowLevelDiscordIPC ipc, CancellationToken token) => Task.CompletedTask;
-        internal static bool IsAuthorizedPayload(ICommandArgs payload) => !(payload is Authenticate.Args || payload is Authorize.Args);
     }
 }

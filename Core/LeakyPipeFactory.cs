@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Nito.AsyncEx;
 
 namespace Dec.DiscordIPC.Core {
-    public class LeakyPipeFactory : IDisposable {
+    public class LeakyPipeFactory {
         private readonly IPCHello<NamedPipeClientStream> OnStreamConnectEvent;
         private readonly Func<Task> AfterStreamHelloEvent;
         private readonly ReaderWriterLockSlim Lock = new ReaderWriterLockSlim();
@@ -158,6 +158,9 @@ namespace Dec.DiscordIPC.Core {
             }
         }
         
+        /// <summary>
+        /// Check the current pipe status for if it is dead or disconnected
+        /// </summary>
         private bool PipeIsDead() {
             // If connection is not "OPEN", LazyLoader is not initialized
             if (!this.IsConnected.IsSet || this.Client is null || this.HelloTask is null)
@@ -166,9 +169,9 @@ namespace Dec.DiscordIPC.Core {
         }
         
         /// <summary>
-        /// Dispose of the current pipe
+        /// Close the current pipe and release its resources
         /// </summary>
-        public void Dispose() {
+        public void Close() {
             this.Client?.Dispose();
             this.CancellationToken?.Cancel();
             this.SentHello.Reset();

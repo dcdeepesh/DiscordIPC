@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Dec.DiscordIPC.Commands.Interfaces;
 using Dec.DiscordIPC.Commands.Payloads;
 using Dec.DiscordIPC.Core;
-using Dec.DiscordIPC.Development;
 
 namespace Dec.DiscordIPC {
     public class DiscordIPC : LowLevelDiscordIPC {
@@ -15,12 +14,12 @@ namespace Dec.DiscordIPC {
         public DiscordIPC(
             string clientId,
             bool verbose = false
-        ) : this(clientId, LowLevelDiscordIPC.EmptyHello, LowLevelDiscordIPC.EmptyHello, verbose) {}
+        ) : base(clientId, verbose) {}
         public DiscordIPC(
             string clientId,
             IPCHello<DiscordIPC> beforeAuthorize,
             bool verbose = false
-        ) : base(clientId, (ipc, can) => beforeAuthorize(ipc as DiscordIPC, can), LowLevelDiscordIPC.EmptyHello, verbose) {}
+        ) : base(clientId, (ipc, can) => beforeAuthorize(ipc as DiscordIPC, can), verbose) {}
         public DiscordIPC(
             string clientId,
             IPCHello<DiscordIPC> beforeAuthorize,
@@ -31,21 +30,16 @@ namespace Dec.DiscordIPC {
         #region Commands
         
         /// <summary>Send a command payload that does not have a return type</summary>
-        public async Task SendCommandAsync(IPayloadResponse args, CancellationToken cancellationToken = default) {
-            Type type = args.GetType();
-            DiscordRPCAttribute attribute = type.GetCustomAttribute<DiscordRPCAttribute>() ?? throw new ArgumentException("Payloads must have the DiscordRPC Attribute", nameof(args));
-            await this.SendCommandAsync(attribute.Command, args, cancellationToken);
-        }
+        public async Task SendCommandAsync(IPayloadResponse args, CancellationToken cancellationToken = default)
+            => await this.SendCommandAsync(args.GetArgCommand(), args, cancellationToken);
         
         /// <summary>Emit a command that has no return type</summary>
-        private Task SendCommandAsync(string cmd, ICommandArgs args, CancellationToken cancellationToken = default) => this.SendCommandAsync<object>(cmd, args, cancellationToken);
+        private Task SendCommandAsync(string cmd, ICommandArgs args, CancellationToken cancellationToken = default)
+            => this.SendCommandAsync<object>(cmd, args, cancellationToken);
         
         /// <summary>Send a command payload that has a return type</summary>
-        public async Task<T> SendCommandAsync<T>(IPayloadResponse<T> args, CancellationToken cancellationToken = default) {
-            Type type = args.GetType();
-            DiscordRPCAttribute attribute = type.GetCustomAttribute<DiscordRPCAttribute>() ?? throw new ArgumentException("Payloads must have the DiscordRPC Attribute", nameof(args));
-            return await this.SendCommandAsync<T>(attribute.Command, args, cancellationToken);
-        }
+        public async Task<T> SendCommandAsync<T>(IPayloadResponse<T> args, CancellationToken cancellationToken = default)
+            => await this.SendCommandAsync<T>(args.GetArgCommand(), args, cancellationToken);
         
         /// <summary>Emit a command that has a return type</summary>
         private async Task<T> SendCommandAsync<T>(string cmd, ICommandArgs args, CancellationToken cancellationToken = default) {
@@ -63,7 +57,7 @@ namespace Dec.DiscordIPC {
                     Args = args
                 };
             
-            JsonElement response = await this.SendCommandAsync(payload, LowLevelDiscordIPC.IsAuthorizedPayload(args), cancellationToken);
+            JsonElement response = await this.SendCommandAsync(payload, cancellationToken);
             return typeof(T) == typeof(object) ? default : response.GetProperty("data").ToObject<T>();
         }
         
@@ -71,15 +65,12 @@ namespace Dec.DiscordIPC {
         
         #region Event subscription
         
-        public async Task SubscribeAllAsync(IEnumerable<ICommandArgs> list, CancellationToken cancellationToken = default) {
-            foreach (ICommandArgs args in list)
-                await this.SubscribeAsync(args, cancellationToken);
-        }
-        public Task SubscribeAsync(ICommandArgs args, CancellationToken cancellationToken = default) {
-            Type type = args.GetType();
-            DiscordRPCAttribute attribute = type.GetCustomAttribute<DiscordRPCAttribute>() ?? throw new ArgumentException("Payloads must have the DiscordRPC Attribute", nameof(args));
-            return this.SubscribeAsync(attribute.Command, args, cancellationToken);
-        }
+        public Task SubscribeAllAsync(IEnumerable<ICommandArgs> list, CancellationToken cancellationToken = default)
+            => Task.WhenAll(list.Select(args => this.SubscribeAsync(args, cancellationToken)));
+        
+        public Task SubscribeAsync(ICommandArgs args, CancellationToken cancellationToken = default)
+            => this.SubscribeAsync(args.GetArgCommand(), args, cancellationToken);
+        
         private async Task SubscribeAsync(string evnt, ICommandArgs args, CancellationToken cancellationToken = default) {
             string nonce = Guid.NewGuid().ToString();
             EventPayload payload;
@@ -97,22 +88,19 @@ namespace Dec.DiscordIPC {
                     Args = args
                 };
             
-            await this.SendCommandAsync(payload, cancellationToken: cancellationToken);
+            await this.SendCommandAsync(payload, cancellationToken);
         }
         
         #endregion
         
         #region Event un-subscription
         
-        public async Task UnsubscribeAllAsync(IEnumerable<ICommandArgs> list, CancellationToken cancellationToken = default) {
-            foreach (ICommandArgs args in list)
-                await this.UnsubscribeAsync(args, cancellationToken);
-        }
-        public Task UnsubscribeAsync(ICommandArgs args, CancellationToken cancellationToken = default) {
-            Type type = args.GetType();
-            DiscordRPCAttribute attribute = type.GetCustomAttribute<DiscordRPCAttribute>() ?? throw new ArgumentException("Payloads must have the DiscordRPC Attribute", nameof(args));
-            return this.UnsubscribeAsync(attribute.Command, args, cancellationToken);
-        }
+        public Task UnsubscribeAllAsync(IEnumerable<ICommandArgs> list, CancellationToken cancellationToken = default)
+            => Task.WhenAll(list.Select(args => this.UnsubscribeAsync(args, cancellationToken)));
+        
+        public Task UnsubscribeAsync(ICommandArgs args, CancellationToken cancellationToken = default)
+            => this.UnsubscribeAsync(args.GetArgCommand(), args, cancellationToken);
+        
         private async Task UnsubscribeAsync(string evnt, ICommandArgs args, CancellationToken cancellationToken = default) {
             string nonce = Guid.NewGuid().ToString();
             EventPayload payload;
@@ -130,7 +118,7 @@ namespace Dec.DiscordIPC {
                     Args = args
                 };
             
-            await this.SendCommandAsync(payload, cancellationToken: cancellationToken);
+            await this.SendCommandAsync(payload, cancellationToken);
         }
         
         #endregion
