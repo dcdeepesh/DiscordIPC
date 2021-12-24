@@ -51,11 +51,9 @@ namespace Dec.DiscordIPC.Core {
             return Task.Run(async () => {
                 Waiter waiter;
                 lock (this.Responses) {
-                    JsonElement? result = null;
-                    foreach (JsonElement response in this.Responses.Where(response => response.GetProperty("nonce").GetString() == nonce)) {
-                        result = response;
-                        break;
-                    }
+                    JsonElement? result = this.Responses.Where(response => response.GetProperty("nonce").GetString() == nonce)
+                        .Cast<JsonElement?>()
+                        .FirstOrDefault();
                     
                     if (result is JsonElement element) {
                         this.Responses.Remove(element);
