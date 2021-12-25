@@ -2,7 +2,6 @@
 using System.IO;
 using System.IO.Pipes;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,12 +14,6 @@ namespace Dec.DiscordIPC.Core {
         private readonly LeakyPipeConnection Pipe;
         private readonly IPCHello<LowLevelDiscordIPC> UserHello;
         protected readonly string ClientId;
-        private string NamedPipe {
-            get {
-                const string NAME = "discord-ipc-0";
-                return RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? $"{Environment.GetEnvironmentVariable("XDG_RUNTIME_DIR")}/{NAME}" : NAME;
-            }
-        }
         
         public LowLevelDiscordIPC(
             string clientId,
@@ -31,7 +24,7 @@ namespace Dec.DiscordIPC.Core {
             this.ClientId = clientId;
             this.UserHello = beforeAuthorize;
             Util.Verbose = verbose;
-            this.Pipe = new LeakyPipeConnection(this.NamedPipe, this.HelloEvent, () => afterAuthorize(this), this.FireEvent);
+            this.Pipe = new LeakyPipeConnection(this.HelloEvent, () => afterAuthorize(this), this.FireEvent);
         }
         public LowLevelDiscordIPC(
             string clientId,
@@ -46,7 +39,21 @@ namespace Dec.DiscordIPC.Core {
         /// <summary>
         /// Start the connection loop
         /// </summary>
+        /// <exception cref="T:System.Threading.ThreadStateException">The connection loop has already been started.</exception>
+        /// <exception cref="T:System.OutOfMemoryException">There is not enough memory available to start the connection loop.</exception>
         public void Start() => this.Pipe.Start();
+        
+        /// <summary>
+        /// Clamps the IPC Connection to a specific IPC socket, such as 'discord-ipc-0'
+        /// When disconnected, as long as 'Start' has been called, the client will only attempt connecting to that pipe
+        /// </summary>
+        public void ClampConnections(int num = 0) => this.ClampConnections(num, num);
+        
+        /// <summary>
+        /// Clamps the IPC Connection to a range of IPC sockets
+        /// When disconnected, as long as 'Start' has been called, the client will attempt connecting to the range of pipes in a round-robin
+        /// </summary>
+        public void ClampConnections(int min, int max) => this.Pipe.Clamp(min, max);
         
         public async Task<JsonElement> SendCommandAsync(CommandPayload payload, CancellationToken cancellationToken = default) {
             // If the payload should wait for authentication before sending

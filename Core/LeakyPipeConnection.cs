@@ -19,13 +19,12 @@ namespace Dec.DiscordIPC.Core {
         private readonly CancellationTokenSource TokenSource = new CancellationTokenSource();
         
         internal LeakyPipeConnection(
-            string name,
             IPCHello<NamedPipeClientStream> streamHello,
             Func<Task> afterHello,
             Action<string, IPCMessage> messageReceiveEvent
         ) {
             this.MessageReceiveEvent = messageReceiveEvent;
-            this.Factory = new LeakyPipeFactory(name, streamHello, afterHello);
+            this.Factory = new LeakyPipeFactory(streamHello, afterHello);
             
             this.Thread = new Thread(this.Loop) {
                 Name = "IPCReader",
@@ -36,7 +35,15 @@ namespace Dec.DiscordIPC.Core {
         /// <summary>
         /// Start the connection loop
         /// </summary>
+        /// <exception cref="T:System.Threading.ThreadStateException">The connection loop has already been started.</exception>
+        /// <exception cref="T:System.OutOfMemoryException">There is not enough memory available to start the connection loop.</exception>
         public void Start() => this.Thread.Start();
+        
+        /// <summary>
+        /// Clamps the IPC Connection to a range of IPC sockets
+        /// When disconnected, as long as 'Start' has been called, the client will attempt connecting to the range of pipes in a round-robin
+        /// </summary>
+        public void Clamp(int min, int max) => this.Factory.Clamp(min, max);
         
         #region Writers
         

@@ -1,5 +1,6 @@
 using System;
 using System.IO.Pipes;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Nito.AsyncEx;
@@ -9,7 +10,10 @@ namespace Dec.DiscordIPC.Core {
         private readonly IPCHello<NamedPipeClientStream> OnStreamConnectEvent;
         private readonly Func<Task> AfterStreamHelloEvent;
         private readonly ReaderWriterLockSlim Lock = new ReaderWriterLockSlim();
-        private readonly string PipeName;
+        
+        private int MinIPC = 0;
+        private int MaxIPC = 0;
+        private int IPCDiff => this.MaxIPC - this.MinIPC + 1;
         
         private readonly AsyncManualResetEvent IsConnected = new AsyncManualResetEvent(false);
         private readonly AsyncManualResetEvent SentHello = new AsyncManualResetEvent(false);
@@ -19,13 +23,20 @@ namespace Dec.DiscordIPC.Core {
         private CancellationTokenSource CancellationToken = new CancellationTokenSource();
         
         public LeakyPipeFactory(
-            string name,
             IPCHello<NamedPipeClientStream> onStreamConnectEvent,
             Func<Task> afterHelloEvent
         ) {
             this.OnStreamConnectEvent = onStreamConnectEvent;
             this.AfterStreamHelloEvent = afterHelloEvent;
-            this.PipeName = name;
+        }
+        
+        /// <summary>
+        /// Clamps the IPC Connection to a range of IPC sockets
+        /// When disconnected, as long as 'Start' has been called, the client will attempt connecting to the range of pipes in a round-robin
+        /// </summary>
+        public void Clamp(int min, int max) {
+            this.MinIPC = Math.Max(min, 0);
+            this.MaxIPC = Math.Max(max, this.MinIPC);
         }
         
         /// <summary>
@@ -104,9 +115,6 @@ namespace Dec.DiscordIPC.Core {
                         if (this.CancellationToken is {IsCancellationRequested: true})
                             this.CancellationToken = new CancellationTokenSource();
                         
-                        Console.WriteLine("Creating new client stream");
-                        NamedPipeClientStream clientStream = new NamedPipeClientStream(".", this.PipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
-                        
                         // Create the connection task for when the connection opens
                         CancellationToken inner = this.CancellationToken!.Token;
                         this.HelloTask = Task.Run(async() => {
@@ -117,7 +125,7 @@ namespace Dec.DiscordIPC.Core {
                             await Task.Delay(TimeSpan.FromSeconds(1), inner);
                             
                             // Run the connect event (Send Authenticate and Authorize)
-                            await this.OnStreamConnectEvent(clientStream, inner);
+                            await this.OnStreamConnectEvent(this.Client, inner);
                             
                             // Set that the Hello has been triggered
                             this.SentHello.Set();
@@ -126,10 +134,17 @@ namespace Dec.DiscordIPC.Core {
                             await this.AfterStreamHelloEvent();
                         }, inner);
                         
+                        // Loop connection numbers
+                        int attempts = 0;
+                        
                         // Run as long as the cancellation token provided is not cancelled
                         while (!cancellationToken.IsCancellationRequested) {
+                            string name = this.GetPipeName(attempts % this.IPCDiff);
+                            Console.WriteLine($"Creating new client '{name}' stream");
+                            NamedPipeClientStream clientStream = new NamedPipeClientStream(".", name, PipeDirection.InOut, PipeOptions.Asynchronous);
+                            
                             try {
-                                Console.WriteLine("CONNECT: Pipe attempting connection..");
+                                Console.WriteLine($"CONNECT: Pipe attempting connection to '{name}'..");
                                 
                                 // Try connecting for 2 seconds
                                 clientStream.Connect(2000);
@@ -145,6 +160,8 @@ namespace Dec.DiscordIPC.Core {
                                 
                                 break;
                             } catch (TimeoutException) {}
+                            
+                            attempts++;
                         }
                     } finally {
                         this.Lock.ExitWriteLock();
@@ -166,6 +183,14 @@ namespace Dec.DiscordIPC.Core {
             if (!this.IsConnected.IsSet || this.Client is null || this.HelloTask is null)
                 return true;
             return !this.Client.IsConnected;
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        private string GetPipeName(int num) {
+            string name = $"discord-ipc-{num}";
+            return RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? $"{Environment.GetEnvironmentVariable("XDG_RUNTIME_DIR")}/{name}" : name;
         }
         
         /// <summary>

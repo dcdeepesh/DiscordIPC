@@ -41,13 +41,32 @@ No tasks are performed after constructing the `DiscordIPC` until `Start` is call
 discordIPC.Start();
 ```
 
+> If you want to receive the payload sent in the `READY` event, register a handler to the `OnReady` event _before_ calling `Init`. More [here](#what-events-can-i-subscribe-to).
+
 ```c#
 discordIPC.Dispose();
 ```
 
-> As of right now, DiscordIPC connects only to `discord-ipc-0` if it can, and doesn't check/connect to other pipes. So you can't connect to another pipe if you have two discord clients running (e.g. Canary).
+`DiscordIPC` handles all of the processing of connecting to the Discord IPC Pipe, by default it only attempts connecting to `discord-ipc-0`, and doesn't check/connect to any other pipes. If the user uses multiple Discord clients (e.g. PTB or Canary).
 
-> If you want to receive the payload sent in the `READY` event, register a handler to the `OnReady` event before calling `Init`. More [here](#what-events-can-i-subscribe-to).
+The IPC pipes are named (by the Discord client) in the order of the clients opening (`discord-ipc-0`, `discord-ipc-1`, etc) and are not changed until that client restarts. Opening two clients and then closing the client responsible for ipc-0 will cause the default setup to never connect, as the remaining client will remain as ipc-1.
+
+In order to change the range of clients one of the following methods can be called. The client will connect to the first available pipe.
+
+```c#
+// Specifying a connection number to clamp to will only ever
+// attempt connecting to that socket, in this case ipc-1
+discordIPC.ClampConnections(1);
+
+// The default value for the method is to only connect to ipc-0
+discordIPC.ClampConnections();
+
+// Specifying a range of sockets will instruct the client to attempt
+// connecting to the range in a round-robin order. First trying ipc-0,
+// then ipc-1, then ipc-2, and then ipc-0 again. Each attempt will wait
+// for two seconds before attempting the next connection
+discordIPC.ClampConnections(0, 2);
+```
 
 # Commands
 All commands are defined in the `Dec.DiscordIPC.Commands` namespace. Each command has a class, a subclass `Args` which defines the arguments to provide when sending that command, and a subclass `Data` which defines the data returned in response to that command.
