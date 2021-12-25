@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Nito.AsyncEx;
 
 namespace Dec.DiscordIPC.Core {
-    public class LeakyPipeFactory {
+    internal sealed class LeakyPipeFactory {
         private readonly IPCHello<NamedPipeClientStream> OnStreamConnectEvent;
         private readonly Func<Task> AfterStreamHelloEvent;
         private readonly ReaderWriterLockSlim Lock = new ReaderWriterLockSlim();
