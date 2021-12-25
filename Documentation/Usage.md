@@ -41,7 +41,7 @@ No tasks are performed after constructing the `DiscordIPC` until `Start` is call
 discordIPC.Start();
 ```
 
-> If you want to receive the payload sent in the `READY` event, register a handler to the `OnReady` event _before_ calling `Init`. More [here](#what-events-can-i-subscribe-to).
+> If you want to receive the payload sent in the `READY` event, register a handler to the `OnReady` event _before_ calling `Start`. More [here](#what-events-can-i-subscribe-to).
 
 ```c#
 discordIPC.Dispose();
@@ -154,7 +154,7 @@ discordIPC.OnMessageCreate -= handler;
 All of them! Not just the ones related to rich presence (a.k.a. activity).
 
 Ok all except 2:
-  - `READY`: because it's only fired once upon initialization. To handle this event, register a listener to `OnReady` before calling `Init`.
+  - `READY`: because it's only fired once upon initialization. To handle this event, register a listener to `OnReady` before calling `Start`.
   - `ERROR`: because they're handled automatically internally in the form of `ErrorResponseException`.
 
 If you don't know all the events, their semantics and other things, [here's the documentation](https://discord.com/developers/docs/topics/rpc#commands-and-events-rpc-events).
