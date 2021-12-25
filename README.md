@@ -111,6 +111,10 @@ static void Main(string[] args) {
         Listen // Listening method, called automatically after READY event received
     );
     
+    // Add an event listener by creating a lamba callback
+    // (Or Reference to a method)
+    discordIPC.OnMessageCreate += (sender, data) => Console.Log("New message!");
+    
     // Start the IPC reading thread
     // The thread will automatically reconnect to IPC
     //   if the connection is lost, or if Discord is
@@ -144,10 +148,6 @@ static async Task Authenticate(DiscordIPC discordIPC, CancellationToken cancella
     await discordIPC.SendCommandAsync(new Authenticate.Args() {
         AccessToken = accessToken
     });
-    
-    // Add an event listener by creating a lamba callback
-    // (Or Reference to a method)
-    discordIPC.OnMessageCreate += (sender, data) => Console.Log("New message!");
 }
 
 // The Listen method runs after the Authenticate method has completed,
