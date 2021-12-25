@@ -111,9 +111,12 @@ namespace Dec.DiscordIPC.Core {
         /// <param name="cancellationToken"></param>
         private async Task HelloEvent(NamedPipeClientStream stream, CancellationToken cancellationToken) {
             EventWaitHandle readyWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+            
+            // Create a listener for the Ready event
             void ReadyListener(object sender, Ready.Data data) => readyWaitHandle.Set();
             this.OnReady += ReadyListener;
             
+            // Send the intializing handshake (Expecting the READY in return)
             await this.SendMessageAsync(stream, IPCMessage.Handshake(Json.SerializeToBytes(new {
                 client_id = this.ClientId,
                 v = "1",
@@ -121,6 +124,7 @@ namespace Dec.DiscordIPC.Core {
                     .ToString()
             })), cancellationToken);
             
+            // Wait for the Ready event to return
             await Task.Run(() => {
                 readyWaitHandle.WaitOne();
                 this.OnReady -= ReadyListener;

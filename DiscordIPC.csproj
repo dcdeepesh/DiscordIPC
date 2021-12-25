@@ -16,8 +16,8 @@
         <Owners>Deckilio</Owners>
         <Company>Oyster</Company>
         <Description>A wrapper for Discord's IPC based RPC</Description>
-        <PackageProjectUrl>https://github.com/dcdeepesh/DiscordIPC</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/dcdeepesh/DiscordIPC</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/GStefanowich/DiscordIPC</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/GStefanowich/DiscordIPC</RepositoryUrl>
         <PackageReleaseNotes>First release of DiscordIPC</PackageReleaseNotes>
         <LangVersion>8</LangVersion>
     </PropertyGroup>

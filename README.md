@@ -10,11 +10,13 @@ The fork was mainly created because some things didn't work in my Linux environm
 + Added named pipe support for Linux
 + Changed C# version to 8.0
 + Fixed some typo's that were present in Objects used for JSON serialization
-+ Updated some Objects for JSON Serialization that were updated by Discord
 + Added CancellationTokens to await methods that are Cancelled when calling .Dispose() on the IPC Client
  - Not cancelling awaiting methods can cause the app to hang when waiting for ipc messages
 + Changed JSON Serialization to use JsonPropertyNameAttributes
+ - Objects use the PascalCase standard
 + Added Discord Documentation to some objects
++ Built in reconnect logic to handle disconnects
+ - Supports numbers pipe ranges: `ipc-0`, `ipc-1`, etc..
 ```
 
 ## Before you use it
