@@ -16,7 +16,7 @@ The fork was mainly created because some things didn't work in my Linux environm
  - Objects use the PascalCase standard
 + Added Discord Documentation to some objects
 + Built in reconnect logic to handle disconnects
- - Supports numbers pipe ranges: `ipc-0`, `ipc-1`, etc..
+ - Supports numbered pipe ranges: `ipc-0`, `ipc-1`, etc..
 ```
 
 ## Before you use it
