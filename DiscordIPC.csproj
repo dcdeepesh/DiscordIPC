@@ -4,25 +4,22 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Dec.DiscordIPC</RootNamespace>
 	  <AssemblyTitle>DiscordIPC</AssemblyTitle>
-	  <AssemblyVersion>1.2.0.0</AssemblyVersion>
+	  <AssemblyVersion>1.2.1.0</AssemblyVersion>
 	  <Product>DiscordIPC</Product>
-	  <Copyright>Copyright ©  2021 Deepesh</Copyright>
+	  <Copyright>Copyright ©  2021 Deepesh Choudhary</Copyright>
 	  <RegisterForComInterop>false</RegisterForComInterop>
 	  
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	  <PackageId>Dec.DiscordIPC</PackageId>
-	  <Version>1.2</Version>
+	  <Version>1.2.1</Version>
 	  <Authors>Deepesh Choudhary</Authors>
 	  <Owners>Deepesh Choudhary</Owners>
 	  <Company>Oyster</Company>
 	  <Description>A wrapper for Discord's IPC based RPC</Description>
 	  <PackageProjectUrl>https://github.com/dcdeepesh/DiscordIPC</PackageProjectUrl>
 	  <RepositoryUrl>https://github.com/dcdeepesh/DiscordIPC</RepositoryUrl>
-	  <PackageReleaseNotes>This is the first stable release of DiscordIPC
-Changes:
-- Fix inifnite tasks on pipe close
-- Add ability to connect to other pipes
-- Update documentation</PackageReleaseNotes>
+	  <PackageReleaseNotes>Changes:
+- Fix GetSelectedVoiceChannel.Data</PackageReleaseNotes>
 	  <PackageTags>discord</PackageTags>
 	  <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
