@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using Dec.DiscordIPC.Entities;
+using Dec.DiscordIPC.Events;
 
 namespace Dec.DiscordIPC.Commands {
     public class GetChannel {
@@ -17,7 +18,7 @@ namespace Dec.DiscordIPC.Commands {
             public int? bitrate { get; set; }
             public int? user_limit { get; set; }
             public int? position { get; set; }
-            public List<VoiceState> voice_states { get; set; }
+            public List<VoiceStateCreate.Data> voice_states { get; set; }
             public List<Message> messages { get; set; }
         }
     }
