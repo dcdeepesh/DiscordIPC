@@ -58,8 +58,8 @@ namespace Dec.DiscordIPC {
         public async Task<GetVoiceSettings.Data> SendCommandAsync(GetVoiceSettings.Args _) =>
             await SendCommandAsync_Core<GetVoiceSettings.Data>("GET_VOICE_SETTINGS", null);
 
-        public async Task<SetVoiceSettings.Data> SendCommandAsync(SetVoiceSettings.Args _) =>
-            await SendCommandAsync_Core<SetVoiceSettings.Data>("SET_VOICE_SETTINGS", null);
+        public async Task<SetVoiceSettings.Data> SendCommandAsync(SetVoiceSettings.Args args) =>
+            await SendCommandAsync_Core<SetVoiceSettings.Data>("SET_VOICE_SETTINGS", args);
 
         public async Task SendCommandAsync(SetCertifiedDevices.Args args) =>
             await SendCommandAsync_Core<object>("SET_CERTIFIED_DEVICES", args, false);
