@@ -3,7 +3,7 @@
 using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Commands {
-    public class GetChannelsCommand {
+    public class GetChannelsCommand : ICommand<GetChannelsCommand.Args, GetChannelsCommand.Data> {
         public class Args {
             public string guild_id { get; set; }
         }

@@ -3,7 +3,7 @@
 using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Commands {
-    public class GetGuildCommand {
+    public class GetGuildCommand : ICommand<GetGuildCommand.Args, GetGuildCommand.Data> {
         public class Args {
             public string guild_id { get; set; }
             public int? timeout { get; set; }

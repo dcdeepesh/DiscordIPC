@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace Dec.DiscordIPC.Commands {
-    public class AuthorizeCommand {
+    public class AuthorizeCommand : ICommand<AuthorizeCommand.Args, AuthorizeCommand.Data> {
         public class Args {
             public List<string> scopes { get; set; }
             public string client_id { get; set; }

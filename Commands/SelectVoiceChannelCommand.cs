@@ -1,5 +1,5 @@
 ﻿namespace Dec.DiscordIPC.Commands {
-    public class SelectVoiceChannelCommand {
+    public class SelectVoiceChannelCommand : ICommand<SelectVoiceChannelCommand.Args, SelectVoiceChannelCommand.Data> {
         public class Args {
             public string channel_id { get; set; }
             public int? timeout { get; set; }
