@@ -2,6 +2,9 @@
 
 [![Nuget badge](https://img.shields.io/nuget/v/Dec.DiscordIPC)](https://www.nuget.org/packages/Dec.DiscordIPC/)
 
+> After months of being dormant, DiscordIPC is now back into active development (hooray!).
+> It is currently going through a complete architectural overhaul.
+
 DiscordIPC is a wrapper for Discord's IPC-based RPC. It supports all commands and events unlike the other wrappers that support only presence related commands and events.
 
 ## Before you use it
@@ -11,7 +14,6 @@ Because Discord's RPC is still under private beta, there are many inconsistencie
   - [Adding to your project](#adding-to-your-project)
   - [Usage](#usage)
   - [Problems and changes](#problems-and-changes)
-    - [Solving these problems](#solving-these-problems)
   - [Updates and contributing](#updates-and-contributing)
   - [Queries and contact](#queries-and-contact)
 
@@ -88,7 +90,7 @@ Make sure to include the `rpc` scope when authorizing your app.
 See the [complete usage guide](Documentation/Usage.md).
 
 ## Problems and changes
-The RPC hasn't been officially released by Discord yet, which is why DiscordIPC uses the IPC directly, which poses problems of its own. Because it's still unofficial, Discord's documention about RPC isn't complete, and at times outdated. This means any changes in the implementation are not guaranteed to be documented. It also means that some things in DiscordIPC may break every now and then.
+The RPC hasn't been officially released by Discord yet, which is why DiscordIPC uses the IPC directly, which poses problems of its own. Because it's still unofficial, Discord's documentation about RPC isn't complete, and at times outdated. This means any changes in the implementation are not guaranteed to be documented. It also means that some things in DiscordIPC may break every now and then.
 
 That being said, don't get the impression that DiscordIPC can't be reliably used at all. For the most part, these changes aren't breaking, the fundamental flow of IPC remains the same. So you can use it to build your own applications and it will work seamlessly. But still **think of it as testing something in it's beta stage, where things may break out of nowhere.**
 
@@ -98,4 +100,4 @@ DiscordIPC is certainly not in a mature state and will never be, because of the 
 There are no strict requirements for pull requests and contributions. Just keep your commits restricted to a single fundamental change and commit messages clean.
 
 ## Queries and contact
-If there's anything that you didn't understand from the documentation, or want to ask anything else about DiscordIPC directly to me, you can add and DM me on Discord (`Krove#7669`).
+If there's anything that you don't understand from the documentation, or want to ask anything else about DiscordIPC directly to me, you can add and DM me on Discord (`Krove#5477`).
