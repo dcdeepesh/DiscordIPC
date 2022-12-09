@@ -1,8 +1,8 @@
 ﻿namespace Dec.DiscordIPC.Commands {
-    public class GetSelectedVoiceChannel {
+    public class GetSelectedVoiceChannelCommand {
         // No arguments; dummy
         public class Args { }
 
-        public class Data : GetChannel.Data { }
+        public class Data : GetChannelCommand.Data { }
     }
 }

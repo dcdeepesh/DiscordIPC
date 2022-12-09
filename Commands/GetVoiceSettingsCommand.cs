@@ -1,7 +1,7 @@
 ﻿using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Commands {
-    public class GetVoiceSettings {
+    public class GetVoiceSettingsCommand {
         // No arguments; dummy
         public class Args { }
 

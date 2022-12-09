@@ -3,7 +3,7 @@
 using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Commands {
-    public class Authenticate {
+    public class AuthenticateCommand {
         public class Args {
             public string access_token { get; set; }
         }

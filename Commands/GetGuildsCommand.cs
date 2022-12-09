@@ -3,7 +3,7 @@
 using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Commands {
-    public class GetGuilds {
+    public class GetGuildsCommand {
         // No arguments; dummy
         public class Args { }
 

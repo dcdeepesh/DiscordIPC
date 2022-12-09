@@ -25,52 +25,52 @@ namespace Dec.DiscordIPC {
 
         #region Commands
 
-        public async Task<Authorize.Data> SendCommandAsync(Authorize.Args args) =>
-            await SendCommandAsync_Core<Authorize.Data>("AUTHORIZE", args);
+        public async Task<AuthorizeCommand.Data> SendCommandAsync(AuthorizeCommand.Args args) =>
+            await SendCommandAsync_Core<AuthorizeCommand.Data>("AUTHORIZE", args);
 
-        public async Task<Authenticate.Data> SendCommandAsync(Authenticate.Args args) =>
-            await SendCommandAsync_Core<Authenticate.Data>("AUTHENTICATE", args);
+        public async Task<AuthenticateCommand.Data> SendCommandAsync(AuthenticateCommand.Args args) =>
+            await SendCommandAsync_Core<AuthenticateCommand.Data>("AUTHENTICATE", args);
 
-        public async Task<GetGuild.Data> SendCommandAsync(GetGuild.Args args) =>
-            await SendCommandAsync_Core<GetGuild.Data>("GET_GUILD", args);
+        public async Task<GetGuildCommand.Data> SendCommandAsync(GetGuildCommand.Args args) =>
+            await SendCommandAsync_Core<GetGuildCommand.Data>("GET_GUILD", args);
 
-        public async Task<GetGuilds.Data> SendCommandAsync(GetGuilds.Args _) =>
-            await SendCommandAsync_Core<GetGuilds.Data>("GET_GUILDS", null);
+        public async Task<GetGuildsCommand.Data> SendCommandAsync(GetGuildsCommand.Args _) =>
+            await SendCommandAsync_Core<GetGuildsCommand.Data>("GET_GUILDS", null);
 
-        public async Task<GetChannel.Data> SendCommandAsync(GetChannel.Args args) =>
-            await SendCommandAsync_Core<GetChannel.Data>("GET_CHANNEL", args);
+        public async Task<GetChannelCommand.Data> SendCommandAsync(GetChannelCommand.Args args) =>
+            await SendCommandAsync_Core<GetChannelCommand.Data>("GET_CHANNEL", args);
 
-        public async Task<GetChannels.Data> SendCommandAsync(GetChannels.Args args) =>
-            await SendCommandAsync_Core<GetChannels.Data>("GET_CHANNELS", args);
+        public async Task<GetChannelsCommand.Data> SendCommandAsync(GetChannelsCommand.Args args) =>
+            await SendCommandAsync_Core<GetChannelsCommand.Data>("GET_CHANNELS", args);
 
-        public async Task<SetUserVoiceSettings.Data> SendCommandAsync(SetUserVoiceSettings.Args args) =>
-            await SendCommandAsync_Core<SetUserVoiceSettings.Data>("SET_USER_VOICE_SETTINGS", args);
+        public async Task<SetUserVoiceSettingsCommand.Data> SendCommandAsync(SetUserVoiceSettingsCommand.Args args) =>
+            await SendCommandAsync_Core<SetUserVoiceSettingsCommand.Data>("SET_USER_VOICE_SETTINGS", args);
 
-        public async Task<SelectVoiceChannel.Data> SendCommandAsync(SelectVoiceChannel.Args args) =>
-             await SendCommandAsync_Core<SelectVoiceChannel.Data>("SELECT_VOICE_CHANNEL", args);
+        public async Task<SelectVoiceChannelCommand.Data> SendCommandAsync(SelectVoiceChannelCommand.Args args) =>
+             await SendCommandAsync_Core<SelectVoiceChannelCommand.Data>("SELECT_VOICE_CHANNEL", args);
 
-        public async Task<GetSelectedVoiceChannel.Data> SendCommandAsync(GetSelectedVoiceChannel.Args _) =>
-            await SendCommandAsync_Core<GetSelectedVoiceChannel.Data>("GET_SELECTED_VOICE_CHANNEL", null);
+        public async Task<GetSelectedVoiceChannelCommand.Data> SendCommandAsync(GetSelectedVoiceChannelCommand.Args _) =>
+            await SendCommandAsync_Core<GetSelectedVoiceChannelCommand.Data>("GET_SELECTED_VOICE_CHANNEL", null);
 
-        public async Task<SelectTextChannel.Data> SendCommandAsync(SelectTextChannel.Args args) =>
-            await SendCommandAsync_Core<SelectTextChannel.Data>("SELECT_TEXT_CHANNEL", args);
+        public async Task<SelectTextChannelCommand.Data> SendCommandAsync(SelectTextChannelCommand.Args args) =>
+            await SendCommandAsync_Core<SelectTextChannelCommand.Data>("SELECT_TEXT_CHANNEL", args);
 
-        public async Task<GetVoiceSettings.Data> SendCommandAsync(GetVoiceSettings.Args _) =>
-            await SendCommandAsync_Core<GetVoiceSettings.Data>("GET_VOICE_SETTINGS", null);
+        public async Task<GetVoiceSettingsCommand.Data> SendCommandAsync(GetVoiceSettingsCommand.Args _) =>
+            await SendCommandAsync_Core<GetVoiceSettingsCommand.Data>("GET_VOICE_SETTINGS", null);
 
-        public async Task<SetVoiceSettings.Data> SendCommandAsync(SetVoiceSettings.Args args) =>
-            await SendCommandAsync_Core<SetVoiceSettings.Data>("SET_VOICE_SETTINGS", args);
+        public async Task<SetVoiceSettingsCommand.Data> SendCommandAsync(SetVoiceSettingsCommand.Args args) =>
+            await SendCommandAsync_Core<SetVoiceSettingsCommand.Data>("SET_VOICE_SETTINGS", args);
 
-        public async Task SendCommandAsync(SetCertifiedDevices.Args args) =>
+        public async Task SendCommandAsync(SetCertifiedDevicesCommand.Args args) =>
             await SendCommandAsync_Core<object>("SET_CERTIFIED_DEVICES", args, false);
 
-        public async Task SendCommandAsync(SetActivity.Args args) =>
+        public async Task SendCommandAsync(SetActivityCommand.Args args) =>
             await SendCommandAsync_Core<object>("SET_ACTIVITY", args, false);
 
-        public async Task SendCommandAsync(SendActivityJoinInvite.Args args) =>
+        public async Task SendCommandAsync(SendActivityJoinInviteCommand.Args args) =>
             await SendCommandAsync_Core<object>("SET_ACTIVITY_JOIN_INVITE", args, false);
 
-        public async Task SendCommandAsync(CloseActivityRequest.Args args) =>
+        public async Task SendCommandAsync(CloseActivityRequestCommand.Args args) =>
             await SendCommandAsync_Core<object>("CLOSE_ACTIVITY_REQUEST", args, false);
 
         private async Task<T> SendCommandAsync_Core<T>(

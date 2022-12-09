@@ -4,7 +4,7 @@ using Dec.DiscordIPC.Entities;
 using Dec.DiscordIPC.Events;
 
 namespace Dec.DiscordIPC.Commands {
-    public class GetChannel {
+    public class GetChannelCommand {
         public class Args {
             public string channel_id { get; set; }
         }

@@ -1,5 +1,5 @@
 ﻿namespace Dec.DiscordIPC.Commands {
-    public class SetUserVoiceSettings {
+    public class SetUserVoiceSettingsCommand {
         public class Args {
             public string user_id { get; set; }
             public Pan pan { get; set; }
