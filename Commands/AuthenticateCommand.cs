@@ -5,7 +5,8 @@ using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Commands {
     public class AuthenticateCommand : ICommand<AuthenticateCommand.Args, AuthenticateCommand.Data> {
-        
+
+        public string Name => "AUTHENTICATE";
         public Args Arguments { get; set; }
         
         public static AuthenticateCommand Create(Action<Args> argsBuilder) {

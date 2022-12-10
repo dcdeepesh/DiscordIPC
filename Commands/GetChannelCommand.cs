@@ -7,6 +7,7 @@ using Dec.DiscordIPC.Events;
 namespace Dec.DiscordIPC.Commands {
     public class GetChannelCommand : ICommand<GetChannelCommand.Args, GetChannelCommand.Data> {
         
+        public string Name => "GET_CHANNEL";
         public Args Arguments { get; set; }
         
         public static GetChannelCommand Create(Action<Args> argsBuilder) {

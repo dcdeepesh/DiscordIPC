@@ -3,6 +3,7 @@
 namespace Dec.DiscordIPC.Commands {
     public class SelectTextChannelCommand : ICommand<SelectTextChannelCommand.Args, SelectTextChannelCommand.Data> {
         
+        public string Name => "SELECT_TEXT_CHANNEL";
         public Args Arguments { get; set; }
         
         public static SelectTextChannelCommand Create(Action<Args> argsBuilder) {

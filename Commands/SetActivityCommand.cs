@@ -4,6 +4,7 @@ using Dec.DiscordIPC.Entities;
 namespace Dec.DiscordIPC.Commands {
     public class SetActivityCommand : ICommand<SetActivityCommand.Args> {
         
+        public string Name => "SET_ACTIVITY";
         public Args Arguments { get; set; }
         
         public static SetActivityCommand Create(Action<Args> argsBuilder) {

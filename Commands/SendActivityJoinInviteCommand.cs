@@ -3,6 +3,7 @@
 namespace Dec.DiscordIPC.Commands {
     public class SendActivityJoinInviteCommand : ICommand<SendActivityJoinInviteCommand.Args> {
         
+        public string Name => "SEND_ACTIVITY_JOIN_INVITE";
         public Args Arguments { get; set; }
         
         public static SendActivityJoinInviteCommand Create(Action<Args> argsBuilder) {

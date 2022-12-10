@@ -6,6 +6,7 @@ using Dec.DiscordIPC.Entities;
 namespace Dec.DiscordIPC.Commands {
     public class GetChannelsCommand : ICommand<GetChannelsCommand.Args, GetChannelsCommand.Data> {
         
+        public string Name => "GET_CHANNELS";
         public Args Arguments { get; set; }
         
         public static GetChannelsCommand Create(Action<Args> argsBuilder) {

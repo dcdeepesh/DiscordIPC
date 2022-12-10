@@ -6,6 +6,7 @@ using Dec.DiscordIPC.Entities;
 namespace Dec.DiscordIPC.Commands {
     public class GetGuildCommand : ICommand<GetGuildCommand.Args, GetGuildCommand.Data> {
         
+        public string Name => "GET_GUILD";
         public Args Arguments { get; set; }
         
         public static GetGuildCommand Create(Action<Args> argsBuilder) {

@@ -3,6 +3,7 @@
 namespace Dec.DiscordIPC.Commands {
     public class SelectVoiceChannelCommand : ICommand<SelectVoiceChannelCommand.Args, SelectVoiceChannelCommand.Data> {
         
+        public string Name => "SELECT_VOICE_CHANNEL";
         public Args Arguments { get; set; }
         
         public static SelectVoiceChannelCommand Create(Action<Args> argsBuilder) {

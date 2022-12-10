@@ -4,6 +4,7 @@ using Dec.DiscordIPC.Entities;
 namespace Dec.DiscordIPC.Commands {
     public class SetVoiceSettingsCommand : ICommand<SetVoiceSettingsCommand.Args, SetVoiceSettingsCommand.Data> {
         
+        public string Name => "SET_VOICE_SETTINGS";
         public Args Arguments { get; set; }
         
         public static SetVoiceSettingsCommand Create(Action<Args> argsBuilder) {

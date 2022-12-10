@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace Dec.DiscordIPC.Commands {
     public class AuthorizeCommand : ICommand<AuthorizeCommand.Args, AuthorizeCommand.Data> {
         
+        public string Name => "AUTHORIZE";
         public Args Arguments { get; set; }
         
         public static AuthorizeCommand Create(Action<Args> argsBuilder) {

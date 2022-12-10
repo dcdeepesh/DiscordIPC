@@ -3,6 +3,7 @@
 namespace Dec.DiscordIPC.Commands {
     public class GetVoiceSettingsCommand : ICommand<GetVoiceSettingsCommand.Args, GetVoiceSettingsCommand.Data> {
         
+        public string Name => "GET_VOICE_SETTINGS";
         public Args Arguments { get; set; }
         
         public static Args Create() => new();
