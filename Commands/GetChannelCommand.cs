@@ -1,10 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using Dec.DiscordIPC.Entities;
 using Dec.DiscordIPC.Events;
 
 namespace Dec.DiscordIPC.Commands {
     public class GetChannelCommand : ICommand<GetChannelCommand.Args, GetChannelCommand.Data> {
+        
+        public static Args Create(Action<Args> argsBuilder) {
+            Args args = new();
+            argsBuilder(args);
+            return args;
+        }
+        
         public class Args {
             public string channel_id { get; set; }
         }

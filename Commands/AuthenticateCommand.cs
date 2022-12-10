@@ -1,9 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Commands {
     public class AuthenticateCommand : ICommand<AuthenticateCommand.Args, AuthenticateCommand.Data> {
+        
+        public static Args Create(Action<Args> argsBuilder) {
+            Args args = new();
+            argsBuilder(args);
+            return args;
+        }
+        
         public class Args {
             public string access_token { get; set; }
         }

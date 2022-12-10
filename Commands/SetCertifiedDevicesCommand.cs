@@ -1,7 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Dec.DiscordIPC.Commands {
     public class SetCertifiedDevicesCommand : ICommand<SetCertifiedDevicesCommand.Args> {
+        
+        public static Args Create(Action<Args> argsBuilder) {
+            Args args = new();
+            argsBuilder(args);
+            return args;
+        }
+        
         public class Args {
             public List<Device> devices { get; set; }
         }
