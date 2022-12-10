@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace Dec.DiscordIPC.Commands {
-    public class SetCertifiedDevicesCommand {
+    public class SetCertifiedDevicesCommand : ICommand<SetCertifiedDevicesCommand.Args> {
         public class Args {
             public List<Device> devices { get; set; }
         }
