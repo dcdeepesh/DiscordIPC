@@ -2,6 +2,8 @@
     public class GetSelectedVoiceChannelCommand :
         ICommand<GetSelectedVoiceChannelCommand.Args, GetSelectedVoiceChannelCommand.Data> {
         
+        public Args Arguments { get; set; }
+        
         public static Args Create() => new();
 
         // No arguments; dummy

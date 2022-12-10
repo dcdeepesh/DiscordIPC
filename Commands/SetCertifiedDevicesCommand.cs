@@ -4,6 +4,8 @@ using System.Collections.Generic;
 namespace Dec.DiscordIPC.Commands {
     public class SetCertifiedDevicesCommand : ICommand<SetCertifiedDevicesCommand.Args> {
         
+        public Args Arguments { get; set; }
+        
         public static Args Create(Action<Args> argsBuilder) {
             Args args = new();
             argsBuilder(args);

@@ -5,6 +5,8 @@ using Dec.DiscordIPC.Entities;
 namespace Dec.DiscordIPC.Commands {
     public class GetGuildsCommand : ICommand<GetGuildsCommand.Args, GetGuildsCommand.Data>{
         
+        public Args Arguments { get; set; }
+        
         public static Args Create() => new();
         
         // No arguments; dummy
