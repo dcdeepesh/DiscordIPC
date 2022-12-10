@@ -46,7 +46,7 @@ namespace Dec.DiscordIPC.Core {
             EventHandler<Ready.Data> readyListener = (sender, data) => readyWaitHandle.Set();
             OnReady += readyListener;
 
-            await SendMessageAsync(IPCMessage.Handshake(Json.SerializeToBytes(new {
+            await SendMessageAsync(new IPCMessage(OpCode.HANDSHAKE, Json.SerializeToBytes(new {
                 client_id = clientId,
                 v = "1",
                 nonce = Guid.NewGuid().ToString()
