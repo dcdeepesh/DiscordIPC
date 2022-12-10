@@ -26,7 +26,7 @@ namespace Dec.DiscordIPC.Commands {
         public class OAuth2Scopes {
             public static readonly string
                 ACTIVITIES_READ = "activities.read",
-                ACTIVITIES_WRITE = "acrivities.write",
+                ACTIVITIES_WRITE = "activities.write",
                 APPLICATIONS_BUILDS_READ = "applications.builds.read",
                 APPLICATIONS_BUILDS_UPLOAD = "applications.builds.upload",
                 APPLICATIONS_COMMANDS = "applications.commands",
