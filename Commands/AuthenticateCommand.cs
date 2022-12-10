@@ -8,10 +8,12 @@ namespace Dec.DiscordIPC.Commands {
         
         public Args Arguments { get; set; }
         
-        public static Args Create(Action<Args> argsBuilder) {
-            Args args = new();
-            argsBuilder(args);
-            return args;
+        public static AuthenticateCommand Create(Action<Args> argsBuilder) {
+            AuthenticateCommand command = new() {
+                Arguments = new Args()
+            };
+            argsBuilder(command.Arguments);
+            return command;
         }
         
         public class Args {

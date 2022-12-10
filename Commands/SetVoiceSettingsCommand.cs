@@ -6,10 +6,12 @@ namespace Dec.DiscordIPC.Commands {
         
         public Args Arguments { get; set; }
         
-        public static Args Create(Action<Args> argsBuilder) {
-            Args args = new();
-            argsBuilder(args);
-            return args;
+        public static SetVoiceSettingsCommand Create(Action<Args> argsBuilder) {
+            SetVoiceSettingsCommand command = new() {
+                Arguments = new Args()
+            };
+            argsBuilder(command.Arguments);
+            return command;
         }
         
         public class Args : VoiceSettings { }

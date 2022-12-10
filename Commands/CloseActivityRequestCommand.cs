@@ -4,11 +4,13 @@ namespace Dec.DiscordIPC.Commands {
     public class CloseActivityRequestCommand : ICommand<CloseActivityRequestCommand.Args> {
         
         public Args Arguments { get; set; }
-        
-        public static Args Create(Action<Args> argsBuilder) {
-            Args args = new();
-            argsBuilder(args);
-            return args;
+
+        public static CloseActivityRequestCommand Create(Action<Args> argsBuilder) {
+            CloseActivityRequestCommand command = new() {
+                Arguments = new Args()
+            };
+            argsBuilder(command.Arguments);
+            return command;
         }
 
         public class Args {
