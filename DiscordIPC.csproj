@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+      <LangVersion>10.0</LangVersion>
     <OutputType>Library</OutputType>
     <RootNamespace>Dec.DiscordIPC</RootNamespace>
 	  <AssemblyTitle>DiscordIPC</AssemblyTitle>
