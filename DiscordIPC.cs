@@ -27,29 +27,29 @@ namespace Dec.DiscordIPC {
 
         public async Task<TData> SendCommandAsync<TArgs, TData>(ICommand<TArgs, TData> command) {
             var nonce = Guid.NewGuid().ToString();
-            dynamic payload;
+            CommandPayload payload;
             var args = command.Arguments;
             string cmd = command.Name;
             if (args is null)
-                payload = new { cmd, nonce };
+                payload = new CommandPayload() { cmd=cmd, nonce=nonce };
             else
-                payload = new { cmd, nonce, args };
+                payload = new CommandPayload() { cmd=cmd, nonce=nonce, args=args };
         
-            JsonElement response = await SendCommandWeakTypeAsync(payload);
+            JsonElement response = await SendCommandPayloadAsync(payload);
             return response.GetProperty("data").ToObject<TData>();
         }
         
         public async Task SendCommandAsync<TArgs>(ICommand<TArgs> command) {
             var nonce = Guid.NewGuid().ToString();
-            dynamic payload;
+            CommandPayload payload;
             var args = command.Arguments;
             string cmd = command.Name;
             if (args is null)
-                payload = new { cmd, nonce };
+                payload = new CommandPayload { cmd=cmd, nonce=nonce };
             else
-                payload = new { cmd, nonce, args };
+                payload = new CommandPayload { cmd=cmd, nonce=nonce, args=args };
             
-            await SendCommandWeakTypeAsync(payload);
+            await SendCommandPayloadAsync(payload);
         }
 
         #endregion
@@ -112,13 +112,13 @@ namespace Dec.DiscordIPC {
 
         private async Task SubscribeAsync_Core(string evt, dynamic args) {
             var nonce = Guid.NewGuid().ToString();
-            dynamic payload;
+            CommandPayload payload;
             if (args is null)
-                payload = new { cmd = "SUBSCRIBE", nonce, evt };
+                payload = new CommandPayload { cmd = "SUBSCRIBE", nonce=nonce, evt=evt };
             else
-                payload = new { cmd = "SUBSCRIBE", nonce, evt, args };
+                payload = new CommandPayload { cmd = "SUBSCRIBE", nonce=nonce, evt=evt, args=args };
 
-            await SendCommandWeakTypeAsync(payload);
+            await SendCommandPayloadAsync(payload);
         }
 
         #endregion
@@ -181,13 +181,13 @@ namespace Dec.DiscordIPC {
 
         private async Task UnsubscribeAsync_Core(string evt, dynamic args) {
             var nonce = Guid.NewGuid().ToString();
-            dynamic payload;
+            CommandPayload payload;
             if (args is null)
-                payload = new { cmd = "UNSUBSCRIBE", nonce, evt, };
+                payload = new CommandPayload { cmd = "UNSUBSCRIBE", nonce=nonce, evt=evt, };
             else
-                payload = new { cmd = "UNSUBSCRIBE", nonce, evt, args };
+                payload = new CommandPayload { cmd = "UNSUBSCRIBE", nonce=nonce, evt=evt, args=args };
 
-            await SendCommandWeakTypeAsync(payload);
+            await SendCommandPayloadAsync(payload);
         }
 
         #endregion
