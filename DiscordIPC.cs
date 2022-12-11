@@ -48,7 +48,7 @@ namespace Dec.DiscordIPC {
 
         #region Event subscription
 
-        async Task SubscribeAsync<TArgs>(IEvent<TArgs> theEvent) {
+        public async Task SubscribeAsync<TArgs>(IEvent<TArgs> theEvent) {
             IpcPayload payload = new() {
                 cmd = "SUBSCRIBE",
                 nonce = Guid.NewGuid().ToString(),
@@ -63,7 +63,7 @@ namespace Dec.DiscordIPC {
 
         #region Event un-subscription
 
-        async Task UnsubscribeAsync<TArgs>(IEvent<TArgs> theEvent) {
+        public async Task UnsubscribeAsync<TArgs>(IEvent<TArgs> theEvent) {
             IpcPayload payload = new() {
                 cmd = "UNSUBSCRIBE",
                 nonce = Guid.NewGuid().ToString(),
