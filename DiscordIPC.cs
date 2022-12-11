@@ -48,58 +48,58 @@ namespace Dec.DiscordIPC {
 
         #region Event subscription
 
-        public async Task SubscribeAsync(GuildStatus.Args args) =>
+        public async Task SubscribeAsync(GuildStatusEvent.Args args) =>
             await SubscribeAsync_Core("GUILD_STATUS", args);
 
-        public async Task SubscribeAsync(GuildCreate.Args _) =>
+        public async Task SubscribeAsync(GuildCreateEvent.Args _) =>
             await SubscribeAsync_Core("GUILD_CREATE", null);
 
-        public async Task SubscribeAsync(ChannelCreate.Args _) =>
+        public async Task SubscribeAsync(ChannelCreateEvent.Args _) =>
             await SubscribeAsync_Core("CHANNEL_CREATE", null);
 
-        public async Task SubscribeAsync(VoiceChannelSelect.Args _) =>
+        public async Task SubscribeAsync(VoiceChannelSelectEvent.Args _) =>
             await SubscribeAsync_Core("VOICE_CHANNEL_SELECT", null);
 
-        public async Task SubscribeAsync(VoiceStateCreate.Args args) =>
+        public async Task SubscribeAsync(VoiceStateCreateEvent.Args args) =>
             await SubscribeAsync_Core("VOICE_STATE_CREATE", args);
 
-        public async Task SubscribeAsync(VoiceStateUpdate.Args args) =>
+        public async Task SubscribeAsync(VoiceStateUpdateEvent.Args args) =>
             await SubscribeAsync_Core("VOICE_STATE_UPDATE", args);
 
-        public async Task SubscribeAsync(VoiceStateDelete.Args args) =>
+        public async Task SubscribeAsync(VoiceStateDeleteEvent.Args args) =>
             await SubscribeAsync_Core("VOICE_STATE_DELETE", args);
 
-        public async Task SubscribeAsync(VoiceSettingsUpdate.Args _) =>
+        public async Task SubscribeAsync(VoiceSettingsUpdateEvent.Args _) =>
             await SubscribeAsync_Core("VOICE_SETTINGS_UPDATE", null);
 
-        public async Task SubscribeAsync(VoiceConnectionStatus.Args _) =>
+        public async Task SubscribeAsync(VoiceConnectionStatusEvent.Args _) =>
             await SubscribeAsync_Core("VOICE_CONNECTION_STATUS", null);
 
-        public async Task SubscribeAsync(SpeakingStart.Args args) =>
+        public async Task SubscribeAsync(SpeakingStartEvent.Args args) =>
             await SubscribeAsync_Core("SPEAKING_START", args);
 
-        public async Task SubscribeAsync(SpeakingStop.Args args) =>
+        public async Task SubscribeAsync(SpeakingStopEvent.Args args) =>
             await SubscribeAsync_Core("SPEAKING_STOP", args);
 
-        public async Task SubscribeAsync(MessageCreate.Args args) =>
+        public async Task SubscribeAsync(MessageCreateEvent.Args args) =>
             await SubscribeAsync_Core("MESSAGE_CREATE", args);
 
-        public async Task SubscribeAsync(MessageUpdate.Args args) =>
+        public async Task SubscribeAsync(MessageUpdateEvent.Args args) =>
             await SubscribeAsync_Core("MESSAGE_UPDATE", args);
 
-        public async Task SubscribeAsync(MessageDelete.Args args) =>
+        public async Task SubscribeAsync(MessageDeleteEvent.Args args) =>
             await SubscribeAsync_Core("MESSAGE_DELETE", args);
 
-        public async Task SubscribeAsync(NotificationCreate.Args _) =>
+        public async Task SubscribeAsync(NotificationCreateEvent.Args _) =>
             await SubscribeAsync_Core("NOTIFICATION_CREATE", null);
 
-        public async Task SubscribeAsync(ActivityJoin.Args _) =>
+        public async Task SubscribeAsync(ActivityJoinEvent.Args _) =>
             await SubscribeAsync_Core("ACTIVITY_JOIN", null);
 
-        public async Task SubscribeAsync(ActivitySpectate.Args _) =>
+        public async Task SubscribeAsync(ActivitySpectateEvent.Args _) =>
             await SubscribeAsync_Core("ACTIVITY_SPECTATE", null);
 
-        public async Task SubscribeAsync(ActivityJoinRequest.Args _) =>
+        public async Task SubscribeAsync(ActivityJoinRequestEvent.Args _) =>
             await SubscribeAsync_Core("ACTIVITY_JOIN_REQUEST", null);
 
         private async Task SubscribeAsync_Core(string evt, dynamic args) {
@@ -117,58 +117,58 @@ namespace Dec.DiscordIPC {
 
         #region Event un-subscription
 
-        public async Task UnsubscribeAsync(GuildStatus.Args args) =>
+        public async Task UnsubscribeAsync(GuildStatusEvent.Args args) =>
             await UnsubscribeAsync_Core("GUILD_STATUS", args);
 
-        public async Task UnsubscribeAsync(GuildCreate.Args _) =>
+        public async Task UnsubscribeAsync(GuildCreateEvent.Args _) =>
             await UnsubscribeAsync_Core("GUILD_CREATE", null);
 
-        public async Task UnsubscribeAsync(ChannelCreate.Args _) =>
+        public async Task UnsubscribeAsync(ChannelCreateEvent.Args _) =>
             await UnsubscribeAsync_Core("CHANNEL_CREATE", null);
 
-        public async Task UnsubscribeAsync(VoiceChannelSelect.Args _) =>
+        public async Task UnsubscribeAsync(VoiceChannelSelectEvent.Args _) =>
             await UnsubscribeAsync_Core("VOICE_CHANNEL_SELECT", null);
 
-        public async Task UnsubscribeAsync(VoiceStateCreate.Args args) =>
+        public async Task UnsubscribeAsync(VoiceStateCreateEvent.Args args) =>
             await UnsubscribeAsync_Core("VOICE_STATE_CREATE", args);
 
-        public async Task UnsubscribeAsync(VoiceStateUpdate.Args args) =>
+        public async Task UnsubscribeAsync(VoiceStateUpdateEvent.Args args) =>
             await UnsubscribeAsync_Core("VOICE_STATE_UPDATE", args);
 
-        public async Task UnsubscribeAsync(VoiceStateDelete.Args args) =>
+        public async Task UnsubscribeAsync(VoiceStateDeleteEvent.Args args) =>
             await UnsubscribeAsync_Core("VOICE_STATE_DELETE", args);
 
-        public async Task UnsubscribeAsync(VoiceSettingsUpdate.Args _) =>
+        public async Task UnsubscribeAsync(VoiceSettingsUpdateEvent.Args _) =>
             await UnsubscribeAsync_Core("VOICE_SETTINGS_UPDATE", null);
 
-        public async Task UnsubscribeAsync(VoiceConnectionStatus.Args _) =>
+        public async Task UnsubscribeAsync(VoiceConnectionStatusEvent.Args _) =>
             await UnsubscribeAsync_Core("VOICE_CONNECTION_STATUS", null);
 
-        public async Task UnsubscribeAsync(SpeakingStart.Args args) =>
+        public async Task UnsubscribeAsync(SpeakingStartEvent.Args args) =>
             await UnsubscribeAsync_Core("SPEAKING_START", args);
 
-        public async Task UnsubscribeAsync(SpeakingStop.Args args) =>
+        public async Task UnsubscribeAsync(SpeakingStopEvent.Args args) =>
             await UnsubscribeAsync_Core("SPEAKING_STOP", args);
 
-        public async Task UnsubscribeAsync(MessageCreate.Args args) =>
+        public async Task UnsubscribeAsync(MessageCreateEvent.Args args) =>
             await UnsubscribeAsync_Core("MESSAGE_CREATE", args);
 
-        public async Task UnsubscribeAsync(MessageUpdate.Args args) =>
+        public async Task UnsubscribeAsync(MessageUpdateEvent.Args args) =>
             await UnsubscribeAsync_Core("MESSAGE_UPDATE", args);
 
-        public async Task UnsubscribeAsync(MessageDelete.Args args) =>
+        public async Task UnsubscribeAsync(MessageDeleteEvent.Args args) =>
             await UnsubscribeAsync_Core("MESSAGE_DELETE", args);
 
-        public async Task UnsubscribeAsync(NotificationCreate.Args _) =>
+        public async Task UnsubscribeAsync(NotificationCreateEvent.Args _) =>
             await UnsubscribeAsync_Core("NOTIFICATION_CREATE", null);
 
-        public async Task UnsubscribeAsync(ActivityJoin.Args _) =>
+        public async Task UnsubscribeAsync(ActivityJoinEvent.Args _) =>
             await UnsubscribeAsync_Core("ACTIVITY_JOIN", null);
 
-        public async Task UnsubscribeAsync(ActivitySpectate.Args _) =>
+        public async Task UnsubscribeAsync(ActivitySpectateEvent.Args _) =>
             await UnsubscribeAsync_Core("ACTIVITY_SPECTATE", null);
 
-        public async Task UnsubscribeAsync(ActivityJoinRequest.Args _) =>
+        public async Task UnsubscribeAsync(ActivityJoinRequestEvent.Args _) =>
             await UnsubscribeAsync_Core("ACTIVITY_JOIN_REQUEST", null);
 
         private async Task UnsubscribeAsync_Core(string evt, dynamic args) {

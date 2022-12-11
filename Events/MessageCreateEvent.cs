@@ -1,7 +1,7 @@
 ﻿using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events {
-    public class MessageCreate {
+    public class MessageCreateEvent {
         public class Args {
             public string channel_id { get; set; }
         }

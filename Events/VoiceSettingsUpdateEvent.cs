@@ -1,7 +1,7 @@
 ﻿using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events {
-    public class VoiceSettingsUpdate {
+    public class VoiceSettingsUpdateEvent {
         // No arguments; dummy
         public class Args { }
 

@@ -43,7 +43,7 @@ namespace Dec.DiscordIPC.Core {
             messageReadLoop.Start();
 
             EventWaitHandle readyWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
-            EventHandler<Ready.Data> readyListener = (sender, data) => readyWaitHandle.Set();
+            EventHandler<ReadyEvent.Data> readyListener = (sender, data) => readyWaitHandle.Set();
             OnReady += readyListener;
 
             await SendPacketAsync(new IpcRawPacket(OpCode.HANDSHAKE, new {
@@ -65,26 +65,26 @@ namespace Dec.DiscordIPC.Core {
 
         #region Events
 
-        public event EventHandler<Ready.Data> OnReady;
+        public event EventHandler<ReadyEvent.Data> OnReady;
         // Event ERROR is handled differently
-        public event EventHandler<GuildStatus.Data> OnGuildStatus;
-        public event EventHandler<GuildCreate.Data> OnGuildCreate;
-        public event EventHandler<ChannelCreate.Data> OnChannelCreate;
-        public event EventHandler<VoiceChannelSelect.Data> OnVoiceChannelSelect;
-        public event EventHandler<VoiceStateCreate.Data> OnVoiceStateCreate;
-        public event EventHandler<VoiceStateUpdate.Data> OnVoiceStateUpdate;
-        public event EventHandler<VoiceStateDelete.Data> OnVoiceStateDelete;
-        public event EventHandler<VoiceSettingsUpdate.Data> OnVoiceSettingsUpdate;
-        public event EventHandler<VoiceConnectionStatus.Data> OnVoiceConnectionStatus;
-        public event EventHandler<SpeakingStart.Data> OnSpeakingStart;
-        public event EventHandler<SpeakingStop.Data> OnSpeakingStop;
-        public event EventHandler<MessageCreate.Data> OnMessageCreate;
-        public event EventHandler<MessageUpdate.Data> OnMessageUpdate;
-        public event EventHandler<MessageDelete.Data> OnMessageDelete;
-        public event EventHandler<NotificationCreate.Data> OnNotificationCreate;
-        public event EventHandler<ActivityJoin.Data> OnActivityJoin;
-        public event EventHandler<ActivitySpectate.Data> OnActivitySpectate;
-        public event EventHandler<ActivityJoinRequest.Data> OnActivityJoinRequest;
+        public event EventHandler<GuildStatusEvent.Data> OnGuildStatus;
+        public event EventHandler<GuildCreateEvent.Data> OnGuildCreate;
+        public event EventHandler<ChannelCreateEvent.Data> OnChannelCreate;
+        public event EventHandler<VoiceChannelSelectEvent.Data> OnVoiceChannelSelect;
+        public event EventHandler<VoiceStateCreateEvent.Data> OnVoiceStateCreate;
+        public event EventHandler<VoiceStateUpdateEvent.Data> OnVoiceStateUpdate;
+        public event EventHandler<VoiceStateDeleteEvent.Data> OnVoiceStateDelete;
+        public event EventHandler<VoiceSettingsUpdateEvent.Data> OnVoiceSettingsUpdate;
+        public event EventHandler<VoiceConnectionStatusEvent.Data> OnVoiceConnectionStatus;
+        public event EventHandler<SpeakingStartEvent.Data> OnSpeakingStart;
+        public event EventHandler<SpeakingStopEvent.Data> OnSpeakingStop;
+        public event EventHandler<MessageCreateEvent.Data> OnMessageCreate;
+        public event EventHandler<MessageUpdateEvent.Data> OnMessageUpdate;
+        public event EventHandler<MessageDeleteEvent.Data> OnMessageDelete;
+        public event EventHandler<NotificationCreateEvent.Data> OnNotificationCreate;
+        public event EventHandler<ActivityJoinEvent.Data> OnActivityJoin;
+        public event EventHandler<ActivitySpectateEvent.Data> OnActivitySpectate;
+        public event EventHandler<ActivityJoinRequestEvent.Data> OnActivityJoinRequest;
 
         // More events on their way
 
@@ -92,79 +92,79 @@ namespace Dec.DiscordIPC.Core {
             JsonElement obj = Json.Deserialize<dynamic>(packet.Json).GetProperty("data");
             switch (evt) {
                 case "READY":
-                    OnReady?.Invoke(this, obj.ToObject<Ready.Data>());
+                    OnReady?.Invoke(this, obj.ToObject<ReadyEvent.Data>());
                     break;
 
                 case "GUILD_STATUS":
-                    OnGuildStatus?.Invoke(this, obj.ToObject<GuildStatus.Data>());
+                    OnGuildStatus?.Invoke(this, obj.ToObject<GuildStatusEvent.Data>());
                     break;
 
                 case "GUILD_CREATE":
-                    OnGuildCreate?.Invoke(this, obj.ToObject<GuildCreate.Data>());
+                    OnGuildCreate?.Invoke(this, obj.ToObject<GuildCreateEvent.Data>());
                     break;
 
                 case "CHANNEL_CREATE":
-                    OnChannelCreate?.Invoke(this, obj.ToObject<ChannelCreate.Data>());
+                    OnChannelCreate?.Invoke(this, obj.ToObject<ChannelCreateEvent.Data>());
                     break;
 
                 case "VOICE_CHANNEL_SELECT":
-                    OnVoiceChannelSelect?.Invoke(this, obj.ToObject<VoiceChannelSelect.Data>());
+                    OnVoiceChannelSelect?.Invoke(this, obj.ToObject<VoiceChannelSelectEvent.Data>());
                     break;
 
                 case "VOICE_STATE_CREATE":
-                    OnVoiceStateCreate?.Invoke(this, obj.ToObject<VoiceStateCreate.Data>());
+                    OnVoiceStateCreate?.Invoke(this, obj.ToObject<VoiceStateCreateEvent.Data>());
                     break;
 
                 case "VOICE_STATE_UPDATE":
-                    OnVoiceStateUpdate?.Invoke(this, obj.ToObject<VoiceStateUpdate.Data>());
+                    OnVoiceStateUpdate?.Invoke(this, obj.ToObject<VoiceStateUpdateEvent.Data>());
                     break;
 
                 case "VOICE_STATE_DELETE":
-                    OnVoiceStateDelete?.Invoke(this, obj.ToObject<VoiceStateDelete.Data>());
+                    OnVoiceStateDelete?.Invoke(this, obj.ToObject<VoiceStateDeleteEvent.Data>());
                     break;
 
                 case "VOICE_SETTINGS_UPDATE":
-                    OnVoiceSettingsUpdate?.Invoke(this, obj.ToObject<VoiceSettingsUpdate.Data>());
+                    OnVoiceSettingsUpdate?.Invoke(this, obj.ToObject<VoiceSettingsUpdateEvent.Data>());
                     break;
 
                 case "VOICE_CONNECTION_STATUS":
-                    OnVoiceConnectionStatus?.Invoke(this, obj.ToObject<VoiceConnectionStatus.Data>());
+                    OnVoiceConnectionStatus?.Invoke(this, obj.ToObject<VoiceConnectionStatusEvent.Data>());
                     break;
 
                 case "SPEAKING_START":
-                    OnSpeakingStart?.Invoke(this, obj.ToObject<SpeakingStart.Data>());
+                    OnSpeakingStart?.Invoke(this, obj.ToObject<SpeakingStartEvent.Data>());
                     break;
 
                 case "SPEAKING_STOP":
-                    OnSpeakingStop?.Invoke(this, obj.ToObject<SpeakingStop.Data>());
+                    OnSpeakingStop?.Invoke(this, obj.ToObject<SpeakingStopEvent.Data>());
                     break;
 
                 case "MESSAGE_CREATE":
-                    OnMessageCreate?.Invoke(this, obj.ToObject<MessageCreate.Data>());
+                    OnMessageCreate?.Invoke(this, obj.ToObject<MessageCreateEvent.Data>());
                     break;
 
                 case "MESSAGE_UPDATE":
-                    OnMessageUpdate?.Invoke(this, obj.ToObject<MessageUpdate.Data>());
+                    OnMessageUpdate?.Invoke(this, obj.ToObject<MessageUpdateEvent.Data>());
                     break;
 
                 case "MESSAGE_DELETE":
-                    OnMessageDelete?.Invoke(this, obj.ToObject<MessageDelete.Data>());
+                    OnMessageDelete?.Invoke(this, obj.ToObject<MessageDeleteEvent.Data>());
                     break;
 
                 case "NOTIFICATION_CREATE":
-                    OnNotificationCreate?.Invoke(this, obj.ToObject<NotificationCreate.Data>());
+                    OnNotificationCreate?.Invoke(this, obj.ToObject<NotificationCreateEvent.Data>());
                     break;
 
                 case "ACTIVITY_JOIN":
-                    OnActivityJoin?.Invoke(this, obj.ToObject<ActivityJoin.Data>());
+                    OnActivityJoin?.Invoke(this, obj.ToObject<ActivityJoinEvent.Data>());
                     break;
 
                 case "ACTIVITY_SPECTATE":
-                    OnActivitySpectate?.Invoke(this, obj.ToObject<ActivitySpectate.Data>());
+                    OnActivitySpectate?.Invoke(this, obj.ToObject<ActivitySpectateEvent.Data>());
                     break;
 
                 case "ACTIVITY_JOIN_REQUEST":
-                    OnActivityJoinRequest?.Invoke(this, obj.ToObject<ActivityJoinRequest.Data>());
+                    OnActivityJoinRequest?.Invoke(this, obj.ToObject<ActivityJoinRequestEvent.Data>());
                     break;
             }
         }

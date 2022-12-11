@@ -1,5 +1,5 @@
 ﻿namespace Dec.DiscordIPC.Events {
-    public class SpeakingStart {
+    public class SpeakingStartEvent {
         public class Args {
             public string channel_id { get; set; }
         }

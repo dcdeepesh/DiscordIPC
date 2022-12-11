@@ -1,7 +1,7 @@
 ﻿using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events {
-    public class Ready {
+    public class ReadyEvent {
         // No args because this isn't a subscription event
 
         public class Data {

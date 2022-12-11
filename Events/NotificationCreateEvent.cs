@@ -1,7 +1,7 @@
 ﻿using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events {
-    public class NotificationCreate {
+    public class NotificationCreateEvent {
         // No arguments; dummy
         public class Args { }
 

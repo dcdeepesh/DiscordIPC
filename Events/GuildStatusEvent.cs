@@ -1,7 +1,7 @@
 ﻿using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events {
-    public class GuildStatus {
+    public class GuildStatusEvent {
         public class Args {
             public string guild_id { get; set; }
         }

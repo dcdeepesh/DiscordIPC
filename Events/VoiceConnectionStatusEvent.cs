@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace Dec.DiscordIPC.Events {
-    public class VoiceConnectionStatus {
+    public class VoiceConnectionStatusEvent {
         // No arguments; dummy
         public class Args { }
 

@@ -1,7 +1,7 @@
 ﻿using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events {
-    public class ActivityJoinRequest {
+    public class ActivityJoinRequestEvent {
         // No arguments; dummy
         public class Args { }
 

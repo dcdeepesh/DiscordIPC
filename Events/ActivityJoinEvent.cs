@@ -1,11 +1,10 @@
 ﻿namespace Dec.DiscordIPC.Events {
-    public class GuildCreate {
+    public class ActivityJoinEvent {
         // No arguments; dummy
         public class Args { }
 
         public class Data {
-            public string id { get; set; }
-            public string name { get; set; }
+            public string secret { get; set; }
         }
     }
 }
