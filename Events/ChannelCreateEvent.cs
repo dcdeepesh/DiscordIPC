@@ -3,6 +3,8 @@
         public string Name => "CHANNEL_CREATE";
         public Args Arguments { get; set; }
         
+        public static ChannelCreateEvent Create() => new();
+
         // No arguments; dummy
         public class Args { }
 

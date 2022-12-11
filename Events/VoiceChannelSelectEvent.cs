@@ -3,6 +3,8 @@
         public string Name => "VOICE_CHANNEL_SELECT";
         public Args Arguments { get; set; }
         
+        public static VoiceChannelSelectEvent Create() => new();
+
         // No arguments; dummy
         public class Args { }
 

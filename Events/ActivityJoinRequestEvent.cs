@@ -5,6 +5,8 @@ namespace Dec.DiscordIPC.Events {
         public string Name => "ACTIVITY_JOIN_REQUEST";
         public Args Arguments { get; set; }
         
+        public static ActivityJoinRequestEvent Create() => new();
+
         // No arguments; dummy
         public class Args { }
 

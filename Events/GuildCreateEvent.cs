@@ -3,6 +3,8 @@
         public string Name => "GUILD_CREATE";
         public Args Arguments { get; set; }
         
+        public static GuildCreateEvent Create() => new();
+
         // No arguments; dummy
         public class Args { }
 

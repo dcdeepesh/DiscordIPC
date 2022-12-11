@@ -3,6 +3,8 @@
         public string Name => "ACTIVITY_SPECTATE";
         public Args Arguments { get; set; }
         
+        public static ActivitySpectateEvent Create() => new();
+
         // No arguments; dummy
         public class Args { }
 

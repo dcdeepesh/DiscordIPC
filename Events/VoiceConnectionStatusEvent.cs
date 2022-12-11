@@ -5,6 +5,8 @@ namespace Dec.DiscordIPC.Events {
         public string Name => "VOICE_CONNECTION_STATUS";
         public Args Arguments { get; set; }
         
+        public static VoiceConnectionStatusEvent Create() => new();
+
         // No arguments; dummy
         public class Args { }
 

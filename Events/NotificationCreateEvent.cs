@@ -5,6 +5,8 @@ namespace Dec.DiscordIPC.Events {
         public string Name => "NOTIFICATION_CREATE";
         public Args Arguments { get; set; }
         
+        public static NotificationCreateEvent Create() => new();
+
         // No arguments; dummy
         public class Args { }
 
