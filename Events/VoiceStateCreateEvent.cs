@@ -1,7 +1,10 @@
 ﻿using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events {
-    public class VoiceStateCreateEvent {
+    public class VoiceStateCreateEvent : IEvent<VoiceStateCreateEvent.Args> {
+        public string Name => "VOICE_STATE_CREATE";
+        public Args Arguments { get; set; }
+        
         public class Args {
             public string channel_id { get; set; }
         }

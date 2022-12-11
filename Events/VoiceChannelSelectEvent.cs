@@ -1,5 +1,8 @@
 ﻿namespace Dec.DiscordIPC.Events {
-    public class VoiceChannelSelectEvent {
+    public class VoiceChannelSelectEvent : IEvent<VoiceChannelSelectEvent.Args> {
+        public string Name => "VOICE_CHANNEL_SELECT";
+        public Args Arguments { get; set; }
+        
         // No arguments; dummy
         public class Args { }
 

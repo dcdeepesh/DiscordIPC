@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 
 namespace Dec.DiscordIPC.Events {
-    public class VoiceConnectionStatusEvent {
+    public class VoiceConnectionStatusEvent : IEvent<VoiceConnectionStatusEvent.Args> {
+        public string Name => "VOICE_CONNECTION_STATUS";
+        public Args Arguments { get; set; }
+        
         // No arguments; dummy
         public class Args { }
 

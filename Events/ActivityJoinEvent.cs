@@ -1,5 +1,8 @@
 ﻿namespace Dec.DiscordIPC.Events {
-    public class ActivityJoinEvent {
+    public class ActivityJoinEvent : IEvent<ActivityJoinEvent.Args> {
+        public string Name => "ACTIVITY_JOIN";
+        public Args Arguments { get; set; }
+        
         // No arguments; dummy
         public class Args { }
 
