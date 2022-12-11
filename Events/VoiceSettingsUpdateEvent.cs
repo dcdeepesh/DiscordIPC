@@ -1,15 +1,15 @@
 ﻿using Dec.DiscordIPC.Entities;
 
-namespace Dec.DiscordIPC.Events {
-    public class VoiceSettingsUpdateEvent : IEvent<VoiceSettingsUpdateEvent.Args> {
-        public string Name => "VOICE_SETTINGS_UPDATE";
-        public Args Arguments { get; set; }
+namespace Dec.DiscordIPC.Events; 
+
+public class VoiceSettingsUpdateEvent : IEvent<VoiceSettingsUpdateEvent.Args> {
+    public string Name => "VOICE_SETTINGS_UPDATE";
+    public Args Arguments { get; set; }
         
-        public static VoiceSettingsUpdateEvent Create() => new();
+    public static VoiceSettingsUpdateEvent Create() => new();
 
-        // No arguments; dummy
-        public class Args { }
+    // No arguments; dummy
+    public class Args { }
 
-        public class Data : VoiceSettings { }
-    }
+    public class Data : VoiceSettings { }
 }
