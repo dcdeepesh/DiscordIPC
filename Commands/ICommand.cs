@@ -4,8 +4,6 @@
         TArgs Arguments { get; set; }
     }
     
-    public interface ICommand<TArgs, TData> {
-        string Name { get; }
-        TArgs Arguments { get; set; }
+    public interface ICommand<TArgs, TData> : ICommand<TArgs> {
     }
 }

@@ -7,6 +7,9 @@ namespace Dec.DiscordIPC {
     internal static class Extensions {
         public static T ToObject<T>(this JsonElement element) =>
             Json.Deserialize<T>(element.GetRawText());
+        
+        public static object ToObject(this JsonElement element, Type type) =>
+            Json.Deserialize(element.GetRawText(), type);
 
         public static bool IsErrorResponse(this JsonElement element) {
             if (element.TryGetProperty("evt", out JsonElement evt))
@@ -32,6 +35,10 @@ namespace Dec.DiscordIPC {
     internal class Json {
         public static T Deserialize<T>(string json) {
             return JsonSerializer.Deserialize<T>(json);
+        }
+        
+        public static object Deserialize(string json, Type type) {
+            return JsonSerializer.Deserialize(json, type);
         }
 
         public static byte[] SerializeToBytes<T>(T obj) {

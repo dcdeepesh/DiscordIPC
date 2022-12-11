@@ -25,31 +25,23 @@ namespace Dec.DiscordIPC {
 
         #region Commands
 
-        public async Task<TData> SendCommandAsync<TArgs, TData>(ICommand<TArgs, TData> command) {
-            var nonce = Guid.NewGuid().ToString();
-            IpcPayload payload;
-            var args = command.Arguments;
-            string cmd = command.Name;
-            if (args is null)
-                payload = new IpcPayload() { cmd=cmd, nonce=nonce };
-            else
-                payload = new IpcPayload() { cmd=cmd, nonce=nonce, args=args };
-        
-            JsonElement response = await SendPayloadAsync(payload);
-            return response.GetProperty("data").ToObject<TData>();
-        }
-        
-        public async Task SendCommandAsync<TArgs>(ICommand<TArgs> command) {
-            var nonce = Guid.NewGuid().ToString();
-            IpcPayload payload;
-            var args = command.Arguments;
-            string cmd = command.Name;
-            if (args is null)
-                payload = new IpcPayload { cmd=cmd, nonce=nonce };
-            else
-                payload = new IpcPayload { cmd=cmd, nonce=nonce, args=args };
+        public async Task<TData> SendCommandAsync<TArgs, TData>(ICommand<TArgs, TData> command) =>
+            (TData) await SendCommandAsyncImpl(command, typeof(TData));
+
+        public async Task SendCommandAsync<TArgs>(ICommand<TArgs> command) =>
+            await SendCommandAsyncImpl(command);
+
+        private async Task<object> SendCommandAsyncImpl<TArgs>(ICommand<TArgs> command,
+            Type returnType = null) {
             
-            await SendPayloadAsync(payload);
+            IpcPayload payload = new() {
+                cmd = command.Name,
+                nonce = Guid.NewGuid().ToString(),
+                args = command.Arguments
+            };
+            
+            JsonElement response = await SendPayloadAsync(payload);
+            return returnType is null ? null : response.GetProperty("data").ToObject(returnType);
         }
 
         #endregion
