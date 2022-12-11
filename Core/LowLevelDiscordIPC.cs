@@ -46,7 +46,7 @@ namespace Dec.DiscordIPC.Core {
             EventHandler<Ready.Data> readyListener = (sender, data) => readyWaitHandle.Set();
             OnReady += readyListener;
 
-            await SendMessageAsync(new IPCMessage(OpCode.HANDSHAKE, new {
+            await SendPacketAsync(new IpcRawPacket(OpCode.HANDSHAKE, new {
                 client_id = clientId,
                 v = "1",
                 nonce = Guid.NewGuid().ToString()
@@ -58,8 +58,8 @@ namespace Dec.DiscordIPC.Core {
             });
         }
 
-        public async Task<JsonElement> SendCommandPayloadAsync(CommandPayload payload) {
-            await SendMessageAsync(new IPCMessage(OpCode.FRAME, payload));
+        public async Task<JsonElement> SendPayloadAsync(IpcPayload payload) {
+            await SendPacketAsync(new IpcRawPacket(OpCode.FRAME, payload));
             return await messageReadLoop.WaitForResponse(payload.nonce);
         }
 
@@ -88,8 +88,8 @@ namespace Dec.DiscordIPC.Core {
 
         // More events on their way
 
-        internal void FireEvent(string evt, IPCMessage message) {
-            JsonElement obj = Json.Deserialize<dynamic>(message.Json).GetProperty("data");
+        internal void FireEvent(string evt, IpcRawPacket packet) {
+            JsonElement obj = Json.Deserialize<dynamic>(packet.Json).GetProperty("data");
             switch (evt) {
                 case "READY":
                     OnReady?.Invoke(this, obj.ToObject<Ready.Data>());
@@ -178,19 +178,19 @@ namespace Dec.DiscordIPC.Core {
 
         #region Private methods
 
-        private async Task SendMessageAsync(IPCMessage message) {
-            byte[] bOpCode = BitConverter.GetBytes((int) message.opCode);
-            byte[] bLen = BitConverter.GetBytes(message.Length);
+        private async Task SendPacketAsync(IpcRawPacket packet) {
+            byte[] bOpCode = BitConverter.GetBytes((int) packet.opCode);
+            byte[] bLen = BitConverter.GetBytes(packet.Length);
             if (!BitConverter.IsLittleEndian) {
                 Array.Reverse(bOpCode);
                 Array.Reverse(bLen);
             }
 
-            byte[] buffer = new byte[4 + 4 + message.Length];
+            byte[] buffer = new byte[4 + 4 + packet.Length];
             Array.Copy(bOpCode, buffer, 4);
             Array.Copy(bLen, 0, buffer, 4, 4);
-            Array.Copy(message.data, 0, buffer, 8, message.Length);
-            Util.Log("\nSENDING:\n{0}", message.Json);
+            Array.Copy(packet.data, 0, buffer, 8, packet.Length);
+            Util.Log("\nSENDING:\n{0}", packet.Json);
             await pipe.WriteAsync(buffer, 0, buffer.Length);
         }
 

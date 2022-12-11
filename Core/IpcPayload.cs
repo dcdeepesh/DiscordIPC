@@ -1,6 +1,6 @@
 ﻿namespace Dec.DiscordIPC.Core; 
 
-public class CommandPayload {
+public class IpcPayload {
     public string nonce { get; set; }
     
     public string cmd { get; set; }

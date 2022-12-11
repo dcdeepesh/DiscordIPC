@@ -55,7 +55,7 @@ namespace Dec.DiscordIPC.Core {
         private void Loop() {
             byte[] bOpCode = new byte[4];
             byte[] bLen = new byte[4];
-            IPCMessage message;
+            IpcRawPacket packet;
 
             while (true) {
                 try {
@@ -68,29 +68,29 @@ namespace Dec.DiscordIPC.Core {
                     byte[] data = new byte[len];
                     if (pipe.Read(data, 0, len) == 0)
                         break;
-                    message = new IPCMessage(opCode, data);
+                    packet = new IpcRawPacket(opCode, data);
                 } catch (Exception e) when (e is ObjectDisposedException || e is InvalidOperationException) {
                     break;
                 }
 
                 Task.Run(() => {
-                    Util.Log("\nRECEIVIED:\n{0}", message.Json);
-                    var jsonRoot = JsonDocument.Parse(message.Json).RootElement;
+                    Util.Log("\nRECEIVIED:\n{0}", packet.Json);
+                    var jsonRoot = JsonDocument.Parse(packet.Json).RootElement;
                     string cmd = jsonRoot.GetProperty("cmd").GetString();
                     string evt = "";
                     if (jsonRoot.TryGetProperty("evt", out JsonElement elem))
                         evt = elem.GetString();
 
                     if (cmd == "DISPATCH")
-                        ipcInstance.FireEvent(evt, message);
+                        ipcInstance.FireEvent(evt, packet);
                     else
-                        SignalNewResponse(message);
+                        SignalNewResponse(packet);
                 });
             }
         }
 
-        private void SignalNewResponse(IPCMessage message) {
-            JsonElement response = Json.Deserialize<dynamic>(message.Json);
+        private void SignalNewResponse(IpcRawPacket packet) {
+            JsonElement response = Json.Deserialize<dynamic>(packet.Json);
             lock (responses) {
                 Waiter waiterToResume = null;
                 foreach (var waiter in waiters)
