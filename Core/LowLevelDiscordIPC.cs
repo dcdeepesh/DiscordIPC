@@ -46,11 +46,11 @@ namespace Dec.DiscordIPC.Core {
             EventHandler<Ready.Data> readyListener = (sender, data) => readyWaitHandle.Set();
             OnReady += readyListener;
 
-            await SendMessageAsync(new IPCMessage(OpCode.HANDSHAKE, Json.SerializeToBytes(new {
+            await SendMessageAsync(new IPCMessage(OpCode.HANDSHAKE, new {
                 client_id = clientId,
                 v = "1",
                 nonce = Guid.NewGuid().ToString()
-            })));
+            }));
 
             await Task.Run(() => {
                 readyWaitHandle.WaitOne();
@@ -59,8 +59,7 @@ namespace Dec.DiscordIPC.Core {
         }
 
         public async Task<JsonElement> SendCommandWeakTypeAsync(dynamic payload) {
-            await SendMessageAsync(new IPCMessage(OpCode.FRAME,
-                Json.SerializeToBytes<dynamic>(payload)));
+            await SendMessageAsync(new IPCMessage(OpCode.FRAME, payload));
             return await messageReadLoop.WaitForResponse(payload.nonce);
         }
 
