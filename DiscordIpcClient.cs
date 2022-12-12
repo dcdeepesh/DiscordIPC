@@ -18,7 +18,7 @@ public class DiscordIpcClient {
     private readonly EventDispatcher _eventDispatcher; 
     
     public DiscordIpcClient(string clientId, bool verbose = false) {
-        _ipcHandler = new IpcHandler(clientId, verbose);
+        _ipcHandler = new IpcHandler(clientId, verbose, _eventDispatcher);
         _eventDispatcher = new EventDispatcher();        
     }
     
@@ -54,7 +54,7 @@ public class DiscordIpcClient {
     }
 
     async Task SubAsync<TArgs, TData>(IEvent<TArgs, TData> theEvent, Action<TData> eventHandler) {
-        EventListener<TArgs, TData> eventListener = new(theEvent, eventHandler);
+        var eventListener = EventListener.Create(theEvent, eventHandler);
         _eventDispatcher.AddEventListener(eventListener);
         
         // READY event doesn't need a subscription command
