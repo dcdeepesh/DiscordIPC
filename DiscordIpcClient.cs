@@ -51,10 +51,11 @@ public class DiscordIpcClient {
         return JsonSerializer.Deserialize(JsonSerializer.Serialize(response.data), returnType);
     }
 
-    public async Task SubscribeAsync<TArgs, TData>(IEvent<TArgs, TData> theEvent, Action<TData> eventHandler) {
+    public async Task<EventHandle> SubscribeAsync<TArgs, TData>(IEvent<TArgs, TData> theEvent,
+        Action<TData> eventHandler) {
         var eventListener = EventListener.Create(theEvent, eventHandler);
         _eventDispatcher.AddEventListener(eventListener);
-        
+
         // READY event doesn't need a subscription command
         if (theEvent is not ReadyEvent) {
             IpcPayload payload = new() {
@@ -66,16 +67,21 @@ public class DiscordIpcClient {
 
             await _ipcHandler.SendPayloadAsync(payload);
         }
-    }
 
-    public async Task UnsubscribeAsync<TArgs, TData>(IEvent<TArgs, TData> theEvent) {
-        IpcPayload payload = new() {
-            cmd = "UNSUBSCRIBE",
-            nonce = Guid.NewGuid().ToString(),
-            evt = theEvent.Name,
-            args = theEvent.Arguments
-        };
+        return new EventHandle(UnsubscribeAsync);
 
-        await _ipcHandler.SendPayloadAsync(payload);
+        async ValueTask UnsubscribeAsync() {
+            // READY event doesn't need an unsubscription command
+            if (theEvent is not ReadyEvent) {
+                IpcPayload payload = new() {
+                    cmd = "UNSUBSCRIBE",
+                    nonce = Guid.NewGuid().ToString(),
+                    evt = theEvent.Name,
+                    args = theEvent.Arguments
+                };
+
+                await _ipcHandler.SendPayloadAsync(payload);
+            }
+        }
     }
 }
