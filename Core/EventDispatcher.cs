@@ -12,8 +12,8 @@ public class EventDispatcher {
 
     public void Dispatch(IpcPayload eventPayload, JsonElement serializedEventData) {
         foreach (var listener in _eventListeners) {
-            if (listener.IsMatchingData(eventPayload.data)) {
-                listener.HandleData(eventPayload.data);
+            if (listener.IsMatchingData(eventPayload, serializedEventData)) {
+                listener.HandleData(serializedEventData);
             }
         }
     }
