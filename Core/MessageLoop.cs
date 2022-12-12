@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 namespace Dec.DiscordIPC.Core; 
 
 internal class MessageLoop {
-    private readonly IpcHandler _ipcHandlerInstance;
     private readonly NamedPipeClientStream _pipe;
     private readonly Thread _thread;
     private readonly LinkedList<Waiter> _waiters = new();
@@ -17,7 +16,6 @@ internal class MessageLoop {
 
     public MessageLoop(NamedPipeClientStream pipe, IpcHandler ipcHandlerInstance) {
         _pipe = pipe;
-        _ipcHandlerInstance = ipcHandlerInstance;
         _thread = new Thread(Loop) {
             IsBackground = true,
             Name = "Message loop"
@@ -85,12 +83,14 @@ internal class MessageLoop {
                     evt = elem.GetString();
 
                 if (cmd == "DISPATCH")
-                    _ipcHandlerInstance.FireEvent(evt, packet);
+                    EventPacketReceived?.Invoke(this, new EventPacketReceivedArgs(evt, packet));
                 else
                     SignalNewResponse(packet);
             });
         }
     }
+
+    public event EventHandler<EventPacketReceivedArgs> EventPacketReceived;
 
     private void SignalNewResponse(IpcRawPacket packet) {
         JsonElement response = Json.Deserialize<dynamic>(packet.Json);
@@ -111,6 +111,16 @@ internal class MessageLoop {
                 _responses.AddLast(response);
             }
         }
+    }
+}
+
+internal class EventPacketReceivedArgs {
+    public string EventName { get; }
+    public IpcRawPacket Packet { get; }
+
+    public EventPacketReceivedArgs(string eventName, IpcRawPacket packet) {
+        EventName = eventName;
+        Packet = packet;
     }
 }
 

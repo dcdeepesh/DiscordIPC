@@ -32,7 +32,9 @@ public class IpcHandler {
             throw new IOException($"Unable to connect to pipe {pipeName}");
         }
 
+        // Init message loop
         _messageLoop = new MessageLoop(_pipe, this);
+        _messageLoop.EventPacketReceived += OnEventPackerReceived;
         _messageLoop.Start();
     }
     
@@ -102,6 +104,10 @@ public class IpcHandler {
 
     // More events on their way
 
+    internal void OnEventPackerReceived(object sender, EventPacketReceivedArgs args) {
+        FireEvent(args.EventName, args.Packet);
+    }
+    
     internal void FireEvent(string evt, IpcRawPacket packet) {
         JsonElement obj = Json.Deserialize<dynamic>(packet.Json).GetProperty("data");
         switch (evt) {
