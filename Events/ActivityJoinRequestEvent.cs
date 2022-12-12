@@ -6,7 +6,9 @@ public class ActivityJoinRequestEvent : IEvent<object, ActivityJoinRequestEvent.
     public string Name => "ACTIVITY_JOIN_REQUEST";
     // No arguments; dummy
     public object Arguments { get; set; }
-        
+    
+    public bool IsMatchingData(Data _) => true;
+
     public static ActivityJoinRequestEvent Create() => new();
 
     public class Data {

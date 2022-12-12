@@ -5,7 +5,9 @@ namespace Dec.DiscordIPC.Events;
 public class SpeakingStopEvent : IEvent<SpeakingStopEvent.Args, SpeakingStopEvent.Data> {
     public string Name => "SPEAKING_STOP";
     public Args Arguments { get; set; }
-        
+    
+    public bool IsMatchingData(Data _) => true;
+
     public SpeakingStopEvent Create(Action<Args> argsBuilder) {
         SpeakingStopEvent theEvent = new() {
             Arguments = new Args()

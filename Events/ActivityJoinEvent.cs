@@ -5,6 +5,8 @@ public class ActivityJoinEvent : IEvent<object, ActivityJoinEvent.Data> {
     // No arguments; dummy
     public object Arguments { get; set; }
 
+    public bool IsMatchingData(Data _) => true;
+
     public static ActivityJoinEvent Create() => new();
 
     public class Data {

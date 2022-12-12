@@ -6,7 +6,10 @@ namespace Dec.DiscordIPC.Events;
 public class MessageCreateEvent : IEvent<MessageCreateEvent.Args, MessageCreateEvent.Data> {
     public string Name => "MESSAGE_CREATE";
     public Args Arguments { get; set; }
-        
+
+    public bool IsMatchingData(Data data) =>
+        data.channel_id == Arguments.channel_id;
+    
     public MessageCreateEvent Create(Action<Args> argsBuilder) {
         MessageCreateEvent theEvent = new() {
             Arguments = new Args()

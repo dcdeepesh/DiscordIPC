@@ -4,7 +4,9 @@ public class VoiceChannelSelectEvent : IEvent<object, VoiceChannelSelectEvent.Da
     public string Name => "VOICE_CHANNEL_SELECT";
     // No arguments; dummy
     public object Arguments { get; set; }
-        
+    
+    public bool IsMatchingData(Data _) => true;
+
     public static VoiceChannelSelectEvent Create() => new();
 
     public class Data {

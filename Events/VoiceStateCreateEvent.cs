@@ -6,7 +6,9 @@ namespace Dec.DiscordIPC.Events;
 public class VoiceStateCreateEvent : IEvent<VoiceStateCreateEvent.Args, VoiceStateCreateEvent.Data> {
     public string Name => "VOICE_STATE_CREATE";
     public Args Arguments { get; set; }
-        
+    
+    public bool IsMatchingData(Data _) => true;
+
     public VoiceStateCreateEvent Create(Action<Args> argsBuilder) {
         VoiceStateCreateEvent theEvent = new() {
             Arguments = new Args()

@@ -6,7 +6,9 @@ public class VoiceConnectionStatusEvent : IEvent<object, VoiceConnectionStatusEv
     public string Name => "VOICE_CONNECTION_STATUS";
     // No arguments; dummy
     public object Arguments { get; set; }
-        
+    
+    public bool IsMatchingData(Data _) => true;
+
     public static VoiceConnectionStatusEvent Create() => new();
 
     public class Data {

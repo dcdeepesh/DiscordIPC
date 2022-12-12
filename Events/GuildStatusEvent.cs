@@ -7,6 +7,9 @@ public class GuildStatusEvent : IEvent<GuildStatusEvent.Args, GuildStatusEvent.D
     public string Name => "GUILD_STATUS";
     public Args Arguments { get; set; }
 
+    public bool IsMatchingData(Data data) =>
+        data.guild.id == Arguments.guild_id;
+
     public GuildStatusEvent Create(Action<Args> argsBuilder) {
         GuildStatusEvent theEvent = new() {
             Arguments = new Args()

@@ -5,7 +5,9 @@ namespace Dec.DiscordIPC.Events;
 public class SpeakingStartEvent : IEvent<SpeakingStartEvent.Args, SpeakingStartEvent.Data> {
     public string Name => "SPEAKING_START";
     public Args Arguments { get; set; }
-        
+
+    public bool IsMatchingData(Data _) => true;
+    
     public SpeakingStartEvent Create(Action<Args> argsBuilder) {
         SpeakingStartEvent theEvent = new() {
             Arguments = new Args()

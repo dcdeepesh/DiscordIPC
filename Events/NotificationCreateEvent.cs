@@ -6,7 +6,9 @@ public class NotificationCreateEvent : IEvent<object, NotificationCreateEvent.Da
     public string Name => "NOTIFICATION_CREATE";
     // No arguments; dummy
     public object Arguments { get; set; }
-        
+    
+    public bool IsMatchingData(Data _) => true;
+
     public static NotificationCreateEvent Create() => new();
 
     public class Data {

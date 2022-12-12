@@ -5,7 +5,10 @@ namespace Dec.DiscordIPC.Events;
 public class MessageDeleteEvent : IEvent<MessageDeleteEvent.Args, MessageDeleteEvent.Data> {
     public string Name => "MESSAGE_DELETE";
     public Args Arguments { get; set; }
-        
+    
+    public bool IsMatchingData(Data data) =>
+        data.channel_id == Arguments.channel_id;
+    
     public MessageDeleteEvent Create(Action<Args> argsBuilder) {
         MessageDeleteEvent theEvent = new() {
             Arguments = new Args()

@@ -4,7 +4,9 @@ public class GuildCreateEvent : IEvent<object, GuildCreateEvent.Data> {
     public string Name => "GUILD_CREATE";
     // No arguments; dummy
     public object Arguments { get; set; }
-        
+    
+    public bool IsMatchingData(Data _) => true;
+
     public static GuildCreateEvent Create() => new();
 
     public class Data {
