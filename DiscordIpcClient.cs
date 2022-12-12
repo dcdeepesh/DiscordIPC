@@ -12,16 +12,19 @@ namespace Dec.DiscordIPC;
 /// <summary>
 /// The main access point for user programs to use DiscordIPC.
 /// </summary>
-public class DiscordIpcClient : IpcHandler {
+public class DiscordIpcClient {
+
+    private readonly IpcHandler _ipcHandler;
     
-    public DiscordIpcClient(string clientId, bool verbose = false) : base(clientId, verbose) {
+    public DiscordIpcClient(string clientId, bool verbose = false) {
+        _ipcHandler = new IpcHandler(clientId, verbose);
     }
     
     public async Task ConnectToDiscordAsync(int pipeNumber = 0, int timeoutMs = 2000,
         CancellationToken ctk = default) {
 
-        await ConnectToPipeAsync(pipeNumber, timeoutMs, ctk);
-        await SendHandshakeAsync(ctk);
+        await _ipcHandler.ConnectToPipeAsync(pipeNumber, timeoutMs, ctk);
+        await _ipcHandler.SendHandshakeAsync(ctk);
     }
 
     public async Task<TData> SendCommandAsync<TArgs, TData>(ICommand<TArgs, TData> command) =>
@@ -39,7 +42,7 @@ public class DiscordIpcClient : IpcHandler {
             args = command.Arguments
         };
             
-        JsonElement response = await SendPayloadAsync(payload);
+        JsonElement response = await _ipcHandler.SendPayloadAsync(payload);
         return returnType is null ? null : response.GetProperty("data").ToObject(returnType);
     }
 
@@ -51,7 +54,7 @@ public class DiscordIpcClient : IpcHandler {
             args = theEvent.Arguments
         };
 
-        await SendPayloadAsync(payload);
+        await _ipcHandler.SendPayloadAsync(payload);
     }
 
     public async Task UnsubscribeAsync<TArgs>(IEvent<TArgs> theEvent) {
@@ -62,6 +65,6 @@ public class DiscordIpcClient : IpcHandler {
             args = theEvent.Arguments
         };
 
-        await SendPayloadAsync(payload);
+        await _ipcHandler.SendPayloadAsync(payload);
     }
 }

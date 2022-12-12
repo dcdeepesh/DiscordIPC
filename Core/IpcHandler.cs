@@ -11,7 +11,7 @@ namespace Dec.DiscordIPC.Core;
 
 public class IpcHandler {
     private NamedPipeClientStream _pipe;
-    internal MessageReadLoop _messageReadLoop;
+    private MessageReadLoop _messageReadLoop;
     private readonly string _clientId;
 
     public IpcHandler(string clientId, bool verbose) {
