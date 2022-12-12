@@ -14,8 +14,8 @@ internal class IpcRawPacket {
     }
         
     public IpcRawPacket(OpCode opCode, byte[] data) {
-        this.OpCode = opCode;
-        this.Data = data;
+        OpCode = opCode;
+        Data = data;
     }
 }
 

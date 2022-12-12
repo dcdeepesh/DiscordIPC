@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO.Pipes;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,8 +16,8 @@ internal class MessageReadLoop {
     private readonly LinkedList<JsonElement> _responses = new();
 
     public MessageReadLoop(NamedPipeClientStream pipe, LowLevelDiscordIpc ipcInstance) {
-        this._pipe = pipe;
-        this._ipcInstance = ipcInstance;
+        _pipe = pipe;
+        _ipcInstance = ipcInstance;
         _thread = new Thread(Loop) {
             IsBackground = true,
             Name = "Message loop"
@@ -30,6 +31,7 @@ internal class MessageReadLoop {
             Waiter waiter;
             lock (_responses) {
                 JsonElement? result = null;
+                // TODO: use LINQ and Single() instead?
                 foreach (var response in _responses)
                     if (response.GetProperty("nonce").GetString() == nonce)
                         result = response;
@@ -93,12 +95,15 @@ internal class MessageReadLoop {
     private void SignalNewResponse(IpcRawPacket packet) {
         JsonElement response = Json.Deserialize<dynamic>(packet.Json);
         lock (_responses) {
-            Waiter waiterToResume = null;
-            foreach (var waiter in _waiters)
-                if (waiter.Nonce == response.GetProperty("nonce").GetString())
-                    waiterToResume = waiter;
+            // TODO: use Single() instead?
+            Waiter waiterToResume = _waiters.FirstOrDefault(
+                w => w.Nonce == response.GetProperty("nonce").GetString());
+            // Waiter waiterToResume = null;
+            // foreach (var waiter in _waiters)
+            //     if (waiter.Nonce == response.GetProperty("nonce").GetString())
+            //         waiterToResume = waiter;
 
-            if (waiterToResume is null is false) {
+            if (waiterToResume is not null) {
                 _waiters.Remove(waiterToResume);
                 waiterToResume.Response = response;
                 waiterToResume.ResetEvent.Set();
@@ -114,5 +119,5 @@ internal class Waiter {
     public AutoResetEvent ResetEvent = new(false);
     public JsonElement Response;
 
-    public Waiter(string nonce) => this.Nonce = nonce;
+    public Waiter(string nonce) => Nonce = nonce;
 }
