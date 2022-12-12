@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DiscordIPC</name>
+    </assembly>
+    <members>
+        <member name="T:Dec.DiscordIPC.DiscordIpcClient">
+            <summary>
+            The main access point for user programs to use DiscordIPC.
+            </summary>
+        </member>
+        <member name="T:Dec.DiscordIPC.ErrorResponseException">
+            <summary>
+            Exception thrown when IPC returns an error response.
+            </summary>
+        </member>
+        <member name="P:Dec.DiscordIPC.ErrorResponseException.Message">
+            <summary>
+            The error message
+            </summary>
+        </member>
+        <member name="P:Dec.DiscordIPC.ErrorResponseException.Code">
+            <summary>
+            The error code
+            </summary>
+        </member>
+    </members>
+</doc>
