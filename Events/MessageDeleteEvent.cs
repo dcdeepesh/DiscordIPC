@@ -2,7 +2,7 @@
 
 namespace Dec.DiscordIPC.Events; 
 
-public class MessageDeleteEvent : IEvent<MessageDeleteEvent.Args> {
+public class MessageDeleteEvent : IEvent<MessageDeleteEvent.Args, MessageDeleteEvent.Data> {
     public string Name => "MESSAGE_DELETE";
     public Args Arguments { get; set; }
         

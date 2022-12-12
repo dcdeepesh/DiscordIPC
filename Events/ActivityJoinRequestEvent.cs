@@ -1,8 +1,8 @@
 ﻿using Dec.DiscordIPC.Entities;
 
-namespace Dec.DiscordIPC.Events; 
+namespace Dec.DiscordIPC.Events;
 
-public class ActivityJoinRequestEvent : IEvent<ActivityJoinRequestEvent.Args> {
+public class ActivityJoinRequestEvent : IEvent<ActivityJoinRequestEvent.Args, ActivityJoinRequestEvent.Data> {
     public string Name => "ACTIVITY_JOIN_REQUEST";
     public Args Arguments { get; set; }
         

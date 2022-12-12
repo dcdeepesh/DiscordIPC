@@ -59,7 +59,7 @@ public class DiscordIpcClient {
         await SubscribeAsync(theEvent);
     }
 
-    public async Task SubscribeAsync<TArgs>(IEvent<TArgs> theEvent) {
+    public async Task SubscribeAsync<TArgs, TData>(IEvent<TArgs, TData> theEvent) {
         IpcPayload payload = new() {
             cmd = "SUBSCRIBE",
             nonce = Guid.NewGuid().ToString(),
@@ -70,7 +70,7 @@ public class DiscordIpcClient {
         await _ipcHandler.SendPayloadAsync(payload);
     }
 
-    public async Task UnsubscribeAsync<TArgs>(IEvent<TArgs> theEvent) {
+    public async Task UnsubscribeAsync<TArgs, TData>(IEvent<TArgs, TData> theEvent) {
         IpcPayload payload = new() {
             cmd = "UNSUBSCRIBE",
             nonce = Guid.NewGuid().ToString(),

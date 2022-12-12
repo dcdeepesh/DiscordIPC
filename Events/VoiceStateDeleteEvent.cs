@@ -2,7 +2,7 @@
 
 namespace Dec.DiscordIPC.Events; 
 
-public class VoiceStateDeleteEvent : IEvent<VoiceStateDeleteEvent.Args> {
+public class VoiceStateDeleteEvent : IEvent<VoiceStateDeleteEvent.Args, VoiceStateDeleteEvent.Data> {
     public string Name => "VOICE_STATE_DELETE";
     public Args Arguments { get; set; }
 

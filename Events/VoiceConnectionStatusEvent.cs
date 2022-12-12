@@ -2,7 +2,7 @@
 
 namespace Dec.DiscordIPC.Events; 
 
-public class VoiceConnectionStatusEvent : IEvent<VoiceConnectionStatusEvent.Args> {
+public class VoiceConnectionStatusEvent : IEvent<VoiceConnectionStatusEvent.Args, VoiceConnectionStatusEvent.Data> {
     public string Name => "VOICE_CONNECTION_STATUS";
     public Args Arguments { get; set; }
         

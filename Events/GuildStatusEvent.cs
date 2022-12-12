@@ -3,7 +3,7 @@ using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events; 
 
-public class GuildStatusEvent : IEvent<GuildStatusEvent.Args> {
+public class GuildStatusEvent : IEvent<GuildStatusEvent.Args, GuildStatusEvent.Data> {
     public string Name => "GUILD_STATUS";
     public Args Arguments { get; set; }
 

@@ -1,6 +1,6 @@
 ﻿namespace Dec.DiscordIPC.Events; 
 
-public class GuildCreateEvent : IEvent<GuildCreateEvent.Args> {
+public class GuildCreateEvent : IEvent<GuildCreateEvent.Args, GuildCreateEvent.Data> {
     public string Name => "GUILD_CREATE";
     public Args Arguments { get; set; }
         

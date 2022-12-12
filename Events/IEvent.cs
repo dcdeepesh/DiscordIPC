@@ -1,12 +1,8 @@
-﻿using System;
+﻿// using System;
 
 namespace Dec.DiscordIPC.Events; 
 
-public interface IEvent<TArgs> {
+public interface IEvent<TArgs, TData> {
     TArgs Arguments { get; set; }
     string Name { get; }
-}
-
-public interface IEvent<TArgs, TData> : IEvent<TArgs> {
-    Func<TData, bool> DataMatcher { get; }
 }

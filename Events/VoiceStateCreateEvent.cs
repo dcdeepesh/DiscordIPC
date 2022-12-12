@@ -3,7 +3,7 @@ using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events; 
 
-public class VoiceStateCreateEvent : IEvent<VoiceStateCreateEvent.Args> {
+public class VoiceStateCreateEvent : IEvent<VoiceStateCreateEvent.Args, VoiceStateCreateEvent.Data> {
     public string Name => "VOICE_STATE_CREATE";
     public Args Arguments { get; set; }
         

@@ -1,6 +1,6 @@
 ﻿namespace Dec.DiscordIPC.Events; 
 
-public class ActivitySpectateEvent : IEvent<ActivitySpectateEvent.Args> {
+public class ActivitySpectateEvent : IEvent<ActivitySpectateEvent.Args, ActivitySpectateEvent.Data> {
     public string Name => "ACTIVITY_SPECTATE";
     public Args Arguments { get; set; }
         

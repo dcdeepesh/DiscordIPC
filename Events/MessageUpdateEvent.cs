@@ -2,7 +2,7 @@
 
 namespace Dec.DiscordIPC.Events; 
 
-public class MessageUpdateEvent : IEvent<MessageUpdateEvent.Args> {
+public class MessageUpdateEvent : IEvent<MessageUpdateEvent.Args, MessageUpdateEvent.Data> {
     public string Name => "MESSAGE_UPDATE";
     public Args Arguments { get; set; }
         

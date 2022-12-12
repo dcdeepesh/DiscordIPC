@@ -3,7 +3,7 @@ using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events; 
 
-public class MessageCreateEvent : IEvent<MessageCreateEvent.Args> {
+public class MessageCreateEvent : IEvent<MessageCreateEvent.Args, MessageCreateEvent.Data> {
     public string Name => "MESSAGE_CREATE";
     public Args Arguments { get; set; }
         

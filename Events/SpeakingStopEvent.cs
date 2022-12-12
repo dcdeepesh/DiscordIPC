@@ -2,7 +2,7 @@
 
 namespace Dec.DiscordIPC.Events; 
 
-public class SpeakingStopEvent : IEvent<SpeakingStopEvent.Args> {
+public class SpeakingStopEvent : IEvent<SpeakingStopEvent.Args, SpeakingStopEvent.Data> {
     public string Name => "SPEAKING_STOP";
     public Args Arguments { get; set; }
         

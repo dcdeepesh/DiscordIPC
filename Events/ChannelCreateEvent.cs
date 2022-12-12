@@ -1,6 +1,6 @@
 ﻿namespace Dec.DiscordIPC.Events; 
 
-public class ChannelCreateEvent : IEvent<ChannelCreateEvent.Args> {
+public class ChannelCreateEvent : IEvent<ChannelCreateEvent.Args, ChannelCreateEvent.Data> {
     public string Name => "CHANNEL_CREATE";
     public Args Arguments { get; set; }
         

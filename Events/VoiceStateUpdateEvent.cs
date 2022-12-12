@@ -2,7 +2,7 @@
 
 namespace Dec.DiscordIPC.Events; 
 
-public class VoiceStateUpdateEvent : IEvent<VoiceStateUpdateEvent.Args> {
+public class VoiceStateUpdateEvent : IEvent<VoiceStateUpdateEvent.Args, VoiceStateUpdateEvent.Data> {
     public string Name => "VOICE_STATE_UPDATE";
     public Args Arguments { get; set; }
         

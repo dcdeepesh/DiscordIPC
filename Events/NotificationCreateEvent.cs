@@ -2,7 +2,7 @@
 
 namespace Dec.DiscordIPC.Events; 
 
-public class NotificationCreateEvent : IEvent<NotificationCreateEvent.Args> {
+public class NotificationCreateEvent : IEvent<NotificationCreateEvent.Args, NotificationCreateEvent.Data> {
     public string Name => "NOTIFICATION_CREATE";
     public Args Arguments { get; set; }
         
