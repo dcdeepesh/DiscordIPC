@@ -2,14 +2,12 @@
 
 namespace Dec.DiscordIPC.Events; 
 
-public class VoiceSettingsUpdateEvent : IEvent<VoiceSettingsUpdateEvent.Args, VoiceSettingsUpdateEvent.Data> {
+public class VoiceSettingsUpdateEvent : IEvent<object, VoiceSettingsUpdateEvent.Data> {
     public string Name => "VOICE_SETTINGS_UPDATE";
-    public Args Arguments { get; set; }
+    // No arguments; dummy
+    public object Arguments { get; set; }
         
     public static VoiceSettingsUpdateEvent Create() => new();
-
-    // No arguments; dummy
-    public class Args { }
 
     public class Data : VoiceSettings { }
 }
