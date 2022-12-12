@@ -42,8 +42,13 @@ public class DiscordIpcClient {
             args = command.Arguments
         };
             
-        JsonElement response = await _ipcHandler.SendPayloadAsync(payload);
-        return returnType is null ? null : response.GetProperty("data").ToObject(returnType);
+        IpcPayload response = await _ipcHandler.SendPayloadAsync(payload);
+        if (returnType is null)
+            return null;
+
+        return JsonSerializer.Deserialize(JsonSerializer.Serialize(response.data), returnType);
+        return Convert.ChangeType(response.data, returnType);
+        // return returnType is null ? null : response.data;
     }
 
     public async Task SubscribeAsync<TArgs>(IEvent<TArgs> theEvent) {

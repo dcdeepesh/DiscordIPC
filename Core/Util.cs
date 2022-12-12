@@ -12,10 +12,8 @@ internal static class Extensions {
     public static object ToObject(this JsonElement element, Type type) =>
         Json.Deserialize(element.GetRawText(), type);
 
-    public static bool IsErrorResponse(this JsonElement element) {
-        if (element.TryGetProperty("evt", out JsonElement evt))
-            return evt.GetString() == "ERROR";
-        return false;
+    public static bool IsErrorResponse(this IpcPayload element) {
+        return element.evt == "ERROR";
     }
 }
 

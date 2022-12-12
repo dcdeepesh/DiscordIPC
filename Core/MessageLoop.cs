@@ -12,7 +12,7 @@ internal class MessageLoop {
     private readonly NamedPipeClientStream _pipe;
     private readonly Thread _thread;
     private readonly LinkedList<Waiter> _waiters = new();
-    private readonly LinkedList<JsonElement> _responses = new();
+    private readonly LinkedList<IpcPayload> _responses = new();
 
     public MessageLoop(NamedPipeClientStream pipe, IpcHandler ipcHandlerInstance) {
         _pipe = pipe;
@@ -24,20 +24,20 @@ internal class MessageLoop {
 
     public void Start() => _thread.Start();
 
-    public Task<JsonElement> WaitForResponse(string nonce) {
+    public Task<IpcPayload> WaitForResponse(string nonce) {
         return Task.Run(() => {
             Waiter waiter;
             lock (_responses) {
-                JsonElement? result = null;
+                IpcPayload result = null;
                 // TODO: use LINQ and Single() instead?
                 foreach (var response in _responses)
-                    if (response.GetProperty("nonce").GetString() == nonce)
+                    if (response.nonce == nonce)
                         result = response;
-                if (result.HasValue) {
-                    _responses.Remove(result.Value);
-                    if (result.Value.IsErrorResponse())
-                        throw new ErrorResponseException(result.Value);
-                    return result.Value;
+                if (result is not null) {
+                    _responses.Remove(result);
+                    if (result.IsErrorResponse())
+                        throw new ErrorResponseException(result);
+                    return result;
                 }
 
                 waiter = new Waiter(nonce);
@@ -76,28 +76,23 @@ internal class MessageLoop {
 
             Task.Run(() => {
                 Util.Log("\nRECEIVED:\n{0}", packet.Json);
-                var jsonRoot = JsonDocument.Parse(packet.Json).RootElement;
-                string cmd = jsonRoot.GetProperty("cmd").GetString();
-                string evt = "";
-                if (jsonRoot.TryGetProperty("evt", out JsonElement elem))
-                    evt = elem.GetString();
+                IpcPayload payload = JsonDocument.Parse(packet.Json).RootElement.ToObject<IpcPayload>();
 
-                if (cmd == "DISPATCH")
-                    EventPacketReceived?.Invoke(this, new EventPacketReceivedArgs(evt, packet));
+                if (payload.cmd == "DISPATCH")
+                    EventPacketReceived?.Invoke(this, new EventPacketReceivedArgs(payload.evt, packet));
                 else
-                    SignalNewResponse(packet);
+                    SignalNewResponse(payload);
             });
         }
     }
 
     public event EventHandler<EventPacketReceivedArgs> EventPacketReceived;
 
-    private void SignalNewResponse(IpcRawPacket packet) {
-        JsonElement response = Json.Deserialize<dynamic>(packet.Json);
+    private void SignalNewResponse(IpcPayload payload) {
         lock (_responses) {
             // TODO: use Single() instead?
             Waiter waiterToResume = _waiters.FirstOrDefault(
-                w => w.Nonce == response.GetProperty("nonce").GetString());
+                w => w.Nonce == payload.nonce);
             // Waiter waiterToResume = null;
             // foreach (var waiter in _waiters)
             //     if (waiter.Nonce == response.GetProperty("nonce").GetString())
@@ -105,10 +100,10 @@ internal class MessageLoop {
 
             if (waiterToResume is not null) {
                 _waiters.Remove(waiterToResume);
-                waiterToResume.Response = response;
+                waiterToResume.Response = payload;
                 waiterToResume.ResetEvent.Set();
             } else {
-                _responses.AddLast(response);
+                _responses.AddLast(payload);
             }
         }
     }
@@ -127,7 +122,7 @@ internal class EventPacketReceivedArgs {
 internal class Waiter {
     public string Nonce;
     public AutoResetEvent ResetEvent = new(false);
-    public JsonElement Response;
+    public IpcPayload Response;
 
     public Waiter(string nonce) => Nonce = nonce;
 }

@@ -60,7 +60,7 @@ public class IpcHandler {
         }
     }
 
-    public async Task<JsonElement> SendPayloadAsync(IpcPayload payload) {
+    public async Task<IpcPayload> SendPayloadAsync(IpcPayload payload) {
         await SendPacketAsync(new IpcRawPacket(OpCode.Frame, payload));
         return await _messageLoop.WaitForResponse(payload.nonce);
     }

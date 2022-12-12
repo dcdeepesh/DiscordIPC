@@ -7,5 +7,5 @@ public class IpcPayload {
     public object args { get; set; }
      
     public string evt { get; set; }
-    public object data { get; set; }
+    public dynamic data { get; set; }
 }

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text.Json;
+using Dec.DiscordIPC.Core;
 
 namespace Dec.DiscordIPC; 
 
@@ -16,9 +17,8 @@ public class ErrorResponseException : IOException {
     /// </summary>
     public int Code { get; }
 
-    internal ErrorResponseException(JsonElement response) {
-        var data = response.GetProperty("data");
-        Code = data.GetProperty("code").GetInt32();
-        Message = data.GetProperty("message").GetString();
+    internal ErrorResponseException(IpcPayload response) {
+        Code = response.data.code;
+        Message = response.data.message;
     }
 }
