@@ -51,6 +51,10 @@ public class DiscordIpcClient {
         // return returnType is null ? null : response.data;
     }
 
+    async Task SubAsync<TArgs, TData>(IEvent<TArgs, TData> theEvent, Action<TData> eventHandler) {
+        
+    }
+
     public async Task SubscribeAsync<TArgs>(IEvent<TArgs> theEvent) {
         IpcPayload payload = new() {
             cmd = "SUBSCRIBE",
