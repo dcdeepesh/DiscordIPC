@@ -14,7 +14,7 @@ namespace Dec.DiscordIPC;
 /// </summary>
 public class DiscordIpcClient {
 
-    private readonly IpcHandler _ipcHandler;
+    public readonly IpcHandler _ipcHandler;
     
     public DiscordIpcClient(string clientId, bool verbose = false) {
         _ipcHandler = new IpcHandler(clientId, verbose);
