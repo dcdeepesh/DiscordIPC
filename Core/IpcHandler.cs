@@ -12,11 +12,11 @@ namespace Dec.DiscordIPC.Core;
 public class IpcHandler {
     private NamedPipeClientStream _pipe;
     internal MessageReadLoop _messageReadLoop;
-    protected readonly string clientId;
+    private readonly string _clientId;
 
     public IpcHandler(string clientId, bool verbose) {
-        this.clientId = clientId;
         Util.Verbose = verbose;
+        _clientId = clientId;
     }
 
     public async Task ConnectToPipeAsync(int pipeNumber = 0, int timeoutMs = 2000,
@@ -34,6 +34,28 @@ public class IpcHandler {
 
         _messageReadLoop = new MessageReadLoop(_pipe, this);
         _messageReadLoop.Start();
+    }
+    
+    public async Task SendHandshakeAsync(CancellationToken ctk = default) {
+        EventWaitHandle readyEventWaitHandle = new(false, EventResetMode.ManualReset);
+        OnReady += ReadyEventListener;
+
+        // TODO: use ctk
+        await SendPacketAsync(new IpcRawPacket(OpCode.Handshake, new {
+            client_id = _clientId,
+            v = "1",
+            nonce = Guid.NewGuid().ToString()
+        }));
+
+        // TODO: make this async
+        await Task.Run(() => {
+            readyEventWaitHandle.WaitOne();
+            OnReady -= ReadyEventListener;
+        }, ctk);
+
+        void ReadyEventListener(object sender, ReadyEvent.Data data) {
+            readyEventWaitHandle.Set();
+        }
     }
 
     public async Task<JsonElement> SendPayloadAsync(IpcPayload payload) {
