@@ -1,4 +1,6 @@
-﻿namespace Dec.DiscordIPC.Events; 
+﻿using System;
+
+namespace Dec.DiscordIPC.Events; 
 
 public interface IEvent<TArgs> {
     TArgs Arguments { get; set; }
@@ -6,4 +8,5 @@ public interface IEvent<TArgs> {
 }
 
 public interface IEvent<TArgs, TData> : IEvent<TArgs> {
+    Func<TData, bool> DataMatcher { get; }
 }

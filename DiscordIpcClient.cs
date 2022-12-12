@@ -15,9 +15,11 @@ namespace Dec.DiscordIPC;
 public class DiscordIpcClient {
 
     public readonly IpcHandler _ipcHandler;
+    private readonly EventDispatcher _eventDispatcher; 
     
     public DiscordIpcClient(string clientId, bool verbose = false) {
         _ipcHandler = new IpcHandler(clientId, verbose);
+        _eventDispatcher = new EventDispatcher();        
     }
     
     public async Task ConnectToDiscordAsync(int pipeNumber = 0, int timeoutMs = 2000,
@@ -52,7 +54,9 @@ public class DiscordIpcClient {
     }
 
     async Task SubAsync<TArgs, TData>(IEvent<TArgs, TData> theEvent, Action<TData> eventHandler) {
-        
+        EventListener<TArgs, TData> eventListener = new(theEvent, eventHandler);
+        _eventDispatcher.AddEventListener(eventListener);
+        await SubscribeAsync(theEvent);
     }
 
     public async Task SubscribeAsync<TArgs>(IEvent<TArgs> theEvent) {
