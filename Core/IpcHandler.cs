@@ -9,12 +9,12 @@ using Dec.DiscordIPC.Events;
 
 namespace Dec.DiscordIPC.Core; 
 
-public class LowLevelDiscordIpc {
+public class IpcHandler {
     private NamedPipeClientStream _pipe;
     internal MessageReadLoop _messageReadLoop;
     protected readonly string clientId;
 
-    public LowLevelDiscordIpc(string clientId, bool verbose) {
+    public IpcHandler(string clientId, bool verbose) {
         this.clientId = clientId;
         Util.Verbose = verbose;
     }
@@ -30,33 +30,50 @@ public class LowLevelDiscordIpc {
     /// </remarks>
     /// <param name="pipeNumber">Pipe number to connect to.</param>
     /// <returns></returns>
-    public async Task InitAsync(int pipeNumber = 0) {
-        string pipeName = "discord-ipc-" + pipeNumber;
+    public async Task InitAsync(int pipeNumber = 0, int timeoutMs = 2000,
+        CancellationToken ctk = default) {
+
+        await ConnectToPipeAsync(pipeNumber, timeoutMs, ctk);
+        await WaitForReadyEventAsync(ctk);
+    }
+
+    public async Task ConnectToPipeAsync(int pipeNumber = 0, int timeoutMs = 2000,
+        CancellationToken ctk = default) {
+        
+        string pipeName = $"discord-ipc-{pipeNumber}";
         try {
             _pipe = new NamedPipeClientStream(".", pipeName,
                 PipeDirection.InOut, PipeOptions.Asynchronous);
-            await _pipe.ConnectAsync(2000);
-        } catch (TimeoutException) {
-            throw new IOException("Could not connect to pipe " + pipeName);
+            await _pipe.ConnectAsync(timeoutMs, ctk);
+        }
+        catch (TimeoutException) {
+            throw new IOException($"Unable to connect to pipe {pipeName}");
         }
 
         _messageReadLoop = new MessageReadLoop(_pipe, this);
         _messageReadLoop.Start();
+    }
 
-        EventWaitHandle readyWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
-        EventHandler<ReadyEvent.Data> readyListener = (_, _) => readyWaitHandle.Set();
-        OnReady += readyListener;
+    public async Task WaitForReadyEventAsync(CancellationToken ctk = default) {
+        EventWaitHandle readyEventWaitHandle = new(false, EventResetMode.ManualReset);
+        OnReady += ReadyEventListener;
 
+        // TODO: use ctk
         await SendPacketAsync(new IpcRawPacket(OpCode.Handshake, new {
             client_id = clientId,
             v = "1",
             nonce = Guid.NewGuid().ToString()
         }));
 
+        // TODO: make this async
         await Task.Run(() => {
-            readyWaitHandle.WaitOne();
-            OnReady -= readyListener;
-        });
+            readyEventWaitHandle.WaitOne();
+            OnReady -= ReadyEventListener;
+        }, ctk);
+
+        void ReadyEventListener(object sender, ReadyEvent.Data data) {
+            readyEventWaitHandle.Set();
+        }
     }
 
     public async Task<JsonElement> SendPayloadAsync(IpcPayload payload) {
@@ -64,6 +81,20 @@ public class LowLevelDiscordIpc {
         return await _messageReadLoop.WaitForResponse(payload.nonce);
     }
 
+    private async Task SendPacketAsync(IpcRawPacket packet) {
+        byte[] opCodeBytes = BitConverter.GetBytes((int) packet.OpCode);
+        byte[] lengthBytes = BitConverter.GetBytes(packet.Length);
+
+        // 4-bit opcode, 4-bit length, and then the data
+        byte[] buffer = new byte[4 + 4 + packet.Length];
+        Array.Copy(opCodeBytes, buffer, 4);
+        Array.Copy(lengthBytes, 0, buffer, 4, 4);
+        Array.Copy(packet.Data, 0, buffer, 8, packet.Length);
+        
+        Util.Log("\nSENDING:\n{0}", packet.Json);
+        await _pipe.WriteAsync(buffer, 0, buffer.Length);
+    }
+    
     #region Events
 
     public event EventHandler<ReadyEvent.Data> OnReady;
@@ -171,29 +202,6 @@ public class LowLevelDiscordIpc {
     }
 
     #endregion
-
-    /// <summary>
-    /// Disposes the client. Use when the client is no longer in use.
-    /// </summary>
+    
     public void Dispose() => _pipe.Dispose();
-
-    #region Private methods
-
-    private async Task SendPacketAsync(IpcRawPacket packet) {
-        byte[] bOpCode = BitConverter.GetBytes((int) packet.OpCode);
-        byte[] bLen = BitConverter.GetBytes(packet.Length);
-        if (!BitConverter.IsLittleEndian) {
-            Array.Reverse(bOpCode);
-            Array.Reverse(bLen);
-        }
-
-        byte[] buffer = new byte[4 + 4 + packet.Length];
-        Array.Copy(bOpCode, buffer, 4);
-        Array.Copy(bLen, 0, buffer, 4, 4);
-        Array.Copy(packet.Data, 0, buffer, 8, packet.Length);
-        Util.Log("\nSENDING:\n{0}", packet.Json);
-        await _pipe.WriteAsync(buffer, 0, buffer.Length);
-    }
-
-    #endregion
 }

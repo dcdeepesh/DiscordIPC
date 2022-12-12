@@ -11,13 +11,13 @@ namespace Dec.DiscordIPC;
 /// <summary>
 /// The main access point for user programs to use DiscordIPC.
 /// </summary>
-public class DiscordIpcClient : LowLevelDiscordIpc {
+public class DiscordIpcClient : IpcHandler {
     /// <summary>
     /// Creates a client instance.
     /// </summary>
     /// <remarks>
     /// Does not actually initialize the client.
-    /// Use <see cref="LowLevelDiscordIpc.InitAsync"/> after this to initialize the client.
+    /// Use <see cref="IpcHandler.InitAsync"/> after this to initialize the client.
     /// </remarks>
     /// <param name="clientId">Client ID of your app.</param>
     /// <param name="verbose">If true, DiscordIPC logs every JSON

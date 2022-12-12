@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 namespace Dec.DiscordIPC.Core; 
 
 internal class MessageReadLoop {
-    private readonly LowLevelDiscordIpc _ipcInstance;
+    private readonly IpcHandler _ipcHandlerInstance;
     private readonly NamedPipeClientStream _pipe;
     private readonly Thread _thread;
     private readonly LinkedList<Waiter> _waiters = new();
     private readonly LinkedList<JsonElement> _responses = new();
 
-    public MessageReadLoop(NamedPipeClientStream pipe, LowLevelDiscordIpc ipcInstance) {
+    public MessageReadLoop(NamedPipeClientStream pipe, IpcHandler ipcHandlerInstance) {
         _pipe = pipe;
-        _ipcInstance = ipcInstance;
+        _ipcHandlerInstance = ipcHandlerInstance;
         _thread = new Thread(Loop) {
             IsBackground = true,
             Name = "Message loop"
@@ -85,7 +85,7 @@ internal class MessageReadLoop {
                     evt = elem.GetString();
 
                 if (cmd == "DISPATCH")
-                    _ipcInstance.FireEvent(evt, packet);
+                    _ipcHandlerInstance.FireEvent(evt, packet);
                 else
                     SignalNewResponse(packet);
             });
