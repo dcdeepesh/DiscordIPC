@@ -14,7 +14,7 @@ internal class MessageLoop {
     private readonly LinkedList<Waiter> _waiters = new();
     private readonly LinkedList<IpcPayload> _responses = new();
 
-    public MessageLoop(NamedPipeClientStream pipe, IpcHandler ipcHandlerInstance) {
+    public MessageLoop(NamedPipeClientStream pipe) {
         _pipe = pipe;
         _thread = new Thread(Loop) {
             IsBackground = true,

@@ -35,7 +35,7 @@ public class IpcHandler {
         }
 
         // Init message loop
-        _messageLoop = new MessageLoop(_pipe, this);
+        _messageLoop = new MessageLoop(_pipe);
         _messageLoop.EventPacketReceived += (_, args) => {
             _eventDispatcher.Dispatch(args.Packet,
                 JsonDocument.Parse(JsonSerializer.Serialize(args.Packet.data)).RootElement);
@@ -83,118 +83,6 @@ public class IpcHandler {
         Util.Log("\nSENDING:\n{0}", packet.Json);
         await _pipe.WriteAsync(buffer, 0, buffer.Length);
     }
-    //
-    // #region Events
-    //
-    // public event EventHandler<ReadyEvent.Data> OnReady;
-    // // Event ERROR is handled differently
-    // public event EventHandler<GuildStatusEvent.Data> OnGuildStatus;
-    // public event EventHandler<GuildCreateEvent.Data> OnGuildCreate;
-    // public event EventHandler<ChannelCreateEvent.Data> OnChannelCreate;
-    // public event EventHandler<VoiceChannelSelectEvent.Data> OnVoiceChannelSelect;
-    // public event EventHandler<VoiceStateCreateEvent.Data> OnVoiceStateCreate;
-    // public event EventHandler<VoiceStateUpdateEvent.Data> OnVoiceStateUpdate;
-    // public event EventHandler<VoiceStateDeleteEvent.Data> OnVoiceStateDelete;
-    // public event EventHandler<VoiceSettingsUpdateEvent.Data> OnVoiceSettingsUpdate;
-    // public event EventHandler<VoiceConnectionStatusEvent.Data> OnVoiceConnectionStatus;
-    // public event EventHandler<SpeakingStartEvent.Data> OnSpeakingStart;
-    // public event EventHandler<SpeakingStopEvent.Data> OnSpeakingStop;
-    // public event EventHandler<MessageCreateEvent.Data> OnMessageCreate;
-    // public event EventHandler<MessageUpdateEvent.Data> OnMessageUpdate;
-    // public event EventHandler<MessageDeleteEvent.Data> OnMessageDelete;
-    // public event EventHandler<NotificationCreateEvent.Data> OnNotificationCreate;
-    // public event EventHandler<ActivityJoinEvent.Data> OnActivityJoin;
-    // public event EventHandler<ActivitySpectateEvent.Data> OnActivitySpectate;
-    // public event EventHandler<ActivityJoinRequestEvent.Data> OnActivityJoinRequest;
-    //
-    // // More events on their way
-    //
-    // internal void OnEventPackerReceived(object sender, EventPacketReceivedArgs args) {
-    //     FireEvent(args.EventName, args.Packet);
-    // }
-    //
-    // internal void FireEvent(string evt, IpcPayload packet) {
-    //     JsonElement obj = JsonSerializer.Deserialize<dynamic>(JsonSerializer.Serialize(packet.data));
-    //     switch (evt) {
-    //         case "READY":
-    //             OnReady?.Invoke(this, obj.ToObject<ReadyEvent.Data>());
-    //             break;
-    //
-    //         case "GUILD_STATUS":
-    //             OnGuildStatus?.Invoke(this, obj.ToObject<GuildStatusEvent.Data>());
-    //             break;
-    //
-    //         case "GUILD_CREATE":
-    //             OnGuildCreate?.Invoke(this, obj.ToObject<GuildCreateEvent.Data>());
-    //             break;
-    //
-    //         case "CHANNEL_CREATE":
-    //             OnChannelCreate?.Invoke(this, obj.ToObject<ChannelCreateEvent.Data>());
-    //             break;
-    //
-    //         case "VOICE_CHANNEL_SELECT":
-    //             OnVoiceChannelSelect?.Invoke(this, obj.ToObject<VoiceChannelSelectEvent.Data>());
-    //             break;
-    //
-    //         case "VOICE_STATE_CREATE":
-    //             OnVoiceStateCreate?.Invoke(this, obj.ToObject<VoiceStateCreateEvent.Data>());
-    //             break;
-    //
-    //         case "VOICE_STATE_UPDATE":
-    //             OnVoiceStateUpdate?.Invoke(this, obj.ToObject<VoiceStateUpdateEvent.Data>());
-    //             break;
-    //
-    //         case "VOICE_STATE_DELETE":
-    //             OnVoiceStateDelete?.Invoke(this, obj.ToObject<VoiceStateDeleteEvent.Data>());
-    //             break;
-    //
-    //         case "VOICE_SETTINGS_UPDATE":
-    //             OnVoiceSettingsUpdate?.Invoke(this, obj.ToObject<VoiceSettingsUpdateEvent.Data>());
-    //             break;
-    //
-    //         case "VOICE_CONNECTION_STATUS":
-    //             OnVoiceConnectionStatus?.Invoke(this, obj.ToObject<VoiceConnectionStatusEvent.Data>());
-    //             break;
-    //
-    //         case "SPEAKING_START":
-    //             OnSpeakingStart?.Invoke(this, obj.ToObject<SpeakingStartEvent.Data>());
-    //             break;
-    //
-    //         case "SPEAKING_STOP":
-    //             OnSpeakingStop?.Invoke(this, obj.ToObject<SpeakingStopEvent.Data>());
-    //             break;
-    //
-    //         case "MESSAGE_CREATE":
-    //             OnMessageCreate?.Invoke(this, obj.ToObject<MessageCreateEvent.Data>());
-    //             break;
-    //
-    //         case "MESSAGE_UPDATE":
-    //             OnMessageUpdate?.Invoke(this, obj.ToObject<MessageUpdateEvent.Data>());
-    //             break;
-    //
-    //         case "MESSAGE_DELETE":
-    //             OnMessageDelete?.Invoke(this, obj.ToObject<MessageDeleteEvent.Data>());
-    //             break;
-    //
-    //         case "NOTIFICATION_CREATE":
-    //             OnNotificationCreate?.Invoke(this, obj.ToObject<NotificationCreateEvent.Data>());
-    //             break;
-    //
-    //         case "ACTIVITY_JOIN":
-    //             OnActivityJoin?.Invoke(this, obj.ToObject<ActivityJoinEvent.Data>());
-    //             break;
-    //
-    //         case "ACTIVITY_SPECTATE":
-    //             OnActivitySpectate?.Invoke(this, obj.ToObject<ActivitySpectateEvent.Data>());
-    //             break;
-    //
-    //         case "ACTIVITY_JOIN_REQUEST":
-    //             OnActivityJoinRequest?.Invoke(this, obj.ToObject<ActivityJoinRequestEvent.Data>());
-    //             break;
-    //     }
-    // }
-    //
-    // #endregion
-    //
+
     public void Dispose() => _pipe.Dispose();
 }
