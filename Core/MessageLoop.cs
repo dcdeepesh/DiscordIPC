@@ -79,7 +79,7 @@ internal class MessageLoop {
                 IpcPayload payload = JsonDocument.Parse(packet.Json).RootElement.ToObject<IpcPayload>();
 
                 if (payload.cmd == "DISPATCH")
-                    EventPacketReceived?.Invoke(this, new EventPacketReceivedArgs(payload.evt, packet));
+                    EventPacketReceived?.Invoke(this, new EventPacketReceivedArgs(payload.evt, payload));
                 else
                     SignalNewResponse(payload);
             });
@@ -111,9 +111,9 @@ internal class MessageLoop {
 
 internal class EventPacketReceivedArgs {
     public string EventName { get; }
-    public IpcRawPacket Packet { get; }
+    public IpcPayload Packet { get; }
 
-    public EventPacketReceivedArgs(string eventName, IpcRawPacket packet) {
+    public EventPacketReceivedArgs(string eventName, IpcPayload packet) {
         EventName = eventName;
         Packet = packet;
     }

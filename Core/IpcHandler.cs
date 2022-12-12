@@ -108,8 +108,8 @@ public class IpcHandler {
         FireEvent(args.EventName, args.Packet);
     }
     
-    internal void FireEvent(string evt, IpcRawPacket packet) {
-        JsonElement obj = Json.Deserialize<dynamic>(packet.Json).GetProperty("data");
+    internal void FireEvent(string evt, IpcPayload packet) {
+        JsonElement obj = JsonSerializer.Deserialize<dynamic>(JsonSerializer.Serialize(packet.data));
         switch (evt) {
             case "READY":
                 OnReady?.Invoke(this, obj.ToObject<ReadyEvent.Data>());
