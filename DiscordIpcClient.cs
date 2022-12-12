@@ -56,7 +56,10 @@ public class DiscordIpcClient {
     async Task SubAsync<TArgs, TData>(IEvent<TArgs, TData> theEvent, Action<TData> eventHandler) {
         EventListener<TArgs, TData> eventListener = new(theEvent, eventHandler);
         _eventDispatcher.AddEventListener(eventListener);
-        await SubscribeAsync(theEvent);
+        
+        // READY event doesn't need a subscription command
+        if (theEvent is not ReadyEvent)
+            await SubscribeAsync(theEvent);
     }
 
     public async Task SubscribeAsync<TArgs, TData>(IEvent<TArgs, TData> theEvent) {

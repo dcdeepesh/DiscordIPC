@@ -2,8 +2,14 @@
 
 namespace Dec.DiscordIPC.Events; 
 
-public class ReadyEvent {
-    // No args because this isn't a subscription event
+public class ReadyEvent : IEvent<object, ReadyEvent.Data> {
+    public string Name => "READY";
+    // No args; dummy
+    public object Arguments { get; set; }
+    
+    public bool IsMatchingData(Data _) => true;
+
+    public static ReadyEvent Create() => new();
 
     public class Data {
         public int? v { get; set; }
