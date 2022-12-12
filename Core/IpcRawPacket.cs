@@ -2,7 +2,7 @@
 
 namespace Dec.DiscordIPC.Core; 
 
-internal class IpcRawPacket {
+public class IpcRawPacket {
     public OpCode OpCode;
     public byte[] Data;
     
@@ -19,6 +19,6 @@ internal class IpcRawPacket {
     }
 }
 
-internal enum OpCode {
+public enum OpCode {
      Handshake, Frame, Close, Ping, Pong
 }

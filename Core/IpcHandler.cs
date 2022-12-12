@@ -19,24 +19,6 @@ public class IpcHandler {
         Util.Verbose = verbose;
     }
 
-    /// <summary>
-    /// Initializes the IPC client. Use this before calling any other methods.
-    /// </summary>
-    /// <remarks>
-    /// Attempts to connect to <c>discord-ipc-&lt;pipeNumber&gt;</c> with a 2 second<br/>
-    /// timeout and throws an IOException if connection is unsuccessful.<br/>
-    /// No need to specify the pipe number explicitly unless connecting to a<br/>
-    /// secondary discord client (e.g. Canary).
-    /// </remarks>
-    /// <param name="pipeNumber">Pipe number to connect to.</param>
-    /// <returns></returns>
-    public async Task InitAsync(int pipeNumber = 0, int timeoutMs = 2000,
-        CancellationToken ctk = default) {
-
-        await ConnectToPipeAsync(pipeNumber, timeoutMs, ctk);
-        await WaitForReadyEventAsync(ctk);
-    }
-
     public async Task ConnectToPipeAsync(int pipeNumber = 0, int timeoutMs = 2000,
         CancellationToken ctk = default) {
         
@@ -54,34 +36,12 @@ public class IpcHandler {
         _messageReadLoop.Start();
     }
 
-    public async Task WaitForReadyEventAsync(CancellationToken ctk = default) {
-        EventWaitHandle readyEventWaitHandle = new(false, EventResetMode.ManualReset);
-        OnReady += ReadyEventListener;
-
-        // TODO: use ctk
-        await SendPacketAsync(new IpcRawPacket(OpCode.Handshake, new {
-            client_id = clientId,
-            v = "1",
-            nonce = Guid.NewGuid().ToString()
-        }));
-
-        // TODO: make this async
-        await Task.Run(() => {
-            readyEventWaitHandle.WaitOne();
-            OnReady -= ReadyEventListener;
-        }, ctk);
-
-        void ReadyEventListener(object sender, ReadyEvent.Data data) {
-            readyEventWaitHandle.Set();
-        }
-    }
-
     public async Task<JsonElement> SendPayloadAsync(IpcPayload payload) {
         await SendPacketAsync(new IpcRawPacket(OpCode.Frame, payload));
         return await _messageReadLoop.WaitForResponse(payload.nonce);
     }
 
-    private async Task SendPacketAsync(IpcRawPacket packet) {
+    protected async Task SendPacketAsync(IpcRawPacket packet) {
         byte[] opCodeBytes = BitConverter.GetBytes((int) packet.OpCode);
         byte[] lengthBytes = BitConverter.GetBytes(packet.Length);
 

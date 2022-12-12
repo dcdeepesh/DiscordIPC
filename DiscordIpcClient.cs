@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Dec.DiscordIPC.Commands;
@@ -23,6 +24,38 @@ public class DiscordIpcClient : IpcHandler {
     /// <param name="verbose">If true, DiscordIPC logs every JSON
     /// sent and received to the console.</param>
     public DiscordIpcClient(string clientId, bool verbose = false) : base(clientId, verbose) { }
+    
+    public async Task InitAsync(int pipeNumber = 0, int timeoutMs = 2000,
+        CancellationToken ctk = default) {
+
+        await ConnectToPipeAsync(pipeNumber, timeoutMs, ctk);
+        await WaitForReadyEventAsync(ctk);
+    }
+
+    public new async Task ConnectToPipeAsync(int pipeNumber = 0, int timeoutMs = 2000, CancellationToken ctk = default) =>
+        await base.ConnectToPipeAsync(pipeNumber, timeoutMs, ctk);
+    
+    public async Task WaitForReadyEventAsync(CancellationToken ctk = default) {
+        EventWaitHandle readyEventWaitHandle = new(false, EventResetMode.ManualReset);
+        OnReady += ReadyEventListener;
+
+        // TODO: use ctk
+        await SendPacketAsync(new IpcRawPacket(OpCode.Handshake, new {
+            client_id = clientId,
+            v = "1",
+            nonce = Guid.NewGuid().ToString()
+        }));
+
+        // TODO: make this async
+        await Task.Run(() => {
+            readyEventWaitHandle.WaitOne();
+            OnReady -= ReadyEventListener;
+        }, ctk);
+
+        void ReadyEventListener(object sender, ReadyEvent.Data data) {
+            readyEventWaitHandle.Set();
+        }
+    }
 
     public async Task<TData> SendCommandAsync<TArgs, TData>(ICommand<TArgs, TData> command) =>
         (TData) await SendCommandAsync(command, typeof(TData));
