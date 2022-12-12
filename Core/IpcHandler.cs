@@ -11,7 +11,7 @@ namespace Dec.DiscordIPC.Core;
 
 public class IpcHandler {
     private NamedPipeClientStream _pipe;
-    private MessageReadLoop _messageReadLoop;
+    private MessageLoop _messageLoop;
     private readonly string _clientId;
 
     public IpcHandler(string clientId, bool verbose) {
@@ -32,8 +32,8 @@ public class IpcHandler {
             throw new IOException($"Unable to connect to pipe {pipeName}");
         }
 
-        _messageReadLoop = new MessageReadLoop(_pipe, this);
-        _messageReadLoop.Start();
+        _messageLoop = new MessageLoop(_pipe, this);
+        _messageLoop.Start();
     }
     
     public async Task SendHandshakeAsync(CancellationToken ctk = default) {
@@ -60,7 +60,7 @@ public class IpcHandler {
 
     public async Task<JsonElement> SendPayloadAsync(IpcPayload payload) {
         await SendPacketAsync(new IpcRawPacket(OpCode.Frame, payload));
-        return await _messageReadLoop.WaitForResponse(payload.nonce);
+        return await _messageLoop.WaitForResponse(payload.nonce);
     }
 
     protected async Task SendPacketAsync(IpcRawPacket packet) {

@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace Dec.DiscordIPC.Core; 
 
-internal class MessageReadLoop {
+internal class MessageLoop {
     private readonly IpcHandler _ipcHandlerInstance;
     private readonly NamedPipeClientStream _pipe;
     private readonly Thread _thread;
     private readonly LinkedList<Waiter> _waiters = new();
     private readonly LinkedList<JsonElement> _responses = new();
 
-    public MessageReadLoop(NamedPipeClientStream pipe, IpcHandler ipcHandlerInstance) {
+    public MessageLoop(NamedPipeClientStream pipe, IpcHandler ipcHandlerInstance) {
         _pipe = pipe;
         _ipcHandlerInstance = ipcHandlerInstance;
         _thread = new Thread(Loop) {
