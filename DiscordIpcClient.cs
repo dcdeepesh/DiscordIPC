@@ -14,12 +14,12 @@ namespace Dec.DiscordIPC;
 /// </summary>
 public class DiscordIpcClient {
 
-    public readonly IpcHandler _ipcHandler;
+    private readonly IpcHandler _ipcHandler;
     private readonly EventDispatcher _eventDispatcher; 
     
     public DiscordIpcClient(string clientId, bool verbose = false) {
+        _eventDispatcher = new EventDispatcher();
         _ipcHandler = new IpcHandler(clientId, verbose, _eventDispatcher);
-        _eventDispatcher = new EventDispatcher();        
     }
     
     public async Task ConnectToDiscordAsync(int pipeNumber = 0, int timeoutMs = 2000,
@@ -49,28 +49,23 @@ public class DiscordIpcClient {
             return null;
 
         return JsonSerializer.Deserialize(JsonSerializer.Serialize(response.data), returnType);
-        return Convert.ChangeType(response.data, returnType);
-        // return returnType is null ? null : response.data;
     }
 
-    async Task SubAsync<TArgs, TData>(IEvent<TArgs, TData> theEvent, Action<TData> eventHandler) {
+    public async Task SubscribeAsync<TArgs, TData>(IEvent<TArgs, TData> theEvent, Action<TData> eventHandler) {
         var eventListener = EventListener.Create(theEvent, eventHandler);
         _eventDispatcher.AddEventListener(eventListener);
         
         // READY event doesn't need a subscription command
-        if (theEvent is not ReadyEvent)
-            await SubscribeAsync(theEvent);
-    }
+        if (theEvent is not ReadyEvent) {
+            IpcPayload payload = new() {
+                cmd = "SUBSCRIBE",
+                nonce = Guid.NewGuid().ToString(),
+                evt = theEvent.Name,
+                args = theEvent.Arguments
+            };
 
-    public async Task SubscribeAsync<TArgs, TData>(IEvent<TArgs, TData> theEvent) {
-        IpcPayload payload = new() {
-            cmd = "SUBSCRIBE",
-            nonce = Guid.NewGuid().ToString(),
-            evt = theEvent.Name,
-            args = theEvent.Arguments
-        };
-
-        await _ipcHandler.SendPayloadAsync(payload);
+            await _ipcHandler.SendPayloadAsync(payload);
+        }
     }
 
     public async Task UnsubscribeAsync<TArgs, TData>(IEvent<TArgs, TData> theEvent) {
