@@ -9,12 +9,12 @@ using Dec.DiscordIPC.Events;
 
 namespace Dec.DiscordIPC.Core; 
 
-public class LowLevelDiscordIPC {
-    private NamedPipeClientStream pipe;
-    internal MessageReadLoop messageReadLoop;
+public class LowLevelDiscordIpc {
+    private NamedPipeClientStream _pipe;
+    internal MessageReadLoop _messageReadLoop;
     protected readonly string clientId;
 
-    public LowLevelDiscordIPC(string clientId, bool verbose) {
+    public LowLevelDiscordIpc(string clientId, bool verbose) {
         this.clientId = clientId;
         Util.Verbose = verbose;
     }
@@ -33,21 +33,21 @@ public class LowLevelDiscordIPC {
     public async Task InitAsync(int pipeNumber = 0) {
         string pipeName = "discord-ipc-" + pipeNumber;
         try {
-            pipe = new NamedPipeClientStream(".", pipeName,
+            _pipe = new NamedPipeClientStream(".", pipeName,
                 PipeDirection.InOut, PipeOptions.Asynchronous);
-            await pipe.ConnectAsync(2000);
+            await _pipe.ConnectAsync(2000);
         } catch (TimeoutException) {
             throw new IOException("Could not connect to pipe " + pipeName);
         }
 
-        messageReadLoop = new MessageReadLoop(pipe, this);
-        messageReadLoop.Start();
+        _messageReadLoop = new MessageReadLoop(_pipe, this);
+        _messageReadLoop.Start();
 
         EventWaitHandle readyWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
         EventHandler<ReadyEvent.Data> readyListener = (_, _) => readyWaitHandle.Set();
         OnReady += readyListener;
 
-        await SendPacketAsync(new IpcRawPacket(OpCode.HANDSHAKE, new {
+        await SendPacketAsync(new IpcRawPacket(OpCode.Handshake, new {
             client_id = clientId,
             v = "1",
             nonce = Guid.NewGuid().ToString()
@@ -60,8 +60,8 @@ public class LowLevelDiscordIPC {
     }
 
     public async Task<JsonElement> SendPayloadAsync(IpcPayload payload) {
-        await SendPacketAsync(new IpcRawPacket(OpCode.FRAME, payload));
-        return await messageReadLoop.WaitForResponse(payload.nonce);
+        await SendPacketAsync(new IpcRawPacket(OpCode.Frame, payload));
+        return await _messageReadLoop.WaitForResponse(payload.nonce);
     }
 
     #region Events
@@ -175,12 +175,12 @@ public class LowLevelDiscordIPC {
     /// <summary>
     /// Disposes the client. Use when the client is no longer in use.
     /// </summary>
-    public void Dispose() => pipe.Dispose();
+    public void Dispose() => _pipe.Dispose();
 
     #region Private methods
 
     private async Task SendPacketAsync(IpcRawPacket packet) {
-        byte[] bOpCode = BitConverter.GetBytes((int) packet.opCode);
+        byte[] bOpCode = BitConverter.GetBytes((int) packet.OpCode);
         byte[] bLen = BitConverter.GetBytes(packet.Length);
         if (!BitConverter.IsLittleEndian) {
             Array.Reverse(bOpCode);
@@ -190,9 +190,9 @@ public class LowLevelDiscordIPC {
         byte[] buffer = new byte[4 + 4 + packet.Length];
         Array.Copy(bOpCode, buffer, 4);
         Array.Copy(bLen, 0, buffer, 4, 4);
-        Array.Copy(packet.data, 0, buffer, 8, packet.Length);
+        Array.Copy(packet.Data, 0, buffer, 8, packet.Length);
         Util.Log("\nSENDING:\n{0}", packet.Json);
-        await pipe.WriteAsync(buffer, 0, buffer.Length);
+        await _pipe.WriteAsync(buffer, 0, buffer.Length);
     }
 
     #endregion

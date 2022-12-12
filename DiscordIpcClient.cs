@@ -11,18 +11,18 @@ namespace Dec.DiscordIPC;
 /// <summary>
 /// The main access point for user programs to use DiscordIPC.
 /// </summary>
-public class DiscordIPC : LowLevelDiscordIPC {
+public class DiscordIpcClient : LowLevelDiscordIpc {
     /// <summary>
     /// Creates a client instance.
     /// </summary>
     /// <remarks>
     /// Does not actually initialize the client.
-    /// Use <see cref="LowLevelDiscordIPC.InitAsync"/> after this to initialize the client.
+    /// Use <see cref="LowLevelDiscordIpc.InitAsync"/> after this to initialize the client.
     /// </remarks>
     /// <param name="clientId">Client ID of your app.</param>
     /// <param name="verbose">If true, DiscordIPC logs every JSON
     /// sent and received to the console.</param>
-    public DiscordIPC(string clientId, bool verbose = false) : base(clientId, verbose) { }
+    public DiscordIpcClient(string clientId, bool verbose = false) : base(clientId, verbose) { }
 
     public async Task<TData> SendCommandAsync<TArgs, TData>(ICommand<TArgs, TData> command) =>
         (TData) await SendCommandAsync(command, typeof(TData));

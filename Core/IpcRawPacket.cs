@@ -3,21 +3,22 @@
 namespace Dec.DiscordIPC.Core; 
 
 internal class IpcRawPacket {
-    public OpCode opCode;
-    public byte[] data;
-    public int Length => data.Length;
-    public string Json => Encoding.UTF8.GetString(data);
+    public OpCode OpCode;
+    public byte[] Data;
+    
+    public int Length => Data.Length;
+    public string Json => Encoding.UTF8.GetString(Data);
 
     public IpcRawPacket(OpCode opCode, object data)
         : this(opCode, Dec.DiscordIPC.Core.Json.SerializeToBytes(data)) {
     }
         
     public IpcRawPacket(OpCode opCode, byte[] data) {
-        this.opCode = opCode;
-        this.data = data;
+        this.OpCode = opCode;
+        this.Data = data;
     }
 }
 
 internal enum OpCode {
-    HANDSHAKE, FRAME, CLOSE, PING, PONG
+     Handshake, Frame, Close, Ping, Pong
 }
