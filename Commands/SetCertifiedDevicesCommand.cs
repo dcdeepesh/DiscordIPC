@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dec.DiscordIPC.Commands; 
 
@@ -16,12 +17,14 @@ public class SetCertifiedDevicesCommand : ICommand<SetCertifiedDevicesCommand.Ar
         return command;
     }
         
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Args {
         public List<Device> devices { get; set; }
     }
 
     // No data
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Device {
         public string type { get; set; }
         public string id { get; set; }

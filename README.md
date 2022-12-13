@@ -35,9 +35,8 @@ namespace Example {
     class Program {
         private static readonly string CLIENT_ID = "<CLIENT-ID>";
         
-        static void Main(string[] args) => MainAsync(args).GetAwaiter().GetResult();
-        static async Task MainAsync(string[] args) {
-            DiscordIPC client = new DiscordIPC(CLIENT_ID);
+        static async Task Main(string[] args) {
+            DiscordIpcClient client = new DiscordIpcClient(CLIENT_ID);
             await client.InitAsync();
 
             // Authorize

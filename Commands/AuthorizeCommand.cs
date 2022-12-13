@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dec.DiscordIPC.Commands; 
 
@@ -16,6 +17,7 @@ public class AuthorizeCommand : ICommand<AuthorizeCommand.Args, AuthorizeCommand
         return command;
     }
         
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Args {
         public List<string> scopes { get; set; }
         public string client_id { get; set; }
@@ -23,6 +25,7 @@ public class AuthorizeCommand : ICommand<AuthorizeCommand.Args, AuthorizeCommand
         public string username { get; set; }
     }
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Data {
         public string code { get; set; }
     }

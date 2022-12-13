@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 // TODO
 namespace Dec.DiscordIPC.Entities; 
 
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class Message {
     public string id { get; set; }
     public string channel_id { get; set; }

@@ -1,4 +1,6 @@
-﻿namespace Dec.DiscordIPC.Events; 
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Dec.DiscordIPC.Events; 
 
 public class ActivitySpectateEvent : IEvent<object, ActivitySpectateEvent.Data> {
     public string Name => "ACTIVITY_SPECTATE";
@@ -9,6 +11,7 @@ public class ActivitySpectateEvent : IEvent<object, ActivitySpectateEvent.Data> 
 
     public static ActivitySpectateEvent Create() => new();
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Data {
         public string secret { get; set; }
     }

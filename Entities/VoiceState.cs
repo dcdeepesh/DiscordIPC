@@ -1,5 +1,8 @@
-﻿namespace Dec.DiscordIPC.Entities; 
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace Dec.DiscordIPC.Entities; 
+
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class VoiceState {
     public string guild_id { get; set; }
     public string channel_id { get; set; }

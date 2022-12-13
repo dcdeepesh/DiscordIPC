@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dec.DiscordIPC.Commands; 
 
@@ -15,6 +16,7 @@ public class SetUserVoiceSettingsCommand : ICommand<SetUserVoiceSettingsCommand.
         return command;
     }
         
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Args {
         public string user_id { get; set; }
         public Pan pan { get; set; }
@@ -22,6 +24,7 @@ public class SetUserVoiceSettingsCommand : ICommand<SetUserVoiceSettingsCommand.
         public bool? mute { get; set; }
     }
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Data {
         public string user_id { get; set; }
         public Pan pan { get; set; }
@@ -29,6 +32,7 @@ public class SetUserVoiceSettingsCommand : ICommand<SetUserVoiceSettingsCommand.
         public bool? mute { get; set; }
     }
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Pan {
         public float? left { get; set; }
         public float? right { get; set; }

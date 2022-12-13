@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dec.DiscordIPC.Entities; 
 
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class Team {
     public string icon { get; set; }
     public string id { get; set; }

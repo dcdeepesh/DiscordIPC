@@ -1,5 +1,8 @@
-﻿namespace Dec.DiscordIPC.Entities; 
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace Dec.DiscordIPC.Entities; 
+
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class Sticker {
     public string id { get; set; }
     public string pack_id { get; set; }

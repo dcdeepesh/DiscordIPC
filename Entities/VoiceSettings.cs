@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dec.DiscordIPC.Entities; 
 
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class VoiceSettings {
     public Input input { get; set; }
     public Output output { get; set; }

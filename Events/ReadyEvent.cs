@@ -1,4 +1,5 @@
-﻿using Dec.DiscordIPC.Entities;
+﻿using System.Diagnostics.CodeAnalysis;
+using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events; 
 
@@ -11,6 +12,7 @@ public class ReadyEvent : IEvent<object, ReadyEvent.Data> {
 
     public static ReadyEvent Create() => new();
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Data {
         public int? v { get; set; }
         public RPCServerConfig config { get; set; }

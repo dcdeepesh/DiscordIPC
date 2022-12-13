@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dec.DiscordIPC.Entities; 
 
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class Guild {
     public string id { get; set; }
     public string name { get; set; }

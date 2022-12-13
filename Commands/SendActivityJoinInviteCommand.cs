@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dec.DiscordIPC.Commands; 
 
@@ -15,6 +16,7 @@ public class SendActivityJoinInviteCommand : ICommand<SendActivityJoinInviteComm
         return command;
     }
         
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Args {
         public string user_id { get; set; }
     }

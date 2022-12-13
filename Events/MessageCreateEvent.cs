@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events; 
@@ -18,10 +19,12 @@ public class MessageCreateEvent : IEvent<MessageCreateEvent.Args, MessageCreateE
         return theEvent;
     }
         
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Args {
         public string channel_id { get; set; }
     }
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Data {
         public string channel_id { get; set; }
         public Message message { get; set; }

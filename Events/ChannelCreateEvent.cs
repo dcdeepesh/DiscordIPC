@@ -1,4 +1,6 @@
-﻿namespace Dec.DiscordIPC.Events; 
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Dec.DiscordIPC.Events; 
 
 public class ChannelCreateEvent : IEvent<object, ChannelCreateEvent.Data> {
     public string Name => "CHANNEL_CREATE";
@@ -9,6 +11,7 @@ public class ChannelCreateEvent : IEvent<object, ChannelCreateEvent.Data> {
 
     public static ChannelCreateEvent Create() => new();
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Data {
         public string id { get; set; }
         public string name { get; set; }

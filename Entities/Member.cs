@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dec.DiscordIPC.Entities; 
 
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class Member {
     public User user { get; set; }
     public string nick { get; set; }

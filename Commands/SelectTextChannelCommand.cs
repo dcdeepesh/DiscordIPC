@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dec.DiscordIPC.Commands; 
 
@@ -15,6 +16,7 @@ public class SelectTextChannelCommand : ICommand<SelectTextChannelCommand.Args, 
         return command;
     }
         
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Args {
         public string channel_id { get; set; }
         public int? timeout { get; set; }

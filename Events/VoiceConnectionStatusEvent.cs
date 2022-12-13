@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dec.DiscordIPC.Events; 
 
@@ -11,6 +12,7 @@ public class VoiceConnectionStatusEvent : IEvent<object, VoiceConnectionStatusEv
 
     public static VoiceConnectionStatusEvent Create() => new();
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Data {
         public string state { get; set; }
         public string hostname { get; set; }

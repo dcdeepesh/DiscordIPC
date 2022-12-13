@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Diagnostics.CodeAnalysis;
 using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Commands; 
@@ -18,10 +18,12 @@ public class AuthenticateCommand : ICommand<AuthenticateCommand.Args, Authentica
         return command;
     }
         
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Args {
         public string access_token { get; set; }
     }
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Data {
         public User user { get; set; }
         public List<string> scopes { get; set; }
@@ -37,6 +39,7 @@ public class AuthenticateCommand : ICommand<AuthenticateCommand.Args, Authentica
         }
     }
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class OAuth2Scopes {
         public static readonly string
             ACTIVITIES_READ = "activities.read",

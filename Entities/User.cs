@@ -1,5 +1,8 @@
-﻿namespace Dec.DiscordIPC.Entities; 
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace Dec.DiscordIPC.Entities; 
+
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class User {
     public string id { get; set; }
     public string username { get; set; }

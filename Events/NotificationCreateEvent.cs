@@ -1,4 +1,5 @@
-﻿using Dec.DiscordIPC.Entities;
+﻿using System.Diagnostics.CodeAnalysis;
+using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Events; 
 
@@ -11,6 +12,7 @@ public class NotificationCreateEvent : IEvent<object, NotificationCreateEvent.Da
 
     public static NotificationCreateEvent Create() => new();
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Data {
         public string channel_id { get; set; }
         public Message message { get; set; }

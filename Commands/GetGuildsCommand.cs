@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using System.Diagnostics.CodeAnalysis;
 using Dec.DiscordIPC.Entities;
 
 namespace Dec.DiscordIPC.Commands; 
@@ -12,6 +12,7 @@ public class GetGuildsCommand : ICommand<object, GetGuildsCommand.Data>{
         
     public static GetGuildsCommand Create() => new();
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Data {
         public List<Guild> guilds { get; set; }
     }

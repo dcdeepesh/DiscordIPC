@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Diagnostics.CodeAnalysis;
 using Dec.DiscordIPC.Entities;
 using Dec.DiscordIPC.Events;
 
@@ -19,10 +19,12 @@ public class GetChannelCommand : ICommand<GetChannelCommand.Args, GetChannelComm
         return command;
     }
         
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Args {
         public string channel_id { get; set; }
     }
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Data {
         public string id { get; set; }
         public string guild_id { get; set; }

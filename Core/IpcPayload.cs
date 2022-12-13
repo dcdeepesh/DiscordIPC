@@ -1,5 +1,8 @@
-﻿namespace Dec.DiscordIPC.Core; 
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace Dec.DiscordIPC.Core; 
+
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class IpcPayload {
     public string nonce { get; set; }
     
