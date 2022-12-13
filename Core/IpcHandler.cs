@@ -12,7 +12,7 @@ namespace Dec.DiscordIPC.Core;
 public class IpcHandler {
     private NamedPipeClientStream _pipe;
     private MessageLoop _messageLoop;
-    private EventDispatcher _eventDispatcher;
+    private readonly EventDispatcher _eventDispatcher;
     private readonly string _clientId;
 
     public IpcHandler(string clientId, bool verbose, EventDispatcher eventDispatcher) {

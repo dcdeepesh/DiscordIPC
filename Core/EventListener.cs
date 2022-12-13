@@ -4,7 +4,7 @@ using Dec.DiscordIPC.Events;
 
 namespace Dec.DiscordIPC.Core;
 
-public class EventListener<TArgs, TData> : AbstractEventListener {
+public class EventListener<TData> : AbstractEventListener {
     public Action<TData> EventHandler { get; set; }
     public override string EventName { get; set; }
     public Func<TData, bool> DataMatchChecker { get; set; }
@@ -17,10 +17,10 @@ public class EventListener<TArgs, TData> : AbstractEventListener {
 }
 
 public class EventListener {
-    public static EventListener<TArgs, TData> Create<TArgs, TData>(
+    public static EventListener<TData> Create<TArgs, TData>(
         IEvent<TArgs, TData> theEvent, Action<TData> eventHandler) {
         
-        return new EventListener<TArgs, TData> {
+        return new EventListener<TData> {
             EventHandler = eventHandler,
             EventName = theEvent.Name,
             DataMatchChecker = theEvent.IsMatchingData

@@ -3,8 +3,8 @@
 namespace Dec.DiscordIPC.Core; 
 
 public class IpcRawPacket {
-    public OpCode OpCode;
-    public byte[] Data;
+    public OpCode OpCode { get; }
+    public byte[] Data { get; }
     
     public int Length => Data.Length;
     public string Json => Encoding.UTF8.GetString(Data);

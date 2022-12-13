@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Text.Json;
 using Dec.DiscordIPC.Core;
 
 namespace Dec.DiscordIPC; 
