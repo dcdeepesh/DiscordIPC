@@ -9,7 +9,7 @@ public class MessageUpdateEvent : IEvent<MessageUpdateEvent.Args, MessageUpdateE
     public bool IsMatchingData(Data data) =>
         data.channel_id == Arguments.channel_id;
     
-    public MessageUpdateEvent Create(Action<Args> argsBuilder) {
+    public static MessageUpdateEvent Create(Action<Args> argsBuilder) {
         MessageUpdateEvent theEvent = new() {
             Arguments = new Args()
         };

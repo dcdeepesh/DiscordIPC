@@ -8,7 +8,7 @@ public class VoiceStateUpdateEvent : IEvent<VoiceStateUpdateEvent.Args, VoiceSta
     
     public bool IsMatchingData(Data _) => true;
 
-    public VoiceStateUpdateEvent Create(Action<Args> argsBuilder) {
+    public static VoiceStateUpdateEvent Create(Action<Args> argsBuilder) {
         VoiceStateUpdateEvent theEvent = new() {
             Arguments = new Args()
         };

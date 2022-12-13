@@ -10,7 +10,7 @@ public class GuildStatusEvent : IEvent<GuildStatusEvent.Args, GuildStatusEvent.D
     public bool IsMatchingData(Data data) =>
         data.guild.id == Arguments.guild_id;
 
-    public GuildStatusEvent Create(Action<Args> argsBuilder) {
+    public static GuildStatusEvent Create(Action<Args> argsBuilder) {
         GuildStatusEvent theEvent = new() {
             Arguments = new Args()
         };

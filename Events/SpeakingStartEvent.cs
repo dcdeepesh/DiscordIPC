@@ -8,7 +8,7 @@ public class SpeakingStartEvent : IEvent<SpeakingStartEvent.Args, SpeakingStartE
 
     public bool IsMatchingData(Data _) => true;
     
-    public SpeakingStartEvent Create(Action<Args> argsBuilder) {
+    public static SpeakingStartEvent Create(Action<Args> argsBuilder) {
         SpeakingStartEvent theEvent = new() {
             Arguments = new Args()
         };

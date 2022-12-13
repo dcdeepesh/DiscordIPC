@@ -10,7 +10,7 @@ public class MessageCreateEvent : IEvent<MessageCreateEvent.Args, MessageCreateE
     public bool IsMatchingData(Data data) =>
         data.channel_id == Arguments.channel_id;
     
-    public MessageCreateEvent Create(Action<Args> argsBuilder) {
+    public static MessageCreateEvent Create(Action<Args> argsBuilder) {
         MessageCreateEvent theEvent = new() {
             Arguments = new Args()
         };

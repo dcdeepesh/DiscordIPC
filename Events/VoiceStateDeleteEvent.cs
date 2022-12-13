@@ -8,7 +8,7 @@ public class VoiceStateDeleteEvent : IEvent<VoiceStateDeleteEvent.Args, VoiceSta
 
     public bool IsMatchingData(Data _) => true;
 
-    public VoiceStateDeleteEvent Create(Action<Args> argsBuilder) {
+    public static VoiceStateDeleteEvent Create(Action<Args> argsBuilder) {
         VoiceStateDeleteEvent theEvent = new() {
             Arguments = new Args()
         };

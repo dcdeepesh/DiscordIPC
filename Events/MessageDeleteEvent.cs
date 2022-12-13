@@ -9,7 +9,7 @@ public class MessageDeleteEvent : IEvent<MessageDeleteEvent.Args, MessageDeleteE
     public bool IsMatchingData(Data data) =>
         data.channel_id == Arguments.channel_id;
     
-    public MessageDeleteEvent Create(Action<Args> argsBuilder) {
+    public static MessageDeleteEvent Create(Action<Args> argsBuilder) {
         MessageDeleteEvent theEvent = new() {
             Arguments = new Args()
         };
