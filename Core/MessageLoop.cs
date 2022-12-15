@@ -11,9 +11,7 @@ namespace Dec.DiscordIPC.Core;
 internal class MessageLoop {
     private readonly NamedPipeClientStream _pipe;
     private readonly Thread _thread;
-    private readonly LinkedList<Waiter> _waiters = new();
-    private readonly LinkedList<IpcPayload> _responses = new();
-
+    
     public MessageLoop(NamedPipeClientStream pipe) {
         _pipe = pipe;
         _thread = new Thread(Loop) {
@@ -23,33 +21,6 @@ internal class MessageLoop {
     }
 
     public void Start() => _thread.Start();
-
-    public Task<IpcPayload> WaitForResponse(string nonce) {
-        return Task.Run(() => {
-            Waiter waiter;
-            lock (_responses) {
-                IpcPayload result = null;
-                // TODO: use LINQ and Single() instead?
-                foreach (var response in _responses)
-                    if (response.nonce == nonce)
-                        result = response;
-                if (result is not null) {
-                    _responses.Remove(result);
-                    if (result.IsErrorResponse())
-                        throw new ErrorResponseException(result);
-                    return result;
-                }
-
-                waiter = new Waiter(nonce);
-                _waiters.AddLast(waiter);
-            }
-
-            waiter.ResetEvent.WaitOne();
-            if (waiter.Response.IsErrorResponse())
-                throw new ErrorResponseException(waiter.Response);
-            return waiter.Response;
-        });
-    }
 
     private void Loop() {
         byte[] bOpCode = new byte[4];
@@ -79,29 +50,13 @@ internal class MessageLoop {
                 if (payload.cmd == "DISPATCH")
                     EventReceived?.Invoke(this, new PayloadReceivedArgs(payload));
                 else
-                    SignalNewResponse(payload);
+                    ResponseReceived?.Invoke(this, new PayloadReceivedArgs(payload));
             });
         }
     }
 
     public event EventHandler<PayloadReceivedArgs> EventReceived;
     public event EventHandler<PayloadReceivedArgs> ResponseReceived;
-
-    private void SignalNewResponse(IpcPayload payload) {
-        lock (_responses) {
-            // TODO: use Single() instead?
-            Waiter waiterToResume = _waiters.FirstOrDefault(
-                w => w.Nonce == payload.nonce);
-
-            if (waiterToResume is not null) {
-                _waiters.Remove(waiterToResume);
-                waiterToResume.Response = payload;
-                waiterToResume.ResetEvent.Set();
-            } else {
-                _responses.AddLast(payload);
-            }
-        }
-    }
 }
 
 internal class PayloadReceivedArgs {
