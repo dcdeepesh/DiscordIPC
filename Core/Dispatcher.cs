@@ -46,6 +46,9 @@ public class Dispatcher {
                 _pooledResponsePayloads.Remove(response);
             }
         }
+        
+        // TODO: what happens when response is received and added right here?
+        // TODO: Does the lock() above need to be extended?
 
         if (response is null) {
             Waiter waiter = new(nonce);
