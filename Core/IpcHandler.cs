@@ -40,6 +40,9 @@ public class IpcHandler {
             _dispatcher.DispatchEvent(args.Payload,
                 JsonDocument.Parse(JsonSerializer.Serialize(args.Payload.data)).RootElement);
         };
+        _messageLoop.ResponseReceived += (_, args) => {
+            _dispatcher.DispatchResponse(args.Payload);
+        };
         _messageLoop.Start();
     }
     
@@ -67,7 +70,7 @@ public class IpcHandler {
 
     public async Task<IpcPayload> SendPayloadAsync(IpcPayload payload) {
         await SendPacketAsync(new IpcRawPacket(OpCode.Frame, payload));
-        return await _messageLoop.WaitForResponse(payload.nonce);
+        return await _dispatcher.WaitForResponse(payload.nonce);
     }
 
     protected async Task SendPacketAsync(IpcRawPacket packet) {
