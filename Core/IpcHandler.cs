@@ -33,8 +33,9 @@ public class IpcHandler {
         catch (TimeoutException) {
             throw new IOException($"Unable to connect to pipe {pipeName}");
         }
+    }
 
-        // Init message loop
+    public void InitMessageLoopAndDispatcher() {
         _messageLoop = new MessageLoop(_pipe);
         _messageLoop.EventReceived += (_, args) => {
             _dispatcher.DispatchEvent(args.Payload,

@@ -26,6 +26,7 @@ public class DiscordIpcClient {
         CancellationToken ctk = default) {
 
         await _ipcHandler.ConnectToPipeAsync(pipeNumber, timeoutMs, ctk);
+        _ipcHandler.InitMessageLoopAndDispatcher();
         await _ipcHandler.SendHandshakeAsync(ctk);
     }
 
