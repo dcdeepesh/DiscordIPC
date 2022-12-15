@@ -12,13 +12,13 @@ namespace Dec.DiscordIPC.Core;
 public class IpcHandler {
     private NamedPipeClientStream _pipe;
     private MessageLoop _messageLoop;
-    private readonly EventDispatcher _eventDispatcher;
+    private readonly Dispatcher _dispatcher;
     private readonly string _clientId;
 
-    public IpcHandler(string clientId, bool verbose, EventDispatcher eventDispatcher) {
+    public IpcHandler(string clientId, bool verbose, Dispatcher dispatcher) {
         Util.Verbose = verbose;
         _clientId = clientId;
-        _eventDispatcher = eventDispatcher;
+        _dispatcher = dispatcher;
     }
 
     public async Task ConnectToPipeAsync(int pipeNumber = 0, int timeoutMs = 2000,
@@ -37,7 +37,7 @@ public class IpcHandler {
         // Init message loop
         _messageLoop = new MessageLoop(_pipe);
         _messageLoop.EventPacketReceived += (_, args) => {
-            _eventDispatcher.Dispatch(args.Packet,
+            _dispatcher.DispatchEvent(args.Packet,
                 JsonDocument.Parse(JsonSerializer.Serialize(args.Packet.data)).RootElement);
         };
         _messageLoop.Start();
@@ -45,7 +45,7 @@ public class IpcHandler {
     
     public async Task SendHandshakeAsync(CancellationToken ctk = default) {
         EventWaitHandle readyEventWaitHandle = new(false, EventResetMode.ManualReset);
-        _eventDispatcher.AddEventListener(
+        _dispatcher.AddEventListener(
             EventListener.Create(ReadyEvent.Create(), ReadyEventListener));
 
         // TODO: use ctk

@@ -15,11 +15,11 @@ namespace Dec.DiscordIPC;
 public class DiscordIpcClient {
 
     private readonly IpcHandler _ipcHandler;
-    private readonly EventDispatcher _eventDispatcher; 
+    private readonly Dispatcher _dispatcher; 
     
     public DiscordIpcClient(string clientId, bool verbose = false) {
-        _eventDispatcher = new EventDispatcher();
-        _ipcHandler = new IpcHandler(clientId, verbose, _eventDispatcher);
+        _dispatcher = new Dispatcher();
+        _ipcHandler = new IpcHandler(clientId, verbose, _dispatcher);
     }
     
     public async Task ConnectToDiscordAsync(int pipeNumber = 0, int timeoutMs = 2000,
@@ -54,7 +54,7 @@ public class DiscordIpcClient {
     public async Task<EventHandle> SubscribeAsync<TArgs, TData>(IEvent<TArgs, TData> theEvent,
         Action<TData> eventHandler) {
         var eventListener = EventListener.Create(theEvent, eventHandler);
-        _eventDispatcher.AddEventListener(eventListener);
+        _dispatcher.AddEventListener(eventListener);
 
         // READY event doesn't need a subscription command
         if (theEvent is not ReadyEvent) {
