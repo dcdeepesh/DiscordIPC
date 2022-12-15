@@ -79,14 +79,15 @@ internal class MessageLoop {
                 IpcPayload payload = JsonDocument.Parse(packet.Json).RootElement.ToObject<IpcPayload>();
 
                 if (payload.cmd == "DISPATCH")
-                    EventPacketReceived?.Invoke(this, new EventPacketReceivedArgs(payload));
+                    EventReceived?.Invoke(this, new PayloadReceivedArgs(payload));
                 else
                     SignalNewResponse(payload);
             });
         }
     }
 
-    public event EventHandler<EventPacketReceivedArgs> EventPacketReceived;
+    public event EventHandler<PayloadReceivedArgs> EventReceived;
+    public event EventHandler<PayloadReceivedArgs> ResponseReceived;
 
     private void SignalNewResponse(IpcPayload payload) {
         lock (_responses) {
@@ -109,14 +110,10 @@ internal class MessageLoop {
     }
 }
 
-internal class EventPacketReceivedArgs {
-    public string EventName { get; }
-    public IpcPayload Packet { get; }
+internal class PayloadReceivedArgs {
+    public IpcPayload Payload { get; }
 
-    public EventPacketReceivedArgs(IpcPayload packet) {
-        Packet = packet;
-        EventName = packet.evt;
-    }
+    public PayloadReceivedArgs(IpcPayload payload) => Payload = payload;
 }
 
 internal class Waiter {

@@ -36,9 +36,9 @@ public class IpcHandler {
 
         // Init message loop
         _messageLoop = new MessageLoop(_pipe);
-        _messageLoop.EventPacketReceived += (_, args) => {
-            _dispatcher.DispatchEvent(args.Packet,
-                JsonDocument.Parse(JsonSerializer.Serialize(args.Packet.data)).RootElement);
+        _messageLoop.EventReceived += (_, args) => {
+            _dispatcher.DispatchEvent(args.Payload,
+                JsonDocument.Parse(JsonSerializer.Serialize(args.Payload.data)).RootElement);
         };
         _messageLoop.Start();
     }
