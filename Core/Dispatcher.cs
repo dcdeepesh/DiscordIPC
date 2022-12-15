@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 
 namespace Dec.DiscordIPC.Core; 
 
@@ -27,8 +28,7 @@ public class Dispatcher {
 
         if (existingWaiter is not null) {
             _responseWaiters.Remove(existingWaiter);
-            existingWaiter.Response = responsePayload;
-            existingWaiter.ResetEvent.Set();
+            existingWaiter.Notify(responsePayload);
         } else {
             lock (_pooledResponsePayloads) {
                 _pooledResponsePayloads.AddLast(responsePayload);
@@ -49,16 +49,36 @@ public class Dispatcher {
         
         // TODO: what happens when response is received and added right here?
         // TODO: Does the lock() above need to be extended?
+        // TODO: Does _responseWaiters need a lock?
 
         if (response is null) {
             Waiter waiter = new(nonce);
             _responseWaiters.AddLast(waiter);
-            waiter.ResetEvent.WaitOne();
-            response = waiter.Response;
+            response = waiter.WaitForResponse();
         }
 
         if (response.IsErrorResponse())
             throw new ErrorResponseException(response);
         return response;
+    }
+}
+
+internal class Waiter {
+    // TODO: Use ManualResetEvent? Use *Slim? Check performance.
+    private readonly AutoResetEvent _event = new(false);
+    private IpcPayload _response;
+
+    public string Nonce { get; }
+    
+    public Waiter(string nonce) => Nonce = nonce;
+
+    public IpcPayload WaitForResponse() {
+        _event.WaitOne();
+        return _response;
+    }
+
+    public void Notify(IpcPayload response) {
+        _response = response;
+        _event.Set();
     }
 }

@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.IO.Pipes;
-using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,6 +19,9 @@ internal class MessageLoop {
     }
 
     public void Start() => _thread.Start();
+    
+    public event EventHandler<PayloadReceivedArgs> EventReceived;
+    public event EventHandler<PayloadReceivedArgs> ResponseReceived;
 
     private void Loop() {
         byte[] bOpCode = new byte[4];
@@ -54,21 +55,10 @@ internal class MessageLoop {
             });
         }
     }
-
-    public event EventHandler<PayloadReceivedArgs> EventReceived;
-    public event EventHandler<PayloadReceivedArgs> ResponseReceived;
 }
 
 internal class PayloadReceivedArgs {
     public IpcPayload Payload { get; }
 
     public PayloadReceivedArgs(IpcPayload payload) => Payload = payload;
-}
-
-internal class Waiter {
-    public string Nonce;
-    public AutoResetEvent ResetEvent = new(false);
-    public IpcPayload Response;
-
-    public Waiter(string nonce) => Nonce = nonce;
 }
