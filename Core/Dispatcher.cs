@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Dec.DiscordIPC.Core; 
 
@@ -23,16 +22,15 @@ public class Dispatcher {
     }
 
     public void DispatchResponse(IpcPayload responsePayload) {
-        lock (_pooledResponsePayloads) {
-            // TODO: use Single() instead?
-            Waiter waiterToResume = _responseWaiters.FirstOrDefault(
-                w => w.Nonce == responsePayload.nonce);
+        Waiter existingWaiter = _responseWaiters.FirstOrDefault(
+            w => w.Nonce == responsePayload.nonce);
 
-            if (waiterToResume is not null) {
-                _responseWaiters.Remove(waiterToResume);
-                waiterToResume.Response = responsePayload;
-                waiterToResume.ResetEvent.Set();
-            } else {
+        if (existingWaiter is not null) {
+            _responseWaiters.Remove(existingWaiter);
+            existingWaiter.Response = responsePayload;
+            existingWaiter.ResetEvent.Set();
+        } else {
+            lock (_pooledResponsePayloads) {
                 _pooledResponsePayloads.AddLast(responsePayload);
             }
         }
