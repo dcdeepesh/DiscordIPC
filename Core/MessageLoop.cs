@@ -24,18 +24,18 @@ internal class MessageLoop {
     public event EventHandler<PayloadReceivedArgs> ResponseReceived;
 
     private void Loop() {
-        byte[] bOpCode = new byte[4];
-        byte[] bLen = new byte[4];
+        byte[] opCodeBytes = new byte[4];
+        byte[] lengthBytes = new byte[4];
         IpcRawPacket packet;
 
         while (true) {
             try {
-                if (_pipe.Read(bOpCode, 0, 4) == 0)
+                if (_pipe.Read(opCodeBytes, 0, 4) == 0)
                     break;
-                OpCode opCode = (OpCode) BitConverter.ToInt32(bOpCode, 0);
-                if (_pipe.Read(bLen, 0, 4) == 0)
+                OpCode opCode = (OpCode) BitConverter.ToInt32(opCodeBytes, 0);
+                if (_pipe.Read(lengthBytes, 0, 4) == 0)
                     break;
-                int len = BitConverter.ToInt32(bLen, 0);
+                int len = BitConverter.ToInt32(lengthBytes, 0);
                 byte[] data = new byte[len];
                 if (_pipe.Read(data, 0, len) == 0)
                     break;
@@ -48,10 +48,8 @@ internal class MessageLoop {
                 Util.Log("\nRECEIVED:\n{0}", packet.Json);
                 IpcPayload payload = JsonDocument.Parse(packet.Json).RootElement.ToObject<IpcPayload>();
 
-                if (payload.cmd == "DISPATCH")
-                    EventReceived?.Invoke(this, new PayloadReceivedArgs(payload));
-                else
-                    ResponseReceived?.Invoke(this, new PayloadReceivedArgs(payload));
+                var eventToFire = payload.cmd == "DISPATCH" ? EventReceived : ResponseReceived;
+                eventToFire?.Invoke(this, new PayloadReceivedArgs(payload));
             });
         }
     }

@@ -36,7 +36,7 @@ public class Dispatcher {
         }
     }
 
-    public IpcPayload WaitForResponse(string nonce) {
+    public IpcPayload GetResponseFor(string nonce) {
         IpcPayload response;
 
         lock (_pooledResponsePayloads) {

@@ -36,37 +36,35 @@ public class DiscordIpcClient {
     public async Task SendCommandAsync<TArgs>(ICommand<TArgs> command) =>
         await SendCommandAsync(command, null);
 
-    private async Task<object> SendCommandAsync<TArgs>(ICommand<TArgs> command,
+    private async Task<object> SendCommandAsync<TArgs>(
+        ICommand<TArgs> command,
         Type returnType) {
-            
-        IpcPayload payload = new() {
+        
+        IpcPayload response = await _ipcHandler.SendPayloadAsync(new IpcPayload {
             cmd = command.Name,
             nonce = Guid.NewGuid().ToString(),
             args = command.Arguments
-        };
-            
-        IpcPayload response = await _ipcHandler.SendPayloadAsync(payload);
-        if (returnType is null)
-            return null;
-
-        return JsonSerializer.Deserialize(JsonSerializer.Serialize(response.data), returnType);
+        });
+        
+        return returnType is null ? null : 
+            JsonSerializer.Deserialize(JsonSerializer.Serialize(response.data), returnType);
     }
 
-    public async Task<EventHandle> SubscribeAsync<TArgs, TData>(IEvent<TArgs, TData> theEvent,
+    public async Task<EventHandle> SubscribeAsync<TArgs, TData>(
+        IEvent<TArgs, TData> theEvent,
         Action<TData> eventHandler) {
+        
         var eventListener = EventListener.Create(theEvent, eventHandler);
         _dispatcher.AddEventListener(eventListener);
 
         // READY event doesn't need a subscription command
         if (theEvent is not ReadyEvent) {
-            IpcPayload payload = new() {
+            await _ipcHandler.SendPayloadAsync(new IpcPayload {
                 cmd = "SUBSCRIBE",
                 nonce = Guid.NewGuid().ToString(),
                 evt = theEvent.Name,
                 args = theEvent.Arguments
-            };
-
-            await _ipcHandler.SendPayloadAsync(payload);
+            });
         }
 
         return new EventHandle(UnsubscribeAsync);
@@ -74,14 +72,12 @@ public class DiscordIpcClient {
         async ValueTask UnsubscribeAsync() {
             // READY event doesn't need an unsubscription command
             if (theEvent is not ReadyEvent) {
-                IpcPayload payload = new() {
+                await _ipcHandler.SendPayloadAsync(new IpcPayload {
                     cmd = "UNSUBSCRIBE",
                     nonce = Guid.NewGuid().ToString(),
                     evt = theEvent.Name,
                     args = theEvent.Arguments
-                };
-
-                await _ipcHandler.SendPayloadAsync(payload);
+                });
             }
         }
     }

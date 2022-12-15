@@ -2,11 +2,11 @@
 
 namespace Dec.DiscordIPC.Commands; 
 
-public interface ICommand<TArgs> {
+public interface ICommand<out TArgs> {
     string Name { get; }
-    TArgs Arguments { get; set; }
+    TArgs Arguments { get; }
 }
     
 [SuppressMessage("ReSharper", "UnusedTypeParameter")]
-public interface ICommand<TArgs, TData> : ICommand<TArgs> {
+public interface ICommand<out TArgs, TData> : ICommand<TArgs> {
 }

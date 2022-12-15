@@ -1,7 +1,7 @@
 ﻿namespace Dec.DiscordIPC.Events; 
 
-public interface IEvent<TArgs, in TData> {
-    TArgs Arguments { get; set; }
+public interface IEvent<out TArgs, in TData> {
+    TArgs Arguments { get; }
     string Name { get; }
     bool IsMatchingData(TData data);
 }

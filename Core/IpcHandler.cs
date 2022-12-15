@@ -71,7 +71,7 @@ public class IpcHandler {
 
     public async Task<IpcPayload> SendPayloadAsync(IpcPayload payload) {
         await SendPacketAsync(new IpcRawPacket(OpCode.Frame, payload));
-        return _dispatcher.WaitForResponse(payload.nonce);
+        return _dispatcher.GetResponseFor(payload.nonce);
     }
 
     protected async Task SendPacketAsync(IpcRawPacket packet) {

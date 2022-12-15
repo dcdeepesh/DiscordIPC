@@ -6,7 +6,7 @@ namespace Dec.DiscordIPC.Core;
 
 public class EventListener<TData> : AbstractEventListener {
     public Action<TData> EventHandler { get; set; }
-    public override string EventName { get; set; }
+    public string EventName { get; set; }
     public Func<TData, bool> DataMatchChecker { get; set; }
 
     public override bool IsMatchingData(IpcPayload payload, JsonElement serializedEventData) =>
