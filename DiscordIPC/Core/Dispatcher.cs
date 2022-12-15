@@ -57,7 +57,7 @@ public class Dispatcher {
             response = waiter.WaitForResponse();
         }
 
-        if (response.IsErrorResponse())
+        if (response.evt == "ERROR")
             throw new ErrorResponseException(response);
         return response;
     }

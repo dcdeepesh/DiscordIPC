@@ -15,8 +15,7 @@ public class IpcHandler {
     private readonly Dispatcher _dispatcher;
     private readonly string _clientId;
 
-    public IpcHandler(string clientId, bool verbose, Dispatcher dispatcher) {
-        Util.Verbose = verbose;
+    public IpcHandler(string clientId, Dispatcher dispatcher) {
         _clientId = clientId;
         _dispatcher = dispatcher;
     }
@@ -84,7 +83,6 @@ public class IpcHandler {
         Array.Copy(lengthBytes, 0, buffer, 4, 4);
         Array.Copy(packet.Data, 0, buffer, 8, packet.Length);
         
-        Util.Log("\nSENDING:\n{0}", packet.Json);
         await _pipe.WriteAsync(buffer, 0, buffer.Length);
     }
 

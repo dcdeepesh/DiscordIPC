@@ -17,9 +17,9 @@ public class DiscordIpcClient : IDisposable {
     private readonly IpcHandler _ipcHandler;
     private readonly Dispatcher _dispatcher; 
     
-    public DiscordIpcClient(string clientId, bool verbose = false) {
+    public DiscordIpcClient(string clientId) {
         _dispatcher = new Dispatcher();
-        _ipcHandler = new IpcHandler(clientId, verbose, _dispatcher);
+        _ipcHandler = new IpcHandler(clientId, _dispatcher);
     }
     
     public async Task ConnectToDiscordAsync(int pipeNumber = 0, int timeoutMs = 2000,
