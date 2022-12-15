@@ -7,8 +7,8 @@ namespace Dec.DiscordIPC.Core;
 
 public class Dispatcher {
     private readonly List<AbstractEventListener> _eventListeners = new();
-    private readonly LinkedList<Waiter> _waiters = new();
-    private readonly LinkedList<IpcPayload> _responses = new();
+    private readonly LinkedList<Waiter> _responseWaiters = new();
+    private readonly LinkedList<IpcPayload> _pooledResponses = new();
 
     public void AddEventListener(AbstractEventListener eventListener) {
         _eventListeners.Add(eventListener);
@@ -23,17 +23,17 @@ public class Dispatcher {
     }
 
     public void DispatchResponse(IpcPayload responsePayload) {
-        lock (_responses) {
+        lock (_pooledResponses) {
             // TODO: use Single() instead?
-            Waiter waiterToResume = _waiters.FirstOrDefault(
+            Waiter waiterToResume = _responseWaiters.FirstOrDefault(
                 w => w.Nonce == responsePayload.nonce);
 
             if (waiterToResume is not null) {
-                _waiters.Remove(waiterToResume);
+                _responseWaiters.Remove(waiterToResume);
                 waiterToResume.Response = responsePayload;
                 waiterToResume.ResetEvent.Set();
             } else {
-                _responses.AddLast(responsePayload);
+                _pooledResponses.AddLast(responsePayload);
             }
         }
     }
@@ -41,21 +41,21 @@ public class Dispatcher {
     public Task<IpcPayload> WaitForResponse(string nonce) {
         return Task.Run(() => {
             Waiter waiter;
-            lock (_responses) {
+            lock (_pooledResponses) {
                 IpcPayload result = null;
                 // TODO: use LINQ and Single() instead?
-                foreach (var response in _responses)
+                foreach (var response in _pooledResponses)
                     if (response.nonce == nonce)
                         result = response;
                 if (result is not null) {
-                    _responses.Remove(result);
+                    _pooledResponses.Remove(result);
                     if (result.IsErrorResponse())
                         throw new ErrorResponseException(result);
                     return result;
                 }
 
                 waiter = new Waiter(nonce);
-                _waiters.AddLast(waiter);
+                _responseWaiters.AddLast(waiter);
             }
 
             waiter.ResetEvent.WaitOne();
