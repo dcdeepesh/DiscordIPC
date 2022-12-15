@@ -8,7 +8,7 @@ namespace Dec.DiscordIPC.Core;
 public class Dispatcher {
     private readonly List<AbstractEventListener> _eventListeners = new();
     private readonly LinkedList<Waiter> _responseWaiters = new();
-    private readonly LinkedList<IpcPayload> _pooledResponses = new();
+    private readonly LinkedList<IpcPayload> _pooledResponsePayloads = new();
 
     public void AddEventListener(AbstractEventListener eventListener) {
         _eventListeners.Add(eventListener);
@@ -23,7 +23,7 @@ public class Dispatcher {
     }
 
     public void DispatchResponse(IpcPayload responsePayload) {
-        lock (_pooledResponses) {
+        lock (_pooledResponsePayloads) {
             // TODO: use Single() instead?
             Waiter waiterToResume = _responseWaiters.FirstOrDefault(
                 w => w.Nonce == responsePayload.nonce);
@@ -33,35 +33,31 @@ public class Dispatcher {
                 waiterToResume.Response = responsePayload;
                 waiterToResume.ResetEvent.Set();
             } else {
-                _pooledResponses.AddLast(responsePayload);
+                _pooledResponsePayloads.AddLast(responsePayload);
             }
         }
     }
-    
-    public Task<IpcPayload> WaitForResponse(string nonce) {
-        return Task.Run(() => {
-            Waiter waiter;
-            lock (_pooledResponses) {
-                IpcPayload result = null;
-                // TODO: use LINQ and Single() instead?
-                foreach (var response in _pooledResponses)
-                    if (response.nonce == nonce)
-                        result = response;
-                if (result is not null) {
-                    _pooledResponses.Remove(result);
-                    if (result.IsErrorResponse())
-                        throw new ErrorResponseException(result);
-                    return result;
-                }
 
-                waiter = new Waiter(nonce);
-                _responseWaiters.AddLast(waiter);
+    public IpcPayload WaitForResponse(string nonce) {
+        IpcPayload response;
+
+        lock (_pooledResponsePayloads) {
+            response = _pooledResponsePayloads
+                .FirstOrDefault(res => res.nonce == nonce);
+            if (response is not null) {
+                _pooledResponsePayloads.Remove(response);
             }
+        }
 
+        if (response is null) {
+            Waiter waiter = new(nonce);
+            _responseWaiters.AddLast(waiter);
             waiter.ResetEvent.WaitOne();
-            if (waiter.Response.IsErrorResponse())
-                throw new ErrorResponseException(waiter.Response);
-            return waiter.Response;
-        });
+            response = waiter.Response;
+        }
+
+        if (response.IsErrorResponse())
+            throw new ErrorResponseException(response);
+        return response;
     }
 }
