@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.Json;
 using Dec.DiscordIPC.Events;
 
 namespace Dec.DiscordIPC.Core;
@@ -9,11 +8,11 @@ public class EventListener<TData> : AbstractEventListener {
     public string EventName { get; set; }
     public Func<TData, bool> DataMatchChecker { get; set; }
 
-    public override bool IsMatchingData(IpcPayload payload, JsonElement serializedEventData) =>
-        payload.evt == EventName && DataMatchChecker(serializedEventData.ToObject<TData>());
+    public override bool IsMatchingData(IpcPayload payload) =>
+        payload.evt == EventName && DataMatchChecker(payload.GetData<TData>());
 
-    public override void HandleData(JsonElement serializedEventData) =>
-        EventHandler(serializedEventData.ToObject<TData>());
+    public override void HandleData(IpcPayload payload) =>
+        EventHandler(payload.GetData<TData>());
 }
 
 public class EventListener {

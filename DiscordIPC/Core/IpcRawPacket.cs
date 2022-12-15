@@ -7,22 +7,22 @@ namespace Dec.DiscordIPC.Core;
 
 public class IpcRawPacket {
     public OpCode OpCode { get; }
-    public byte[] Data { get; }
+    public byte[] PayloadData { get; }
     
-    public int Length => Data.Length;
-    public string Json => Encoding.UTF8.GetString(Data);
+    public int Length => PayloadData.Length;
+    public string PayloadJson => Encoding.UTF8.GetString(PayloadData);
 
     public IpcRawPacket(OpCode opCode, object data) {
         OpCode = opCode;
-        Data = JsonSerializer.SerializeToUtf8Bytes(data, new JsonSerializerOptions {
+        PayloadData = JsonSerializer.SerializeToUtf8Bytes(data, new JsonSerializerOptions {
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         });
     }
         
-    public IpcRawPacket(OpCode opCode, byte[] data) {
+    public IpcRawPacket(OpCode opCode, byte[] payloadData) {
         OpCode = opCode;
-        Data = data;
+        PayloadData = payloadData;
     }
 }
 

@@ -14,10 +14,10 @@ public class Dispatcher {
         _eventListeners.Add(eventListener);
     }
 
-    public void DispatchEvent(IpcPayload eventPayload, JsonElement serializedEventData) {
+    public void DispatchEvent(IpcPayload eventPayload) {
         foreach (var listener in _eventListeners) {
-            if (listener.IsMatchingData(eventPayload, serializedEventData)) {
-                listener.HandleData(serializedEventData);
+            if (listener.IsMatchingData(eventPayload)) {
+                listener.HandleData(eventPayload);
             }
         }
     }
@@ -66,7 +66,7 @@ public class Dispatcher {
 internal class Waiter {
     // TODO: Use ManualResetEvent? Use *Slim? Check performance.
     private readonly AutoResetEvent _event = new(false);
-    private IpcPayload _response;
+    private IpcPayload _responsePayload;
 
     public string Nonce { get; }
     
@@ -74,11 +74,11 @@ internal class Waiter {
 
     public IpcPayload WaitForResponse() {
         _event.WaitOne();
-        return _response;
+        return _responsePayload;
     }
 
     public void Notify(IpcPayload response) {
-        _response = response;
+        _responsePayload = response;
         _event.Set();
     }
 }

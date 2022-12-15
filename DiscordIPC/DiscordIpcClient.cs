@@ -45,9 +45,9 @@ public class DiscordIpcClient : IDisposable {
             nonce = Guid.NewGuid().ToString(),
             args = command.Arguments
         });
-        
-        return returnType is null ? null : 
-            JsonSerializer.Deserialize(JsonSerializer.Serialize(response.data), returnType);
+
+        return returnType is null ? null :
+            response.GetData(returnType);
     }
 
     public async Task<EventHandle> SubscribeAsync<TArgs, TData>(

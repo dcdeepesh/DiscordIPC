@@ -45,7 +45,9 @@ internal class MessageLoop {
             }
 
             Task.Run(() => {
-                IpcPayload payload = JsonDocument.Parse(packet.Json).RootElement.ToObject<IpcPayload>();
+                IpcPayload payload = JsonSerializer.Deserialize<IpcPayload>(packet.PayloadJson);
+                payload.DataJson = JsonDocument.Parse(packet.PayloadJson).RootElement
+                    .GetProperty(nameof(IpcPayload.data)).GetRawText();
 
                 var eventToFire = payload.cmd == "DISPATCH" ? EventReceived : ResponseReceived;
                 eventToFire?.Invoke(this, new PayloadReceivedArgs(payload));

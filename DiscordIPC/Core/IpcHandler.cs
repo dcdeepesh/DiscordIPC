@@ -37,8 +37,7 @@ public class IpcHandler {
     public void InitMessageLoopAndDispatcher() {
         _messageLoop = new MessageLoop(_pipe);
         _messageLoop.EventReceived += (_, args) => {
-            _dispatcher.DispatchEvent(args.Payload,
-                JsonDocument.Parse(JsonSerializer.Serialize(args.Payload.data)).RootElement);
+            _dispatcher.DispatchEvent(args.Payload);
         };
         _messageLoop.ResponseReceived += (_, args) => {
             _dispatcher.DispatchResponse(args.Payload);
@@ -81,7 +80,7 @@ public class IpcHandler {
         byte[] buffer = new byte[4 + 4 + packet.Length];
         Array.Copy(opCodeBytes, buffer, 4);
         Array.Copy(lengthBytes, 0, buffer, 4, 4);
-        Array.Copy(packet.Data, 0, buffer, 8, packet.Length);
+        Array.Copy(packet.PayloadData, 0, buffer, 8, packet.Length);
         
         await _pipe.WriteAsync(buffer, 0, buffer.Length);
     }
