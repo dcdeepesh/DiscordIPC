@@ -51,8 +51,6 @@ internal class MessageLoop {
         });
     }
 
-    // Private methods
-
     private void Loop() {
         byte[] bOpCode = new byte[4];
         byte[] bLen = new byte[4];
@@ -94,10 +92,6 @@ internal class MessageLoop {
             // TODO: use Single() instead?
             Waiter waiterToResume = _waiters.FirstOrDefault(
                 w => w.Nonce == payload.nonce);
-            // Waiter waiterToResume = null;
-            // foreach (var waiter in _waiters)
-            //     if (waiter.Nonce == response.GetProperty("nonce").GetString())
-            //         waiterToResume = waiter;
 
             if (waiterToResume is not null) {
                 _waiters.Remove(waiterToResume);
