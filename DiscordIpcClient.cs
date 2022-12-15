@@ -12,7 +12,7 @@ namespace Dec.DiscordIPC;
 /// <summary>
 /// The main access point for user programs to use DiscordIPC.
 /// </summary>
-public class DiscordIpcClient {
+public class DiscordIpcClient : IDisposable {
 
     private readonly IpcHandler _ipcHandler;
     private readonly Dispatcher _dispatcher; 
@@ -80,5 +80,9 @@ public class DiscordIpcClient {
                 });
             }
         }
+    }
+
+    public void Dispose() {
+        _ipcHandler.Dispose();
     }
 }
