@@ -14,11 +14,16 @@ namespace Dec.DiscordIPC;
 public class DiscordIpcClient : IDisposable {
 
     private readonly IpcHandler _ipcHandler;
-    private readonly Dispatcher _dispatcher; 
-    
-    public DiscordIpcClient(string clientId) {
+    private readonly Dispatcher _dispatcher;
+    private readonly DiscordIpcClientOptions _options;
+
+    public DiscordIpcClient(string clientId) : this(clientId, new DiscordIpcClientOptions()) {
+    }
+
+    public DiscordIpcClient(string clientId, DiscordIpcClientOptions options) {
         _dispatcher = new Dispatcher();
         _ipcHandler = new IpcHandler(clientId, _dispatcher);
+        _options = options;
     }
     
     public async Task ConnectToDiscordAsync(int pipeNumber = 0, int timeoutMs = 2000,
