@@ -10,6 +10,8 @@ public class EventHandle : IAsyncDisposable {
         _unsubscribeAction = unsubscribeAction;
     }
 
-    public async ValueTask UnsubscribeAsync() => await _unsubscribeAction();
-    public async ValueTask DisposeAsync() => await UnsubscribeAsync();
+    public async ValueTask UnsubscribeAsync() =>
+        await _unsubscribeAction().ConfigureAwait(false);
+    public async ValueTask DisposeAsync() =>
+        await UnsubscribeAsync().ConfigureAwait(false);
 }

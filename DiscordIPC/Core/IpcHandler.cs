@@ -26,7 +26,7 @@ public class IpcHandler {
         try {
             _pipe = new NamedPipeClientStream(".", pipeName,
                 PipeDirection.InOut, PipeOptions.Asynchronous);
-            await _pipe.ConnectAsync(timeoutMs, ctk);
+            await _pipe.ConnectAsync(timeoutMs, ctk).ConfigureAwait(false);
         }
         catch (TimeoutException) {
             throw new IOException($"Unable to connect to pipe {pipeName}");
@@ -54,12 +54,12 @@ public class IpcHandler {
             client_id = _clientId,
             v = "1",
             nonce = Guid.NewGuid().ToString()
-        }));
+        })).ConfigureAwait(false);
 
         // TODO: make this async
         await Task.Run(() => {
             readyEventWaitHandle.WaitOne();
-        }, ctk);
+        }, ctk).ConfigureAwait(false);
 
         void ReadyEventListener(ReadyEvent.Data _) {
             readyEventWaitHandle.Set();
@@ -67,7 +67,8 @@ public class IpcHandler {
     }
 
     public async Task<IpcPayload> SendPayloadAsync(IpcPayload payload) {
-        await SendPacketAsync(new IpcRawPacket(OpCode.Frame, payload));
+        await SendPacketAsync(new IpcRawPacket(OpCode.Frame, payload))
+            .ConfigureAwait(false);
         return _dispatcher.GetResponseFor(payload.nonce);
     }
 
@@ -81,7 +82,8 @@ public class IpcHandler {
         Array.Copy(lengthBytes, 0, buffer, 4, 4);
         Array.Copy(packet.PayloadData, 0, buffer, 8, packet.Length);
         
-        await _pipe.WriteAsync(buffer, 0, buffer.Length);
+        await _pipe.WriteAsync(buffer, 0, buffer.Length)
+            .ConfigureAwait(false);
     }
 
     public void Dispose() => _pipe.Dispose();

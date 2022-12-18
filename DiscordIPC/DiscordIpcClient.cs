@@ -24,16 +24,18 @@ public class DiscordIpcClient : IDisposable {
     public async Task ConnectToDiscordAsync(int pipeNumber = 0, int timeoutMs = 2000,
         CancellationToken ctk = default) {
 
-        await _ipcHandler.ConnectToPipeAsync(pipeNumber, timeoutMs, ctk);
+        await _ipcHandler.ConnectToPipeAsync(pipeNumber, timeoutMs, ctk)
+            .ConfigureAwait(false);
         _ipcHandler.InitMessageLoopAndDispatcher();
-        await _ipcHandler.SendHandshakeAsync(ctk);
+        await _ipcHandler.SendHandshakeAsync(ctk)
+            .ConfigureAwait(false);
     }
 
     public async Task<TData> SendCommandAsync<TArgs, TData>(ICommand<TArgs, TData> command) =>
-        (TData) await SendCommandAsync(command, typeof(TData));
+        (TData) await SendCommandAsync(command, typeof(TData)).ConfigureAwait(false);
 
     public async Task SendCommandAsync<TArgs>(ICommand<TArgs> command) =>
-        await SendCommandAsync(command, null);
+        await SendCommandAsync(command, null).ConfigureAwait(false);
 
     private async Task<object> SendCommandAsync<TArgs>(
         ICommand<TArgs> command,
@@ -43,7 +45,7 @@ public class DiscordIpcClient : IDisposable {
             cmd = command.Name,
             nonce = Guid.NewGuid().ToString(),
             args = command.Arguments
-        });
+        }).ConfigureAwait(false);
 
         return returnType is null ? null :
             response.GetData(returnType);
@@ -63,7 +65,7 @@ public class DiscordIpcClient : IDisposable {
                 nonce = Guid.NewGuid().ToString(),
                 evt = theEvent.Name,
                 args = theEvent.Arguments
-            });
+            }).ConfigureAwait(false);
         }
 
         return new EventHandle(UnsubscribeAsync);
@@ -76,7 +78,7 @@ public class DiscordIpcClient : IDisposable {
                     nonce = Guid.NewGuid().ToString(),
                     evt = theEvent.Name,
                     args = theEvent.Arguments
-                });
+                }).ConfigureAwait(false);
             }
         }
     }
