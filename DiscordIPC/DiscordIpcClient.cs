@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Dec.DiscordIPC.Commands;
 using Dec.DiscordIPC.Core;
 using Dec.DiscordIPC.Events;
+using static Dec.DiscordIPC.Core.LoggerWrapper;
 
 namespace Dec.DiscordIPC; 
 
@@ -24,6 +25,7 @@ public class DiscordIpcClient : IDisposable {
         _dispatcher = new Dispatcher();
         _ipcHandler = new IpcHandler(clientId, _dispatcher);
         _options = options;
+        Logger = options.Logger;
     }
     
     public async Task ConnectToDiscordAsync(int timeoutMs = 2000,
