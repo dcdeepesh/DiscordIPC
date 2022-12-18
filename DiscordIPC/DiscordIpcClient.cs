@@ -80,28 +80,26 @@ public class DiscordIpcClient : IDisposable {
         }
 
         return new EventHandle(Unsubscribe, UnsubscribeAsync);
+
+        // Local helper methods
         
+        IpcPayload MakeUnsubscribePayload() => new() {
+            cmd = "UNSUBSCRIBE",
+            nonce = Guid.NewGuid().ToString(),
+            evt = theEvent.Name,
+            args = theEvent.Arguments
+        };
+
         void Unsubscribe() {
-            // READY event doesn't need an unsubscription command
             if (theEvent is not ReadyEvent) {
-                _ipcHandler.SendPayload(new IpcPayload {
-                    cmd = "UNSUBSCRIBE",
-                    nonce = Guid.NewGuid().ToString(),
-                    evt = theEvent.Name,
-                    args = theEvent.Arguments
-                });
+                _ipcHandler.SendPayload(MakeUnsubscribePayload());
             }
         }
 
         async ValueTask UnsubscribeAsync() {
-            // READY event doesn't need an unsubscription command
             if (theEvent is not ReadyEvent) {
-                await _ipcHandler.SendPayloadAsync(new IpcPayload {
-                    cmd = "UNSUBSCRIBE",
-                    nonce = Guid.NewGuid().ToString(),
-                    evt = theEvent.Name,
-                    args = theEvent.Arguments
-                }, ctk).ConfigureAwait(false);
+                await _ipcHandler.SendPayloadAsync(MakeUnsubscribePayload(), ctk)
+                    .ConfigureAwait(false);
             }
         }
     }
