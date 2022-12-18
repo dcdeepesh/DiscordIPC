@@ -54,7 +54,7 @@ public class IpcHandler {
             client_id = _clientId,
             v = "1",
             nonce = Guid.NewGuid().ToString()
-        })).ConfigureAwait(false);
+        }), ctk).ConfigureAwait(false);
 
         // TODO: make this async
         await Task.Run(() => {
@@ -88,7 +88,7 @@ public class IpcHandler {
             .ConfigureAwait(false);
     }
 
-    private byte[] SerializePacket(IpcRawPacket packet) {
+    private static byte[] SerializePacket(IpcRawPacket packet) {
         byte[] opCodeBytes = BitConverter.GetBytes((int) packet.OpCode);
         byte[] lengthBytes = BitConverter.GetBytes(packet.Length);
 
