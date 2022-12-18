@@ -65,14 +65,30 @@ public class IpcHandler {
             readyEventWaitHandle.Set();
         }
     }
+    
+    public IpcPayload SendPayload(IpcPayload payload) {
+        SendPacket(new IpcRawPacket(OpCode.Frame, payload));
+        return _dispatcher.GetResponseFor(payload.nonce);
+    }
 
     public async Task<IpcPayload> SendPayloadAsync(IpcPayload payload, CancellationToken ctk = default) {
         await SendPacketAsync(new IpcRawPacket(OpCode.Frame, payload), ctk)
             .ConfigureAwait(false);
         return _dispatcher.GetResponseFor(payload.nonce);
     }
+    
+    public void SendPacket(IpcRawPacket packet) {
+        byte[] packetBytes = SerializePacket(packet);
+        _pipe.Write(packetBytes, 0, packetBytes.Length);
+    }
 
-    protected async Task SendPacketAsync(IpcRawPacket packet, CancellationToken ctk = default) {
+    public async Task SendPacketAsync(IpcRawPacket packet, CancellationToken ctk = default) {
+        byte[] packetBytes = SerializePacket(packet);
+        await _pipe.WriteAsync(packetBytes, 0, packetBytes.Length, ctk)
+            .ConfigureAwait(false);
+    }
+
+    private byte[] SerializePacket(IpcRawPacket packet) {
         byte[] opCodeBytes = BitConverter.GetBytes((int) packet.OpCode);
         byte[] lengthBytes = BitConverter.GetBytes(packet.Length);
 
@@ -81,9 +97,8 @@ public class IpcHandler {
         Array.Copy(opCodeBytes, buffer, 4);
         Array.Copy(lengthBytes, 0, buffer, 4, 4);
         Array.Copy(packet.PayloadData, 0, buffer, 8, packet.Length);
-        
-        await _pipe.WriteAsync(buffer, 0, buffer.Length, ctk)
-            .ConfigureAwait(false);
+
+        return buffer;
     }
 
     public void Dispose() => _pipe.Dispose();
