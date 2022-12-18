@@ -26,10 +26,10 @@ public class DiscordIpcClient : IDisposable {
         _options = options;
     }
     
-    public async Task ConnectToDiscordAsync(int pipeNumber = 0, int timeoutMs = 2000,
+    public async Task ConnectToDiscordAsync(int timeoutMs = 2000,
         CancellationToken ctk = default) {
 
-        await _ipcHandler.ConnectToPipeAsync(pipeNumber, timeoutMs, ctk)
+        await _ipcHandler.ConnectToPipeAsync(_options.PipeNumber, timeoutMs, ctk)
             .ConfigureAwait(false);
         _ipcHandler.InitMessageLoopAndDispatcher();
         await _ipcHandler.SendHandshakeAsync(ctk)
