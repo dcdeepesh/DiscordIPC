@@ -36,21 +36,26 @@ public class DiscordIpcClient : IDisposable {
             .ConfigureAwait(false);
     }
 
-    public async Task<TData> SendCommandAsync<TArgs, TData>(ICommand<TArgs, TData> command) =>
-        (TData) await SendCommandAsync(command, typeof(TData)).ConfigureAwait(false);
+    public async Task<TData> SendCommandAsync<TArgs, TData>(
+        ICommand<TArgs, TData> command,
+        CancellationToken ctk = default) =>
+        (TData) await SendCommandAsync(command, typeof(TData), ctk).ConfigureAwait(false);
 
-    public async Task SendCommandAsync<TArgs>(ICommand<TArgs> command) =>
-        await SendCommandAsync(command, null).ConfigureAwait(false);
+    public async Task SendCommandAsync<TArgs>(
+        ICommand<TArgs> command,
+        CancellationToken ctk = default) =>
+        await SendCommandAsync(command, null, ctk).ConfigureAwait(false);
 
     private async Task<object> SendCommandAsync<TArgs>(
         ICommand<TArgs> command,
-        Type returnType) {
+        Type returnType,
+        CancellationToken ctk = default) {
         
         IpcPayload response = await _ipcHandler.SendPayloadAsync(new IpcPayload {
             cmd = command.Name,
             nonce = Guid.NewGuid().ToString(),
             args = command.Arguments
-        }).ConfigureAwait(false);
+        }, ctk).ConfigureAwait(false);
 
         return returnType is null ? null :
             response.GetData(returnType);
@@ -58,7 +63,8 @@ public class DiscordIpcClient : IDisposable {
 
     public async Task<EventHandle> SubscribeAsync<TArgs, TData>(
         IEvent<TArgs, TData> theEvent,
-        Action<TData> eventHandler) {
+        Action<TData> eventHandler,
+        CancellationToken ctk = default) {
         
         var eventListener = EventListener.Create(theEvent, eventHandler);
         _dispatcher.AddEventListener(eventListener);
@@ -70,7 +76,7 @@ public class DiscordIpcClient : IDisposable {
                 nonce = Guid.NewGuid().ToString(),
                 evt = theEvent.Name,
                 args = theEvent.Arguments
-            }).ConfigureAwait(false);
+            }, ctk).ConfigureAwait(false);
         }
 
         return new EventHandle(UnsubscribeAsync);
@@ -83,7 +89,7 @@ public class DiscordIpcClient : IDisposable {
                     nonce = Guid.NewGuid().ToString(),
                     evt = theEvent.Name,
                     args = theEvent.Arguments
-                }).ConfigureAwait(false);
+                }, ctk).ConfigureAwait(false);
             }
         }
     }

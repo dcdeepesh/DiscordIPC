@@ -66,13 +66,13 @@ public class IpcHandler {
         }
     }
 
-    public async Task<IpcPayload> SendPayloadAsync(IpcPayload payload) {
-        await SendPacketAsync(new IpcRawPacket(OpCode.Frame, payload))
+    public async Task<IpcPayload> SendPayloadAsync(IpcPayload payload, CancellationToken ctk = default) {
+        await SendPacketAsync(new IpcRawPacket(OpCode.Frame, payload), ctk)
             .ConfigureAwait(false);
         return _dispatcher.GetResponseFor(payload.nonce);
     }
 
-    protected async Task SendPacketAsync(IpcRawPacket packet) {
+    protected async Task SendPacketAsync(IpcRawPacket packet, CancellationToken ctk = default) {
         byte[] opCodeBytes = BitConverter.GetBytes((int) packet.OpCode);
         byte[] lengthBytes = BitConverter.GetBytes(packet.Length);
 
@@ -82,7 +82,7 @@ public class IpcHandler {
         Array.Copy(lengthBytes, 0, buffer, 4, 4);
         Array.Copy(packet.PayloadData, 0, buffer, 8, packet.Length);
         
-        await _pipe.WriteAsync(buffer, 0, buffer.Length)
+        await _pipe.WriteAsync(buffer, 0, buffer.Length, ctk)
             .ConfigureAwait(false);
     }
 
