@@ -79,7 +79,19 @@ public class DiscordIpcClient : IDisposable {
             }, ctk).ConfigureAwait(false);
         }
 
-        return new EventHandle(UnsubscribeAsync);
+        return new EventHandle(Unsubscribe, UnsubscribeAsync);
+        
+        void Unsubscribe() {
+            // READY event doesn't need an unsubscription command
+            if (theEvent is not ReadyEvent) {
+                _ipcHandler.SendPayload(new IpcPayload {
+                    cmd = "UNSUBSCRIBE",
+                    nonce = Guid.NewGuid().ToString(),
+                    evt = theEvent.Name,
+                    args = theEvent.Arguments
+                });
+            }
+        }
 
         async ValueTask UnsubscribeAsync() {
             // READY event doesn't need an unsubscription command
