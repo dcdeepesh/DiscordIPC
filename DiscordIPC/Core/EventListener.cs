@@ -9,10 +9,10 @@ public class EventListener<TData> : AbstractEventListener {
     public Func<TData, bool> DataMatchChecker { get; set; }
 
     public override bool IsMatchingData(IpcPayload payload) =>
-        payload.evt == EventName && DataMatchChecker(payload.GetData<TData>());
+        payload.evt == EventName && DataMatchChecker(payload.GetDataAs<TData>());
 
     public override void HandleData(IpcPayload payload) =>
-        EventHandler(payload.GetData<TData>());
+        EventHandler(payload.GetDataAs<TData>());
 }
 
 public class EventListener {

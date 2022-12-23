@@ -18,9 +18,9 @@ public class IpcPayload {
     [JsonIgnore]
     public string DataJson { get; set; }
 
-    public TData GetData<TData>() =>
+    public TData GetDataAs<TData>() =>
         JsonSerializer.Deserialize<TData>(DataJson);
 
-    public object GetData(Type returnType) =>
+    public object GetDataAs(Type returnType) =>
         JsonSerializer.Deserialize(DataJson, returnType);
 }

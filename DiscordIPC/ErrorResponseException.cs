@@ -16,8 +16,14 @@ public class ErrorResponseException : IOException {
     /// </summary>
     public int Code { get; }
 
-    internal ErrorResponseException(IpcPayload response) {
-        Code = response.data.code;
-        Message = response.data.message;
+    internal ErrorResponseException(IpcPayload responsePayload) {
+        ErrorPayload response = responsePayload.GetDataAs<ErrorPayload>();
+        Code = response.code;
+        Message = response.message;
+    }
+
+    internal class ErrorPayload {
+        public int code { get; set; }
+        public string message { get; set; }
     }
 }

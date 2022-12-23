@@ -60,7 +60,7 @@ public class DiscordIpcClient : IDisposable {
         }, ctk).ConfigureAwait(false);
 
         return returnType is null ? null :
-            response.GetData(returnType);
+            response.GetDataAs(returnType);
     }
 
     public async Task<EventHandle> SubscribeAsync<TArgs, TData>(
