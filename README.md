@@ -2,6 +2,8 @@
 
 [![Nuget badge](https://img.shields.io/nuget/v/Dec.DiscordIPC)](https://www.nuget.org/packages/Dec.DiscordIPC/)
 
+> **Note (August 2023):** After a few more months of dormancy, development has resumed and will hopefully stay consistent this time. Soon the architectural overhaul will be complete and any new entities, commands and events will be added, along with other highly needed changes. This time, DiscordIPC is expected to be stable, actively maintained and production ready. This note will be kept updated accordingly. If you're planning to use DiscordIPC in your own project, I suggest waiting for a few more weeks and keeping tab of this note.
+
 > After months of being dormant, DiscordIPC is now back into active development (hooray!).
 > It is currently going through a complete architectural overhaul.
 
