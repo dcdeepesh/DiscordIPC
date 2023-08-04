@@ -18,13 +18,10 @@ public class DiscordIpcClient : IDisposable {
     private readonly Dispatcher _dispatcher;
     private readonly DiscordIpcClientOptions _options;
 
-    public DiscordIpcClient(string clientId) : this(clientId, new DiscordIpcClientOptions()) {
-    }
-
-    public DiscordIpcClient(string clientId, DiscordIpcClientOptions options) {
+    public DiscordIpcClient(string clientId, DiscordIpcClientOptions options = default) {
         _dispatcher = new Dispatcher();
         _ipcHandler = new IpcHandler(clientId, _dispatcher);
-        _options = options;
+        _options = options ?? new DiscordIpcClientOptions();
         Logger = options.Logger;
     }
     
