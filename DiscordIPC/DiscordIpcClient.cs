@@ -15,13 +15,13 @@ namespace Dec.DiscordIPC;
 /// </summary>
 public class DiscordIpcClient : IDisposable {
 
-    private readonly Ipc _ipcHandler;
-    private readonly Dispatcher _dispatcher;
+    private readonly Ipc _ipc;
+    private readonly PayloadDispatcher _dispatcher;
     private readonly DiscordIpcClientOptions _options;
 
     public DiscordIpcClient(string clientId, DiscordIpcClientOptions options = default) {
-        _dispatcher = new Dispatcher();
-        _ipcHandler = new Ipc(clientId, _dispatcher);
+        _dispatcher = new PayloadDispatcher();
+        _ipc = new Ipc(clientId, _dispatcher);
         _options = options ?? new DiscordIpcClientOptions();
         Logger = options.Logger;
     }
@@ -29,10 +29,10 @@ public class DiscordIpcClient : IDisposable {
     public async Task ConnectToDiscordAsync(int timeoutMs = 2000,
         CancellationToken ctk = default) {
 
-        await _ipcHandler.ConnectToPipeAsync(_options.PipeNumber, timeoutMs, ctk)
+        await _ipc.ConnectToPipeAsync(_options.PipeNumber, timeoutMs, ctk)
             .ConfigureAwait(false);
-        _ipcHandler.InitMessageLoopAndDispatcher();
-        await _ipcHandler.SendHandshakeAsync(ctk)
+        _ipc.InitMessageLoopAndDispatcher();
+        await _ipc.SendHandshakeAsync(ctk)
             .ConfigureAwait(false);
     }
 
@@ -51,7 +51,7 @@ public class DiscordIpcClient : IDisposable {
         Type returnType,
         CancellationToken ctk = default) {
         
-        IpcPacketPayload response = await _ipcHandler.SendPayloadAsync(new IpcPacketPayload {
+        IpcPacketPayload response = await _ipc.SendPayloadAsync(new IpcPacketPayload {
             cmd = command.Name,
             nonce = Guid.NewGuid().ToString(),
             args = command.Arguments
@@ -71,7 +71,7 @@ public class DiscordIpcClient : IDisposable {
 
         // READY event doesn't need a subscription command
         if (theEvent is not ReadyEvent) {
-            await _ipcHandler.SendPayloadAsync(new IpcPacketPayload {
+            await _ipc.SendPayloadAsync(new IpcPacketPayload {
                 cmd = "SUBSCRIBE",
                 nonce = Guid.NewGuid().ToString(),
                 evt = theEvent.Name,
@@ -92,19 +92,19 @@ public class DiscordIpcClient : IDisposable {
 
         void Unsubscribe() {
             if (theEvent is not ReadyEvent) {
-                _ipcHandler.SendPayload(MakeUnsubscribePayload());
+                _ipc.SendPayload(MakeUnsubscribePayload());
             }
         }
 
         async ValueTask UnsubscribeAsync() {
             if (theEvent is not ReadyEvent) {
-                await _ipcHandler.SendPayloadAsync(MakeUnsubscribePayload(), ctk)
+                await _ipc.SendPayloadAsync(MakeUnsubscribePayload(), ctk)
                     .ConfigureAwait(false);
             }
         }
     }
 
     public void Dispose() {
-        _ipcHandler.Dispose();
+        _ipc.Dispose();
     }
 }

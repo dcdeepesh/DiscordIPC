@@ -12,10 +12,10 @@ public class Ipc
 {
     private NamedPipeClientStream _pipe;
     private MessageLoop _messageLoop;
-    private readonly Dispatcher _dispatcher;
+    private readonly PayloadDispatcher _dispatcher;
     private readonly string _clientId;
 
-    public Ipc(string clientId, Dispatcher dispatcher)
+    public Ipc(string clientId, PayloadDispatcher dispatcher)
     {
         _clientId = clientId;
         _dispatcher = dispatcher;
@@ -107,13 +107,13 @@ public class Ipc
     private static byte[] SerializePacket(IpcPacket packet)
     {
         byte[] opCodeBytes = BitConverter.GetBytes((int)packet.OpCode);
-        byte[] lengthBytes = BitConverter.GetBytes(packet.Length);
+        byte[] lengthBytes = BitConverter.GetBytes(packet.PayloadLength);
 
         // 4-bit opcode, 4-bit length, and then the data
-        byte[] buffer = new byte[4 + 4 + packet.Length];
+        byte[] buffer = new byte[4 + 4 + packet.PayloadLength];
         Array.Copy(opCodeBytes, buffer, 4);
         Array.Copy(lengthBytes, 0, buffer, 4, 4);
-        Array.Copy(packet.PayloadData, 0, buffer, 8, packet.Length);
+        Array.Copy(packet.Payload, 0, buffer, 8, packet.PayloadLength);
 
         return buffer;
     }
