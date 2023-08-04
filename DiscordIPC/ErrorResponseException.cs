@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using Dec.DiscordIPC.Core.Ipc;
 
 namespace Dec.DiscordIPC;
@@ -22,6 +23,7 @@ public class ErrorResponseException : IOException {
         Message = response.message;
     }
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal class ErrorPayload {
         public int code { get; set; }
         public string message { get; set; }

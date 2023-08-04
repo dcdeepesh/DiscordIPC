@@ -26,7 +26,6 @@ internal class PayloadReadLoop {
     private void Loop() {
         byte[] opCodeBytes = new byte[4];
         byte[] lengthBytes = new byte[4];
-        Packet packet;
 
         while (true) {
             try {
@@ -35,24 +34,27 @@ internal class PayloadReadLoop {
                 OpCode opCode = (OpCode)BitConverter.ToInt32(opCodeBytes, 0);
                 if (_pipe.Read(lengthBytes, 0, 4) == 0)
                     break;
-                int len = BitConverter.ToInt32(lengthBytes, 0);
-                byte[] data = new byte[len];
-                if (_pipe.Read(data, 0, len) == 0)
+                int length = BitConverter.ToInt32(lengthBytes, 0);
+                byte[] data = new byte[length];
+                if (_pipe.Read(data, 0, length) == 0)
                     break;
-                packet = new Packet(opCode, data);
+                
+                FireEventForPacket(new Packet(opCode, data));
             } catch (Exception e) when (e is ObjectDisposedException or InvalidOperationException) {
                 // TODO why this catch block?
                 break;
             }
-
-            Task.Run(() => {
-                Payload payload = JsonSerializer.Deserialize<Payload>(packet.PayloadJson);
-                payload.DataJson = JsonDocument.Parse(packet.PayloadJson).RootElement
-                    .GetProperty(nameof(Payload.data)).GetRawText();
-
-                var eventToFire = payload.cmd == "DISPATCH" ? EventReceived : ResponseReceived;
-                eventToFire?.Invoke(this, new PayloadReceivedEventArgs(payload));
-            });
         }
+    }
+
+    private void FireEventForPacket(Packet packet) {
+        Task.Run(() => {
+            Payload payload = JsonSerializer.Deserialize<Payload>(packet.PayloadJson);
+            payload.DataJson = JsonDocument.Parse(packet.PayloadJson).RootElement
+                .GetProperty(nameof(Payload.data)).GetRawText();
+
+            var eventToFire = payload.cmd == "DISPATCH" ? EventReceived : ResponseReceived;
+            eventToFire?.Invoke(this, new PayloadReceivedEventArgs(payload));
+        });
     }
 }
