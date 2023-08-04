@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Dec.DiscordIPC.Core.Ipc;
 
-namespace Dec.DiscordIPC.Core; 
+namespace Dec.DiscordIPC.Core;
 
 public class Dispatcher {
     private readonly List<AbstractEventListener> _eventListeners = new();

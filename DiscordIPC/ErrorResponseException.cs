@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using Dec.DiscordIPC.Core;
+using Dec.DiscordIPC.Core.Ipc;
 
-namespace Dec.DiscordIPC; 
+namespace Dec.DiscordIPC;
 
 /// <summary>
 /// Exception thrown when IPC returns an error response.

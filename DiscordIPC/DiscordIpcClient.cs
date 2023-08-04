@@ -4,10 +4,11 @@ using System.Threading.Tasks;
 
 using Dec.DiscordIPC.Commands;
 using Dec.DiscordIPC.Core;
+using Dec.DiscordIPC.Core.Ipc;
 using Dec.DiscordIPC.Events;
 using static Dec.DiscordIPC.Core.LoggerWrapper;
 
-namespace Dec.DiscordIPC; 
+namespace Dec.DiscordIPC;
 
 /// <summary>
 /// The main access point for user programs to use DiscordIPC.

@@ -1,4 +1,5 @@
 ﻿using System;
+using Dec.DiscordIPC.Core.Ipc;
 using Dec.DiscordIPC.Events;
 
 namespace Dec.DiscordIPC.Core;
