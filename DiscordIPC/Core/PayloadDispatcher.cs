@@ -8,24 +8,23 @@ namespace Dec.DiscordIPC.Core;
 public class PayloadDispatcher {
     
     private readonly List<EventListener> _eventListeners = new();
-    private readonly LinkedList<Waiter> _responseWaiters = new();
+    private readonly LinkedList<ResponseWaiter> _responseWaiters = new();
     private readonly LinkedList<Payload> _pooledResponsePayloads = new();
     
     public void DispatchEvent(Payload eventPayload) {
-        foreach (var listener in _eventListeners) {
-            if (listener.IsMatchingData(eventPayload)) {
-                listener.HandleData(eventPayload);
-            }
+        foreach (var listener in _eventListeners
+                     .Where(el => el.IsMatchingEventData(eventPayload))) {
+            listener.HandleEventData(eventPayload);
         }
     }
 
     public void DispatchResponse(Payload responsePayload) {
-        Waiter existingWaiter = _responseWaiters.FirstOrDefault(
-            w => w.Nonce == responsePayload.nonce);
+        ResponseWaiter existingResponseWaiter = _responseWaiters.FirstOrDefault(
+            rw => rw.Nonce == responsePayload.nonce);
 
-        if (existingWaiter is not null) {
-            _responseWaiters.Remove(existingWaiter);
-            existingWaiter.Notify(responsePayload);
+        if (existingResponseWaiter is not null) {
+            _responseWaiters.Remove(existingResponseWaiter);
+            existingResponseWaiter.Notify(responsePayload);
         } else {
             lock (_pooledResponsePayloads) {
                 _pooledResponsePayloads.AddLast(responsePayload);
@@ -53,9 +52,9 @@ public class PayloadDispatcher {
         // TODO: Does _responseWaiters need a lock?
 
         if (response is null) {
-            Waiter waiter = new(nonce);
-            _responseWaiters.AddLast(waiter);
-            response = waiter.WaitForResponse();
+            ResponseWaiter responseWaiter = new(nonce);
+            _responseWaiters.AddLast(responseWaiter);
+            response = responseWaiter.WaitForResponse();
         }
 
         if (response.evt == "ERROR")
@@ -63,14 +62,14 @@ public class PayloadDispatcher {
         return response;
     }
     
-    private class Waiter {
+    private class ResponseWaiter {
         // TODO: Use ManualResetEvent? Use *Slim? Check performance.
         private readonly AutoResetEvent _event = new(false);
         private Payload _responsePayload;
 
         public string Nonce { get; }
     
-        public Waiter(string nonce) => Nonce = nonce;
+        public ResponseWaiter(string nonce) => Nonce = nonce;
 
         public Payload WaitForResponse() {
             _event.WaitOne();
