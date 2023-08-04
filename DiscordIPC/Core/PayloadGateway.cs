@@ -5,7 +5,7 @@ using Dec.DiscordIPC.Core.Ipc;
 
 namespace Dec.DiscordIPC.Core;
 
-public class PayloadDispatcher {
+public class PayloadGateway {
     private readonly List<EventListener> _eventListeners = new();
     private readonly LinkedList<Waiter> _responseWaiters = new();
     private readonly LinkedList<Payload> _pooledResponsePayloads = new();

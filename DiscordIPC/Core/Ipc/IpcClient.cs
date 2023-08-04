@@ -8,14 +8,14 @@ using Dec.DiscordIPC.Events;
 
 namespace Dec.DiscordIPC.Core.Ipc;
 
-public class Ipc
+public class IpcClient
 {
     private NamedPipeClientStream _pipe;
     private PayloadReadLoop _messageLoop;
-    private readonly PayloadDispatcher _dispatcher;
+    private readonly PayloadGateway _dispatcher;
     private readonly string _clientId;
 
-    public Ipc(string clientId, PayloadDispatcher dispatcher)
+    public IpcClient(string clientId, PayloadGateway dispatcher)
     {
         _clientId = clientId;
         _dispatcher = dispatcher;
