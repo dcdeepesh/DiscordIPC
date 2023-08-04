@@ -15,18 +15,18 @@ public abstract class EventListener {
         };
     }
 
-    public abstract bool IsMatchingData(IpcPacketPayload payload);
-    public abstract void HandleData(IpcPacketPayload payload);
+    public abstract bool IsMatchingData(Payload payload);
+    public abstract void HandleData(Payload payload);
 
     public class SpecificEventListener<TEventData> : EventListener {
         public string EventName { get; set; }
         public Action<TEventData> EventHandler { get; set; }
         public Func<TEventData, bool> DataMatchChecker { get; set; }
 
-        public override bool IsMatchingData(IpcPacketPayload payload) =>
+        public override bool IsMatchingData(Payload payload) =>
             payload.evt == EventName && DataMatchChecker(payload.GetDataAs<TEventData>());
 
-        public override void HandleData(IpcPacketPayload payload) =>
+        public override void HandleData(Payload payload) =>
             EventHandler(payload.GetDataAs<TEventData>());
     }
 }

@@ -8,13 +8,13 @@ namespace Dec.DiscordIPC.Core;
 public class PayloadDispatcher {
     private readonly List<EventListener> _eventListeners = new();
     private readonly LinkedList<Waiter> _responseWaiters = new();
-    private readonly LinkedList<IpcPacketPayload> _pooledResponsePayloads = new();
+    private readonly LinkedList<Payload> _pooledResponsePayloads = new();
 
     public void AddEventListener(EventListener eventListener) {
         _eventListeners.Add(eventListener);
     }
 
-    public void DispatchEvent(IpcPacketPayload eventPayload) {
+    public void DispatchEvent(Payload eventPayload) {
         foreach (var listener in _eventListeners) {
             if (listener.IsMatchingData(eventPayload)) {
                 listener.HandleData(eventPayload);
@@ -22,7 +22,7 @@ public class PayloadDispatcher {
         }
     }
 
-    public void DispatchResponse(IpcPacketPayload responsePayload) {
+    public void DispatchResponse(Payload responsePayload) {
         Waiter existingWaiter = _responseWaiters.FirstOrDefault(
             w => w.Nonce == responsePayload.nonce);
 
@@ -36,8 +36,8 @@ public class PayloadDispatcher {
         }
     }
 
-    public IpcPacketPayload GetResponseFor(string nonce) {
-        IpcPacketPayload response;
+    public Payload GetResponseFor(string nonce) {
+        Payload response;
 
         lock (_pooledResponsePayloads) {
             response = _pooledResponsePayloads
@@ -66,18 +66,18 @@ public class PayloadDispatcher {
 internal class Waiter {
     // TODO: Use ManualResetEvent? Use *Slim? Check performance.
     private readonly AutoResetEvent _event = new(false);
-    private IpcPacketPayload _responsePayload;
+    private Payload _responsePayload;
 
     public string Nonce { get; }
     
     public Waiter(string nonce) => Nonce = nonce;
 
-    public IpcPacketPayload WaitForResponse() {
+    public Payload WaitForResponse() {
         _event.WaitOne();
         return _responsePayload;
     }
 
-    public void Notify(IpcPacketPayload response) {
+    public void Notify(Payload response) {
         _responsePayload = response;
         _event.Set();
     }

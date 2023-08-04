@@ -51,7 +51,7 @@ public class DiscordIpcClient : IDisposable {
         Type returnType,
         CancellationToken ctk = default) {
         
-        IpcPacketPayload response = await _ipc.SendPayloadAsync(new IpcPacketPayload {
+        Payload response = await _ipc.SendPayloadAsync(new Payload {
             cmd = command.Name,
             nonce = Guid.NewGuid().ToString(),
             args = command.Arguments
@@ -71,7 +71,7 @@ public class DiscordIpcClient : IDisposable {
 
         // READY event doesn't need a subscription command
         if (theEvent is not ReadyEvent) {
-            await _ipc.SendPayloadAsync(new IpcPacketPayload {
+            await _ipc.SendPayloadAsync(new Payload {
                 cmd = "SUBSCRIBE",
                 nonce = Guid.NewGuid().ToString(),
                 evt = theEvent.Name,
@@ -83,7 +83,7 @@ public class DiscordIpcClient : IDisposable {
 
         // Local helper methods
         
-        IpcPacketPayload MakeUnsubscribePayload() => new() {
+        Payload MakeUnsubscribePayload() => new() {
             cmd = "UNSUBSCRIBE",
             nonce = Guid.NewGuid().ToString(),
             evt = theEvent.Name,

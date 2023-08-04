@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace Dec.DiscordIPC.Core.Ipc;
 
-public class IpcPacket {
+public class Packet {
 
     public OpCode OpCode { get; }
     public byte[] Payload { get; }
@@ -13,7 +13,7 @@ public class IpcPacket {
     public int PayloadLength => Payload.Length;
     public string PayloadJson => Encoding.UTF8.GetString(Payload);
 
-    public IpcPacket(OpCode opCode, object data) {
+    public Packet(OpCode opCode, object data) {
         OpCode = opCode;
         Payload = JsonSerializer.SerializeToUtf8Bytes(data, new JsonSerializerOptions {
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -21,7 +21,7 @@ public class IpcPacket {
         });
     }
 
-    public IpcPacket(OpCode opCode, byte[] payloadData) {
+    public Packet(OpCode opCode, byte[] payloadData) {
         OpCode = opCode;
         Payload = payloadData;
     }

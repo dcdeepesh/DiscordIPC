@@ -6,27 +6,27 @@ using System.Threading.Tasks;
 
 namespace Dec.DiscordIPC.Core.Ipc;
 
-internal class MessageLoop {
+internal class PayloadReadLoop {
     private readonly NamedPipeClientStream _pipe;
     private readonly Thread _thread;
 
-    public MessageLoop(NamedPipeClientStream pipe) {
+    public PayloadReadLoop(NamedPipeClientStream pipe) {
         _pipe = pipe;
         _thread = new Thread(Loop) {
             IsBackground = true,
-            Name = "IPC Message loop"
+            Name = "IPC Message read loop"
         };
     }
 
     public void Start() => _thread.Start();
 
-    public event EventHandler<MessageReceivedEventArgs> EventReceived;
-    public event EventHandler<MessageReceivedEventArgs> ResponseReceived;
+    public event EventHandler<PayloadReceivedEventArgs> EventReceived;
+    public event EventHandler<PayloadReceivedEventArgs> ResponseReceived;
 
     private void Loop() {
         byte[] opCodeBytes = new byte[4];
         byte[] lengthBytes = new byte[4];
-        IpcPacket packet;
+        Packet packet;
 
         while (true) {
             try {
@@ -39,19 +39,19 @@ internal class MessageLoop {
                 byte[] data = new byte[len];
                 if (_pipe.Read(data, 0, len) == 0)
                     break;
-                packet = new IpcPacket(opCode, data);
+                packet = new Packet(opCode, data);
             } catch (Exception e) when (e is ObjectDisposedException or InvalidOperationException) {
                 // TODO why this catch block?
                 break;
             }
 
             Task.Run(() => {
-                IpcPacketPayload payload = JsonSerializer.Deserialize<IpcPacketPayload>(packet.PayloadJson);
+                Payload payload = JsonSerializer.Deserialize<Payload>(packet.PayloadJson);
                 payload.DataJson = JsonDocument.Parse(packet.PayloadJson).RootElement
-                    .GetProperty(nameof(IpcPacketPayload.data)).GetRawText();
+                    .GetProperty(nameof(Payload.data)).GetRawText();
 
                 var eventToFire = payload.cmd == "DISPATCH" ? EventReceived : ResponseReceived;
-                eventToFire?.Invoke(this, new MessageReceivedEventArgs(payload));
+                eventToFire?.Invoke(this, new PayloadReceivedEventArgs(payload));
             });
         }
     }

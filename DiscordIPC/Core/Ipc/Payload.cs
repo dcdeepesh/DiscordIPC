@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace Dec.DiscordIPC.Core.Ipc;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public class IpcPacketPayload {
+public class Payload {
     public string nonce { get; set; }
 
     public string cmd { get; set; }

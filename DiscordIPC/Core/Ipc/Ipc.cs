@@ -11,7 +11,7 @@ namespace Dec.DiscordIPC.Core.Ipc;
 public class Ipc
 {
     private NamedPipeClientStream _pipe;
-    private MessageLoop _messageLoop;
+    private PayloadReadLoop _messageLoop;
     private readonly PayloadDispatcher _dispatcher;
     private readonly string _clientId;
 
@@ -40,7 +40,7 @@ public class Ipc
 
     public void InitMessageLoopAndDispatcher()
     {
-        _messageLoop = new MessageLoop(_pipe);
+        _messageLoop = new PayloadReadLoop(_pipe);
         _messageLoop.EventReceived += (_, args) =>
         {
             _dispatcher.DispatchEvent(args.Payload);
@@ -59,7 +59,7 @@ public class Ipc
             EventListener.Create(ReadyEvent.Create(), ReadyEventListener));
 
         // TODO: use ctk
-        await SendPacketAsync(new IpcPacket(OpCode.Handshake, new
+        await SendPacketAsync(new Packet(OpCode.Handshake, new
         {
             client_id = _clientId,
             v = "1",
@@ -78,33 +78,33 @@ public class Ipc
         }
     }
 
-    public IpcPacketPayload SendPayload(IpcPacketPayload payload)
+    public Payload SendPayload(Payload payload)
     {
-        SendPacket(new IpcPacket(OpCode.Frame, payload));
+        SendPacket(new Packet(OpCode.Frame, payload));
         return _dispatcher.GetResponseFor(payload.nonce);
     }
 
-    public async Task<IpcPacketPayload> SendPayloadAsync(IpcPacketPayload payload, CancellationToken ctk = default)
+    public async Task<Payload> SendPayloadAsync(Payload payload, CancellationToken ctk = default)
     {
-        await SendPacketAsync(new IpcPacket(OpCode.Frame, payload), ctk)
+        await SendPacketAsync(new Packet(OpCode.Frame, payload), ctk)
             .ConfigureAwait(false);
         return _dispatcher.GetResponseFor(payload.nonce);
     }
 
-    public void SendPacket(IpcPacket packet)
+    public void SendPacket(Packet packet)
     {
         byte[] packetBytes = SerializePacket(packet);
         _pipe.Write(packetBytes, 0, packetBytes.Length);
     }
 
-    public async Task SendPacketAsync(IpcPacket packet, CancellationToken ctk = default)
+    public async Task SendPacketAsync(Packet packet, CancellationToken ctk = default)
     {
         byte[] packetBytes = SerializePacket(packet);
         await _pipe.WriteAsync(packetBytes, 0, packetBytes.Length, ctk)
             .ConfigureAwait(false);
     }
 
-    private static byte[] SerializePacket(IpcPacket packet)
+    private static byte[] SerializePacket(Packet packet)
     {
         byte[] opCodeBytes = BitConverter.GetBytes((int)packet.OpCode);
         byte[] lengthBytes = BitConverter.GetBytes(packet.PayloadLength);
