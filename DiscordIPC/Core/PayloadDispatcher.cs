@@ -6,11 +6,11 @@ using Dec.DiscordIPC.Core.Ipc;
 namespace Dec.DiscordIPC.Core;
 
 public class PayloadDispatcher {
-    private readonly List<AbstractEventListener> _eventListeners = new();
+    private readonly List<EventListener> _eventListeners = new();
     private readonly LinkedList<Waiter> _responseWaiters = new();
     private readonly LinkedList<IpcPacketPayload> _pooledResponsePayloads = new();
 
-    public void AddEventListener(AbstractEventListener eventListener) {
+    public void AddEventListener(EventListener eventListener) {
         _eventListeners.Add(eventListener);
     }
 
