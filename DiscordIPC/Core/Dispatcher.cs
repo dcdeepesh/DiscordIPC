@@ -7,13 +7,13 @@ namespace Dec.DiscordIPC.Core;
 public class Dispatcher {
     private readonly List<AbstractEventListener> _eventListeners = new();
     private readonly LinkedList<Waiter> _responseWaiters = new();
-    private readonly LinkedList<IpcPayload> _pooledResponsePayloads = new();
+    private readonly LinkedList<IpcPacketPayload> _pooledResponsePayloads = new();
 
     public void AddEventListener(AbstractEventListener eventListener) {
         _eventListeners.Add(eventListener);
     }
 
-    public void DispatchEvent(IpcPayload eventPayload) {
+    public void DispatchEvent(IpcPacketPayload eventPayload) {
         foreach (var listener in _eventListeners) {
             if (listener.IsMatchingData(eventPayload)) {
                 listener.HandleData(eventPayload);
@@ -21,7 +21,7 @@ public class Dispatcher {
         }
     }
 
-    public void DispatchResponse(IpcPayload responsePayload) {
+    public void DispatchResponse(IpcPacketPayload responsePayload) {
         Waiter existingWaiter = _responseWaiters.FirstOrDefault(
             w => w.Nonce == responsePayload.nonce);
 
@@ -35,8 +35,8 @@ public class Dispatcher {
         }
     }
 
-    public IpcPayload GetResponseFor(string nonce) {
-        IpcPayload response;
+    public IpcPacketPayload GetResponseFor(string nonce) {
+        IpcPacketPayload response;
 
         lock (_pooledResponsePayloads) {
             response = _pooledResponsePayloads
@@ -65,18 +65,18 @@ public class Dispatcher {
 internal class Waiter {
     // TODO: Use ManualResetEvent? Use *Slim? Check performance.
     private readonly AutoResetEvent _event = new(false);
-    private IpcPayload _responsePayload;
+    private IpcPacketPayload _responsePayload;
 
     public string Nonce { get; }
     
     public Waiter(string nonce) => Nonce = nonce;
 
-    public IpcPayload WaitForResponse() {
+    public IpcPacketPayload WaitForResponse() {
         _event.WaitOne();
         return _responsePayload;
     }
 
-    public void Notify(IpcPayload response) {
+    public void Notify(IpcPacketPayload response) {
         _responsePayload = response;
         _event.Set();
     }

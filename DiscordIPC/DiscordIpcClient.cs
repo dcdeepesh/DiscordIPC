@@ -14,13 +14,13 @@ namespace Dec.DiscordIPC;
 /// </summary>
 public class DiscordIpcClient : IDisposable {
 
-    private readonly IpcHandler _ipcHandler;
+    private readonly Ipc _ipcHandler;
     private readonly Dispatcher _dispatcher;
     private readonly DiscordIpcClientOptions _options;
 
     public DiscordIpcClient(string clientId, DiscordIpcClientOptions options = default) {
         _dispatcher = new Dispatcher();
-        _ipcHandler = new IpcHandler(clientId, _dispatcher);
+        _ipcHandler = new Ipc(clientId, _dispatcher);
         _options = options ?? new DiscordIpcClientOptions();
         Logger = options.Logger;
     }
@@ -50,7 +50,7 @@ public class DiscordIpcClient : IDisposable {
         Type returnType,
         CancellationToken ctk = default) {
         
-        IpcPayload response = await _ipcHandler.SendPayloadAsync(new IpcPayload {
+        IpcPacketPayload response = await _ipcHandler.SendPayloadAsync(new IpcPacketPayload {
             cmd = command.Name,
             nonce = Guid.NewGuid().ToString(),
             args = command.Arguments
@@ -60,7 +60,7 @@ public class DiscordIpcClient : IDisposable {
             response.GetDataAs(returnType);
     }
 
-    public async Task<EventHandle> SubscribeAsync<TArgs, TData>(
+    public async Task<EventSubscriptionHandle> SubscribeAsync<TArgs, TData>(
         IEvent<TArgs, TData> theEvent,
         Action<TData> eventHandler,
         CancellationToken ctk = default) {
@@ -70,7 +70,7 @@ public class DiscordIpcClient : IDisposable {
 
         // READY event doesn't need a subscription command
         if (theEvent is not ReadyEvent) {
-            await _ipcHandler.SendPayloadAsync(new IpcPayload {
+            await _ipcHandler.SendPayloadAsync(new IpcPacketPayload {
                 cmd = "SUBSCRIBE",
                 nonce = Guid.NewGuid().ToString(),
                 evt = theEvent.Name,
@@ -78,11 +78,11 @@ public class DiscordIpcClient : IDisposable {
             }, ctk).ConfigureAwait(false);
         }
 
-        return new EventHandle(Unsubscribe, UnsubscribeAsync);
+        return new EventSubscriptionHandle(Unsubscribe, UnsubscribeAsync);
 
         // Local helper methods
         
-        IpcPayload MakeUnsubscribePayload() => new() {
+        IpcPacketPayload MakeUnsubscribePayload() => new() {
             cmd = "UNSUBSCRIBE",
             nonce = Guid.NewGuid().ToString(),
             evt = theEvent.Name,

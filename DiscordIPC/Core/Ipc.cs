@@ -8,18 +8,18 @@ using Dec.DiscordIPC.Events;
 
 namespace Dec.DiscordIPC.Core; 
 
-public class IpcHandler {
+public class Ipc {
     private NamedPipeClientStream _pipe;
     private MessageLoop _messageLoop;
     private readonly Dispatcher _dispatcher;
     private readonly string _clientId;
 
-    public IpcHandler(string clientId, Dispatcher dispatcher) {
+    public Ipc(string clientId, Dispatcher dispatcher) {
         _clientId = clientId;
         _dispatcher = dispatcher;
     }
 
-    public async Task ConnectToPipeAsync(int pipeNumber = 0, int timeoutMs = 2000,
+    public async Task ConnectToPipeAsync(int pipeNumber, int timeoutMs,
         CancellationToken ctk = default) {
         
         string pipeName = $"discord-ipc-{pipeNumber}";
@@ -28,8 +28,8 @@ public class IpcHandler {
                 PipeDirection.InOut, PipeOptions.Asynchronous);
             await _pipe.ConnectAsync(timeoutMs, ctk).ConfigureAwait(false);
         }
-        catch (TimeoutException) {
-            throw new IOException($"Unable to connect to pipe {pipeName}");
+        catch (TimeoutException ex) {
+            throw new IOException($"Unable to connect to pipe {pipeName}", ex);
         }
     }
 
@@ -50,7 +50,7 @@ public class IpcHandler {
             EventListener.Create(ReadyEvent.Create(), ReadyEventListener));
 
         // TODO: use ctk
-        await SendPacketAsync(new IpcRawPacket(OpCode.Handshake, new {
+        await SendPacketAsync(new IpcPacket(OpCode.Handshake, new {
             client_id = _clientId,
             v = "1",
             nonce = Guid.NewGuid().ToString()
@@ -66,29 +66,29 @@ public class IpcHandler {
         }
     }
     
-    public IpcPayload SendPayload(IpcPayload payload) {
-        SendPacket(new IpcRawPacket(OpCode.Frame, payload));
+    public IpcPacketPayload SendPayload(IpcPacketPayload payload) {
+        SendPacket(new IpcPacket(OpCode.Frame, payload));
         return _dispatcher.GetResponseFor(payload.nonce);
     }
 
-    public async Task<IpcPayload> SendPayloadAsync(IpcPayload payload, CancellationToken ctk = default) {
-        await SendPacketAsync(new IpcRawPacket(OpCode.Frame, payload), ctk)
+    public async Task<IpcPacketPayload> SendPayloadAsync(IpcPacketPayload payload, CancellationToken ctk = default) {
+        await SendPacketAsync(new IpcPacket(OpCode.Frame, payload), ctk)
             .ConfigureAwait(false);
         return _dispatcher.GetResponseFor(payload.nonce);
     }
     
-    public void SendPacket(IpcRawPacket packet) {
+    public void SendPacket(IpcPacket packet) {
         byte[] packetBytes = SerializePacket(packet);
         _pipe.Write(packetBytes, 0, packetBytes.Length);
     }
 
-    public async Task SendPacketAsync(IpcRawPacket packet, CancellationToken ctk = default) {
+    public async Task SendPacketAsync(IpcPacket packet, CancellationToken ctk = default) {
         byte[] packetBytes = SerializePacket(packet);
         await _pipe.WriteAsync(packetBytes, 0, packetBytes.Length, ctk)
             .ConfigureAwait(false);
     }
 
-    private static byte[] SerializePacket(IpcRawPacket packet) {
+    private static byte[] SerializePacket(IpcPacket packet) {
         byte[] opCodeBytes = BitConverter.GetBytes((int) packet.OpCode);
         byte[] lengthBytes = BitConverter.GetBytes(packet.Length);
 

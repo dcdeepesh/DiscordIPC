@@ -26,7 +26,7 @@ internal class MessageLoop {
     private void Loop() {
         byte[] opCodeBytes = new byte[4];
         byte[] lengthBytes = new byte[4];
-        IpcRawPacket packet;
+        IpcPacket packet;
 
         while (true) {
             try {
@@ -39,15 +39,15 @@ internal class MessageLoop {
                 byte[] data = new byte[len];
                 if (_pipe.Read(data, 0, len) == 0)
                     break;
-                packet = new IpcRawPacket(opCode, data);
+                packet = new IpcPacket(opCode, data);
             } catch (Exception e) when (e is ObjectDisposedException or InvalidOperationException) {
                 break;
             }
 
             Task.Run(() => {
-                IpcPayload payload = JsonSerializer.Deserialize<IpcPayload>(packet.PayloadJson);
+                IpcPacketPayload payload = JsonSerializer.Deserialize<IpcPacketPayload>(packet.PayloadJson);
                 payload.DataJson = JsonDocument.Parse(packet.PayloadJson).RootElement
-                    .GetProperty(nameof(IpcPayload.data)).GetRawText();
+                    .GetProperty(nameof(IpcPacketPayload.data)).GetRawText();
 
                 var eventToFire = payload.cmd == "DISPATCH" ? EventReceived : ResponseReceived;
                 eventToFire?.Invoke(this, new PayloadReceivedArgs(payload));
@@ -57,7 +57,7 @@ internal class MessageLoop {
 }
 
 internal class PayloadReceivedArgs {
-    public IpcPayload Payload { get; }
+    public IpcPacketPayload Payload { get; }
 
-    public PayloadReceivedArgs(IpcPayload payload) => Payload = payload;
+    public PayloadReceivedArgs(IpcPacketPayload payload) => Payload = payload;
 }

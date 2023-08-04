@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace Dec.DiscordIPC; 
 
-public class EventHandle : IDisposable, IAsyncDisposable {
+public class EventSubscriptionHandle : IDisposable, IAsyncDisposable {
     private readonly Action _unsubscribeAction;
     private readonly Func<ValueTask> _asyncUnsubscribeAction;
     
-    public EventHandle(Action unsubscribeAction, Func<ValueTask> asyncUnsubscribeAction) {
+    public EventSubscriptionHandle(Action unsubscribeAction, Func<ValueTask> asyncUnsubscribeAction) {
         _unsubscribeAction = unsubscribeAction;
         _asyncUnsubscribeAction = asyncUnsubscribeAction;
     }
