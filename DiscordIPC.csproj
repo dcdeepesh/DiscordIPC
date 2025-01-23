@@ -4,14 +4,14 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Dec.DiscordIPC</RootNamespace>
 	  <AssemblyTitle>DiscordIPC</AssemblyTitle>
-	  <AssemblyVersion>1.2.2.0</AssemblyVersion>
+	  <AssemblyVersion>1.2.3.0</AssemblyVersion>
 	  <Product>DiscordIPC</Product>
 	  <Copyright>Copyright ©  2021 Deepesh Choudhary</Copyright>
 	  <RegisterForComInterop>false</RegisterForComInterop>
 	  
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	  <PackageId>Dec.DiscordIPC</PackageId>
-	  <Version>1.2.2</Version>
+	  <Version>1.2.3</Version>
 	  <Authors>Deepesh Choudhary</Authors>
 	  <Owners>Deepesh Choudhary</Owners>
 	  <Company>Oyster</Company>
