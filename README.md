@@ -2,10 +2,49 @@
 
 [![Nuget badge](https://img.shields.io/nuget/v/Dec.DiscordIPC)](https://www.nuget.org/packages/Dec.DiscordIPC/)
 
-> **Note (August 2023):** After a few more months of dormancy, development has resumed and will hopefully stay consistent this time. Soon the architectural overhaul will be complete and any new entities, commands and events will be added, along with other highly needed changes. This time, DiscordIPC is expected to be stable, actively maintained and production ready. This note will be kept updated accordingly. If you're planning to use DiscordIPC in your own project, I suggest waiting for a few more weeks and keeping tab of this note.
+---
 
-> After months of being dormant, DiscordIPC is now back into active development (hooray!).
-> It is currently going through a complete architectural overhaul.
+## !! Discontinuation Notice !!
+
+**TL;DR:** No more active development; obstrusive issues will, however, be triaged;
+DiscordIPC will be rewritten from scratch in Rust, with cross-platform support and a native library export;
+then C# bindings will/may be implemented; any/all/some of this may happen in this repo;
+everything will (hopefully) be stabilized by mid-2025; this note will stay updated accordingly.
+
+**Long version:** This library was created during the development of [Doge](https://github.com/dcdeepesh/Doge) and was
+initially only meant to be a backend for it. It eventually evolved into a standalone library and I started to like the
+concept of it. A lot has changed since then. Most notably, I've switched to Linux full-time and have grown to not
+particulary like some aspects of Discord and .NET. This project, however, along with Doge, are tightly bound to Windows.
+Changing either requires changing the other. Between the dilemma of how to begin refactoring these projects and my personal
+life not being by my side, no practical progress was made. The master branch contains some commits for the planned revamp
+of the project which never saw the light of day. Neither did Doge. Skipping to present, I'm now trying to revive everything
+I've put off for so long, and bring everything back on track.
+
+DiscordIPC (and Doge) will be improved to become full-fledged software systems. DiscordIPC will be rewritten in Rust,
+will be made cross-platform, and thus will provide native libraries as the build output so any language can comfortably use it.
+In accordance, Doge will be rewritten, possibly using Tauri (yes, I know, web on desktop, but it won't be a lousy piece of software),
+thus also becoming cross-platform. The documentation will be made even more comprehenive, and complete design documents will be made.
+I still haven't decided how to manage repositories among all this transience. Most likely, new repositories will be created for
+DiscordIPC and it's language binding(s), and this repository will be archived. Until then, this repository stays un-archived but stale.
+Should Discord's internal implementation of the IPC change not-too-drastically and cause issues for the current DiscordIPC,
+I'll make appropriate changes. No other updates will be provided. I consider it wasted work as the future DiscordIPC for .NET
+will just be a set of language bindings around the new DiscordIPC native library.
+
+Despite my diminishing usage of Discord, I've loved working on these projects and the response I've gotten, and that is why they'll
+be revived as soon as feasible. I haven't had a good track record of announcing expected dates (try blaming this readme),
+but all of the aforementioned advancements are expected to start getting stabilized around mid-2025, unless life takes another
+huge U-turn. Thus, DiscordIPC is not being discontinued, just the current model of it. The project will be reincarnated with
+a better model moving forward. As any progress is made, this note will be updated.
+
+> **A note on branches:**
+> The branch `v1` contains the "stable" version of the library. Future fixes, if any, will continue on that branch.
+> The branch `master` contains commits for the planned revamp that never happened. I considered re-branching,
+> but decided otherwise to not mess up any clones.
+> Had I re-branched, I would've renamed `v1 -> master` and `master -> revamp`, with `v1 -> master` being the default branch.
+
+End of notice.
+
+---
 
 DiscordIPC is a wrapper for Discord's IPC-based RPC. It supports all commands and events unlike the other wrappers that support only presence related commands and events.
 
